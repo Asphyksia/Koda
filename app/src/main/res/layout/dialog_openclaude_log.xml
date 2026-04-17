@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/koda_dialog_card_bg"
+    android:padding="16dp">
+
+        <TextView
+            android:id="@+id/openclaude_log_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/koda_openclaude_gateway_log"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/koda_on_background"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/koda_accent"
+            android:alpha="0.25"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/openclaude_log_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            app:tabIndicatorColor="@color/koda_accent"
+            app:tabIndicatorHeight="2dp"
+            app:tabSelectedTextColor="@color/koda_on_background"
+            app:tabTextColor="@color/koda_secondary_text"
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginBottom="12dp" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/openclaude_log_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end">
+
+            <Button
+                android:id="@+id/openclaude_log_copy_button"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/koda_button_bg"
+                android:text="@string/koda_copy"
+                android:textAllCaps="false"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/openclaude_log_close_button"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/koda_button_outline_bg"
+                android:text="@string/koda_close"
+                android:textAllCaps="false"
+                android:textColor="@color/koda_accent" />
+        </LinearLayout>
+    </LinearLayout>

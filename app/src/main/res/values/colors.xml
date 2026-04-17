@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Koda Brand Colors -->
+    <color name="koda_background">#0F172A</color>
+    <color name="koda_surface">#1E293B</color>
+    <color name="koda_on_background">#F1F5F9</color>
+    <color name="koda_primary_text">#F1F5F9</color>
+    <color name="koda_secondary_text">#94A3B8</color>
+    <color name="koda_accent">#38BDF8</color>
+    <color name="koda_accent_dark">#0EA5E9</color>
+
+    <!-- Status colors -->
+    <color name="status_connected">#4ADE80</color>
+    <color name="status_disconnected">#64748B</color>
+</resources>
