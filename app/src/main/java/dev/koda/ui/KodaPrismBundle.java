@@ -4,9 +4,9 @@ import io.noties.prism4j.annotations.PrismBundle;
 
 @PrismBundle(
     include = {
-        "java", "kotlin", "javascript", "python", "json", "xml",
+        "java", "kotlin", "javascript", "python", "json", "markup",
         "c", "cpp", "css", "go", "sql", "yaml", "markdown",
-        "typescript", "swift", "ruby"
+        "swift", "dart", "csharp", "groovy", "scala"
     },
     grammarLocatorClassName = ".KodaGrammarLocator"
 )
