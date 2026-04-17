@@ -325,6 +325,7 @@ public class KodaService extends Service {
                 cmd.append(" --model '").append(model.replace("'", "'\\''")).append("'");
             }
             cmd.append(" --bare");  // skip hooks, LSP, etc for faster startup
+            cmd.append(" --thinking disabled");  // RelayGPU doesn't support thinking
             cmd.append(" 2>&1");
 
             String script = cmd.toString();

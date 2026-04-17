@@ -111,7 +111,7 @@
             android:id="@+id/base_url_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="https://relay.opengpu.network/v2/anthropic/v1"
+            android:hint="https://relay.opengpu.network/v2/anthropic"
             android:textColor="#F8FAFC"
             android:textColorHint="#475569"
             android:background="#1E293B"

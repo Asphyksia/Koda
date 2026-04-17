@@ -445,6 +445,12 @@ public final class TermuxInstaller {
                 "fi\n" +
                 "WRAPPER\n" +
                 "chmod 755 $PREFIX/bin/openclaude\n" +
+                "# Patch: remove metadata from API requests (breaks non-Anthropic proxies)\n" +
+                "CLIMJS=\"$PREFIX/lib/node_modules/@gitlawb/openclaude/dist/cli.mjs\"\n" +
+                "if [ -f \"$CLIMJS\" ]; then\n" +
+                "    sed -i 's/metadata: getAPIMetadata()/metadata: undefined/g' \"$CLIMJS\"\n" +
+                "    echo \"KODA_INFO:Patched metadata out of API requests\"\n" +
+                "fi\n" +
                 "echo \"KODA_STEP:2:DONE\"\n\n" +
                 "# Done\n" +
                 "touch \"$MARKER\"\n" +
