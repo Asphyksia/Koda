@@ -87,7 +87,8 @@ public class SetupActivity extends AppCompatActivity {
 
         mInstallButton.setOnClickListener(v -> runInstall());
         mSaveButton.setOnClickListener(v -> saveConfig());
-        mBaseUrlInput.setText("https://api.anthropic.com/v1");
+        // RelayGPU as default provider
+        mBaseUrlInput.setText("https://relay.opengpu.network/v1");
 
         // Start and bind to KodaService
         Intent intent = new Intent(this, KodaService.class);
@@ -226,7 +227,11 @@ public class SetupActivity extends AppCompatActivity {
             return;
         }
         if (baseUrl.isEmpty()) {
-            baseUrl = "https://api.anthropic.com/v1";
+            baseUrl = "https://relay.opengpu.network/v1";
+        }
+        // Strip trailing slash
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
         }
 
         try {
@@ -240,6 +245,12 @@ public class SetupActivity extends AppCompatActivity {
             provider.put("api", "anthropic-messages");
             providers.put("default", provider);
             models.put("providers", providers);
+
+            // Set default model based on provider
+            if (baseUrl.contains("relay.opengpu.network")) {
+                models.put("default", "anthropic/claude-sonnet-4-6");
+            }
+
             config.put("models", models);
 
             // Write to file

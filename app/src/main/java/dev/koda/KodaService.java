@@ -76,9 +76,10 @@ public class KodaService extends Service {
     public String[] buildTermuxEnv() {
         String libDir = PREFIX + "/lib";
 
-        // Read API key and base URL from config
+        // Read API key, base URL and model from config
         String apiKey = "";
         String baseUrl = "";
+        String model = "";
         try {
             File configFile = new File(HOME + "/.openclaude/openclaude.json");
             if (configFile.exists()) {
@@ -88,13 +89,16 @@ public class KodaService extends Service {
                     while ((line = r.readLine()) != null) sb.append(line);
                 }
                 org.json.JSONObject config = new org.json.JSONObject(sb.toString());
-                org.json.JSONObject providers = config.optJSONObject("models");
-                if (providers != null) providers = providers.optJSONObject("providers");
-                if (providers != null && providers.keys().hasNext()) {
-                    org.json.JSONObject p = providers.optJSONObject(providers.keys().next());
-                    if (p != null) {
-                        apiKey = p.optString("apiKey", "");
-                        baseUrl = p.optString("baseUrl", "");
+                org.json.JSONObject models = config.optJSONObject("models");
+                if (models != null) {
+                    model = models.optString("default", "");
+                    org.json.JSONObject providers = models.optJSONObject("providers");
+                    if (providers != null && providers.keys().hasNext()) {
+                        org.json.JSONObject p = providers.optJSONObject(providers.keys().next());
+                        if (p != null) {
+                            apiKey = p.optString("apiKey", "");
+                            baseUrl = p.optString("baseUrl", "");
+                        }
                     }
                 }
             }
@@ -123,6 +127,9 @@ public class KodaService extends Service {
         }
         if (!baseUrl.isEmpty()) {
             env.add("ANTHROPIC_BASE_URL=" + baseUrl);
+        }
+        if (!model.isEmpty()) {
+            env.add("ANTHROPIC_MODEL=" + model);
         }
 
         return env.toArray(new String[0]);
