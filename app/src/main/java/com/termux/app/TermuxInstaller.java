@@ -429,13 +429,20 @@ public final class TermuxInstaller {
                 "    echo \"KODA_ERROR:npm install failed (exit $NPM_EXIT)\"\n" +
                 "    exit 1\n" +
                 "fi\n" +
-                "# Create openclaude wrapper\n" +
+                "# Create openclaude wrapper that avoids npm symlink issues\n" +
                 "cat > $PREFIX/bin/openclaude <<'WRAPPER'\n" +
                 "#!/data/data/com.termux/files/usr/bin/bash\n" +
-                "PREFIX=/data/data/com.termux/files/usr\n" +
+                "export PREFIX=/data/data/com.termux/files/usr\n" +
                 "export NODE_PATH=\"$PREFIX/lib/node_modules\"\n" +
                 "export LD_LIBRARY_PATH=\"$PREFIX/lib\"\n" +
-                "exec node \"$PREFIX/lib/node_modules/@gitlawb/openclaude/bin/openclaude\" \"$@\"\n" +
+                "# Find the dist entry point (built) or the bin entry point\n" +
+                "DIST=\"$PREFIX/lib/node_modules/@gitlawb/openclaude/dist/cli.mjs\"\n" +
+                "BIN=\"$PREFIX/lib/node_modules/@gitlawb/openclaude/bin/openclaude\"\n" +
+                "if [ -f \"$DIST\" ]; then\n" +
+                "    exec \"$PREFIX/bin/node\" \"$DIST\" \"$@\"\n" +
+                "else\n" +
+                "    exec \"$PREFIX/bin/node\" \"$BIN\" \"$@\"\n" +
+                "fi\n" +
                 "WRAPPER\n" +
                 "chmod 755 $PREFIX/bin/openclaude\n" +
                 "echo \"KODA_STEP:2:DONE\"\n\n" +

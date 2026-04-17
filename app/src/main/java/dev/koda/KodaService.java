@@ -249,7 +249,13 @@ public class KodaService extends Service {
             // Use -p (print/prompt) flag for single-shot mode
             // Escape the message for shell safety
             String escaped = message.replace("'", "'\\''");
-            String script = "'" + openclaude + "' -p '" + escaped + "' --output-format text 2>&1";
+
+            // Try dist/cli.mjs first (built package), fallback to bin/openclaude
+            String distPath = PREFIX + "/lib/node_modules/@gitlawb/openclaude/dist/cli.mjs";
+            String binPath = PREFIX + "/lib/node_modules/@gitlawb/openclaude/bin/openclaude";
+            String entryPoint = new File(distPath).exists() ? distPath : binPath;
+
+            String script = "'" + BIN + "/node' '" + entryPoint + "' -p '" + escaped + "' --output-format text 2>&1";
 
             String bash = BIN + "/bash";
             String[] args = { bash, "-c", script };
