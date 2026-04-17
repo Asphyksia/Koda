@@ -75,21 +75,57 @@ public class KodaService extends Service {
      */
     public String[] buildTermuxEnv() {
         String libDir = PREFIX + "/lib";
-        return new String[] {
-            "HOME=" + HOME,
-            "PREFIX=" + PREFIX,
-            "TMPDIR=" + PREFIX + "/tmp",
-            "LANG=en_US.UTF-8",
-            "PATH=" + BIN + ":" + PREFIX + "/bin/applets",
-            "LD_LIBRARY_PATH=" + libDir,
-            "LD_PRELOAD=" + libDir + "/libtermux-exec.so",
-            "TERM=xterm-256color",
-            "COLORTERM=truecolor",
-            "SSL_CERT_FILE=" + PREFIX + "/etc/tls/cert.pem",
-            "NODE_PATH=" + PREFIX + "/lib/node_modules",
-            "ANDROID_DATA=/data",
-            "ANDROID_ROOT=/system",
-        };
+
+        // Read API key and base URL from config
+        String apiKey = "";
+        String baseUrl = "";
+        try {
+            File configFile = new File(HOME + "/.openclaude/openclaude.json");
+            if (configFile.exists()) {
+                StringBuilder sb = new StringBuilder();
+                try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(configFile)))) {
+                    String line;
+                    while ((line = r.readLine()) != null) sb.append(line);
+                }
+                org.json.JSONObject config = new org.json.JSONObject(sb.toString());
+                org.json.JSONObject providers = config.optJSONObject("models");
+                if (providers != null) providers = providers.optJSONObject("providers");
+                if (providers != null && providers.keys().hasNext()) {
+                    org.json.JSONObject p = providers.optJSONObject(providers.keys().next());
+                    if (p != null) {
+                        apiKey = p.optString("apiKey", "");
+                        baseUrl = p.optString("baseUrl", "");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logger.logWarn(LOG_TAG, "Could not read config: " + e.getMessage());
+        }
+
+        java.util.List<String> env = new java.util.ArrayList<>();
+        env.add("HOME=" + HOME);
+        env.add("PREFIX=" + PREFIX);
+        env.add("TMPDIR=" + PREFIX + "/tmp");
+        env.add("LANG=en_US.UTF-8");
+        env.add("PATH=" + BIN + ":" + PREFIX + "/bin/applets");
+        env.add("LD_LIBRARY_PATH=" + libDir);
+        env.add("LD_PRELOAD=" + libDir + "/libtermux-exec.so");
+        env.add("TERM=xterm-256color");
+        env.add("COLORTERM=truecolor");
+        env.add("SSL_CERT_FILE=" + PREFIX + "/etc/tls/cert.pem");
+        env.add("NODE_PATH=" + PREFIX + "/lib/node_modules");
+        env.add("ANDROID_DATA=/data");
+        env.add("ANDROID_ROOT=/system");
+
+        // OpenClaude / Claude Code auth
+        if (!apiKey.isEmpty()) {
+            env.add("ANTHROPIC_API_KEY=" + apiKey);
+        }
+        if (!baseUrl.isEmpty()) {
+            env.add("ANTHROPIC_BASE_URL=" + baseUrl);
+        }
+
+        return env.toArray(new String[0]);
     }
 
     // ========== Command Execution (Pipe Mode) ==========
