@@ -270,30 +270,26 @@ public class KodaService extends Service {
 
     public interface StreamCallback {
         void onToken(String token);
+        void onSessionId(String sessionId);
         void onComplete(int exitCode);
         void onError(String error);
     }
 
     /**
-     * Send a message to OpenClaude via CLI pipe mode.
-     * Uses: openclaude -p "message" --output-format text
-     * Streams output line by line to the callback.
+     * Send a message to OpenClaude via CLI with stream-json output.
+     * Parses streaming events to deliver tokens in real-time.
+     * Supports session continuity via --continue flag.
      */
-    public void sendToOpenClaude(String message, StreamCallback callback) {
+    public void sendToOpenClaude(String message, String sessionId, StreamCallback callback) {
         new Thread(() -> {
             String openclaude = BIN + "/openclaude";
-
-            // Check if openclaude binary exists
             if (!new File(openclaude).exists()) {
                 mHandler.post(() -> callback.onError("OpenClaude not installed. Run setup again."));
                 return;
             }
 
-            // Use -p (print/prompt) flag for single-shot mode
-            // Escape the message for shell safety
             String escaped = message.replace("'", "'\\''");
 
-            // Try dist/cli.mjs first (built package), fallback to bin/openclaude
             String distPath = PREFIX + "/lib/node_modules/@gitlawb/openclaude/dist/cli.mjs";
             String binPath = PREFIX + "/lib/node_modules/@gitlawb/openclaude/bin/openclaude";
             String entryPoint = new File(distPath).exists() ? distPath : binPath;
@@ -316,20 +312,25 @@ public class KodaService extends Service {
                 }
             } catch (Exception ignored) {}
 
-            // Build command with explicit --model flag
+            // Build command
             StringBuilder cmd = new StringBuilder();
             cmd.append("'").append(BIN).append("/node' '").append(entryPoint).append("'");
             cmd.append(" -p '").append(escaped).append("'");
-            cmd.append(" --output-format text");
+            cmd.append(" --output-format stream-json");
+            cmd.append(" --include-partial-messages");
+            cmd.append(" --verbose");
             if (!model.isEmpty()) {
                 cmd.append(" --model '").append(model.replace("'", "'\\''")).append("'");
             }
-            cmd.append(" --bare");  // skip hooks, LSP, etc for faster startup
-            cmd.append(" --thinking disabled");  // RelayGPU doesn't support thinking
-            cmd.append(" 2>&1");
+            // Resume session for context continuity
+            if (sessionId != null && !sessionId.isEmpty()) {
+                cmd.append(" --resume '").append(sessionId).append("'");
+            }
+            cmd.append(" --bare");
+            cmd.append(" --thinking disabled");
+            cmd.append(" 2>/dev/null");  // stderr to /dev/null, we parse stdout JSON
 
             String script = cmd.toString();
-
             String bash = BIN + "/bash";
             String[] args = { bash, "-c", script };
             String[] env = buildTermuxEnv();
@@ -345,8 +346,53 @@ public class KodaService extends Service {
                     new InputStreamReader(new FileInputStream("/proc/self/fd/" + fd)))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    final String l = line + "\n";
-                    mHandler.post(() -> callback.onToken(l));
+                    if (line.isEmpty() || line.charAt(0) != '{') continue;
+
+                    try {
+                        org.json.JSONObject json = new org.json.JSONObject(line);
+                        String type = json.optString("type", "");
+
+                        switch (type) {
+                            case "system":
+                                // Init event — capture session_id
+                                String sid = json.optString("session_id", "");
+                                if (!sid.isEmpty()) {
+                                    mHandler.post(() -> callback.onSessionId(sid));
+                                }
+                                break;
+
+                            case "stream_event":
+                                // Streaming token
+                                org.json.JSONObject event = json.optJSONObject("event");
+                                if (event != null && "content_block_delta".equals(event.optString("type"))) {
+                                    org.json.JSONObject delta = event.optJSONObject("delta");
+                                    if (delta != null && "text_delta".equals(delta.optString("type"))) {
+                                        String text = delta.optString("text", "");
+                                        if (!text.isEmpty()) {
+                                            mHandler.post(() -> callback.onToken(text));
+                                        }
+                                    }
+                                }
+                                break;
+
+                            case "result":
+                                // Final result — if we didn't get streaming tokens,
+                                // show the full result text
+                                break;
+
+                            case "assistant":
+                                // Could extract session_id here too if needed
+                                String asid = json.optString("session_id", "");
+                                if (!asid.isEmpty()) {
+                                    mHandler.post(() -> callback.onSessionId(asid));
+                                }
+                                break;
+                        }
+                    } catch (Exception parseErr) {
+                        // Non-JSON line or parse error — show as text
+                        final String raw = line;
+                        mHandler.post(() -> callback.onToken(raw + "\n"));
+                    }
                 }
             } catch (Exception e) {
                 String msg = e.getMessage();

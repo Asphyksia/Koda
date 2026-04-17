@@ -5,22 +5,21 @@
     android:orientation="vertical"
     android:background="#0F172A">
 
-    <!-- Chat log -->
+    <!-- Chat area -->
     <ScrollView
         android:id="@+id/chat_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="12dp">
+        android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/chat_log"
+        <LinearLayout
+            android:id="@+id/chat_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#E2E8F0"
-            android:fontFamily="monospace"
-            android:lineSpacingExtra="3dp" />
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
     </ScrollView>
 
     <!-- Input bar -->
@@ -37,22 +36,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Type a command..."
+            android:hint="Message Koda..."
             android:textColor="#F8FAFC"
             android:textColorHint="#475569"
-            android:background="#334155"
+            android:background="#0F172A"
             android:padding="12dp"
-            android:textSize="14sp"
-            android:fontFamily="monospace"
-            android:inputType="text"
+            android:textSize="15sp"
+            android:maxLines="4"
             android:imeOptions="actionSend"
-            android:singleLine="true"
-            android:layout_marginEnd="8dp" />
+            android:inputType="textMultiLine|textCapSentences" />
 
         <ImageButton
             android:id="@+id/send_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_marginStart="8dp"
             android:src="@android:drawable/ic_menu_send"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Send"
