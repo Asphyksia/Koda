@@ -298,7 +298,36 @@ public class KodaService extends Service {
             String binPath = PREFIX + "/lib/node_modules/@gitlawb/openclaude/bin/openclaude";
             String entryPoint = new File(distPath).exists() ? distPath : binPath;
 
-            String script = "'" + BIN + "/node' '" + entryPoint + "' -p '" + escaped + "' --output-format text 2>&1";
+            // Read model from config
+            String model = "";
+            try {
+                File configFile = new File(HOME + "/.openclaude/openclaude.json");
+                if (configFile.exists()) {
+                    StringBuilder sb = new StringBuilder();
+                    try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(configFile)))) {
+                        String line;
+                        while ((line = r.readLine()) != null) sb.append(line);
+                    }
+                    org.json.JSONObject config = new org.json.JSONObject(sb.toString());
+                    org.json.JSONObject models = config.optJSONObject("models");
+                    if (models != null) {
+                        model = models.optString("default", "");
+                    }
+                }
+            } catch (Exception ignored) {}
+
+            // Build command with explicit --model flag
+            StringBuilder cmd = new StringBuilder();
+            cmd.append("'").append(BIN).append("/node' '").append(entryPoint).append("'");
+            cmd.append(" -p '").append(escaped).append("'");
+            cmd.append(" --output-format text");
+            if (!model.isEmpty()) {
+                cmd.append(" --model '").append(model.replace("'", "'\\''")).append("'");
+            }
+            cmd.append(" --bare");  // skip hooks, LSP, etc for faster startup
+            cmd.append(" 2>&1");
+
+            String script = cmd.toString();
 
             String bash = BIN + "/bash";
             String[] args = { bash, "-c", script };
