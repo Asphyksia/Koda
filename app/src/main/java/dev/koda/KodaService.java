@@ -223,6 +223,63 @@ public class KodaService extends Service {
         }).start();
     }
 
+    // ========== OpenClaude Chat (Pipe Mode) ==========
+
+    public interface StreamCallback {
+        void onToken(String token);
+        void onComplete(int exitCode);
+        void onError(String error);
+    }
+
+    /**
+     * Send a message to OpenClaude via CLI pipe mode.
+     * Uses: openclaude -p "message" --output-format text
+     * Streams output line by line to the callback.
+     */
+    public void sendToOpenClaude(String message, StreamCallback callback) {
+        new Thread(() -> {
+            String openclaude = BIN + "/openclaude";
+
+            // Check if openclaude binary exists
+            if (!new File(openclaude).exists()) {
+                mHandler.post(() -> callback.onError("OpenClaude not installed. Run setup again."));
+                return;
+            }
+
+            // Use -p (print/prompt) flag for single-shot mode
+            // Escape the message for shell safety
+            String escaped = message.replace("'", "'\\''");
+            String script = "'" + openclaude + "' -p '" + escaped + "' --output-format text 2>&1";
+
+            String bash = BIN + "/bash";
+            String[] args = { bash, "-c", script };
+            String[] env = buildTermuxEnv();
+            int[] pidOut = new int[1];
+
+            int fd = KodaProcess.createSubprocessPipe(bash, args, env, pidOut);
+            if (fd < 0) {
+                mHandler.post(() -> callback.onError("Failed to start OpenClaude process"));
+                return;
+            }
+
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream("/proc/self/fd/" + fd)))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    final String l = line + "\n";
+                    mHandler.post(() -> callback.onToken(l));
+                }
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                mHandler.post(() -> callback.onError("Read error: " + msg));
+            }
+
+            int exitCode = KodaProcess.waitFor(pidOut[0]);
+            KodaProcess.close(fd);
+            mHandler.post(() -> callback.onComplete(exitCode));
+        }).start();
+    }
+
     // ========== OpenClaude Process (PTY Mode) ==========
 
     public boolean isOpenClaudeRunning() {

@@ -106,15 +106,27 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
 
-        // For now: execute as shell command
-        // TODO: replace with gRPC to OpenClaude
         mSendButton.setEnabled(false);
-        mService.executeCommand(message, result -> {
-            appendLog(result.stdout);
-            if (result.exitCode != 0) {
-                appendLog("(exit " + result.exitCode + ")\n");
+        mService.sendToOpenClaude(message, new KodaService.StreamCallback() {
+            @Override
+            public void onToken(String token) {
+                appendLog(token);
             }
-            mSendButton.setEnabled(true);
+
+            @Override
+            public void onComplete(int exitCode) {
+                appendLog("\n");
+                if (exitCode != 0) {
+                    appendLog("(exit " + exitCode + ")\n");
+                }
+                mSendButton.setEnabled(true);
+            }
+
+            @Override
+            public void onError(String error) {
+                appendLog("❌ " + error + "\n");
+                mSendButton.setEnabled(true);
+            }
         });
     }
 }
