@@ -25,7 +25,9 @@ android {
         implementation "io.noties.markwon:ext-strikethrough:4.6.2"
         implementation "io.noties.markwon:ext-tables:4.6.2"
         implementation "io.noties.markwon:syntax-highlight:4.6.2"
-        implementation "io.noties:prism4j:2.0.0"
+        implementation("io.noties:prism4j:2.0.0") {
+            exclude group: "org.jetbrains", module: "annotations"
+        }
         annotationProcessor "io.noties:prism4j-bundler:2.0.0"
 
         implementation project(":terminal-emulator")
@@ -71,6 +73,10 @@ android {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
+    }
+
+    configurations.all {
+        exclude group: "org.jetbrains", module: "annotations-java5"
     }
 
     buildTypes {
