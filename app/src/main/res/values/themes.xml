@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Koda" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/koda_accent</item>
+        <item name="colorPrimaryDark">@color/koda_bg</item>
+        <item name="colorAccent">@color/koda_accent</item>
+        <item name="android:windowBackground">@color/koda_bg</item>
+        <item name="android:statusBarColor">@color/koda_bg</item>
+        <item name="android:navigationBarColor">@color/koda_surface</item>
+        <item name="android:textColor">@color/koda_text</item>
+    </style>
+
+    <!-- Required by termux-shared (TermuxCrashUtils uses these) -->
+    <style name="Theme.TermuxApp.DayNight.DarkActionBar" parent="Theme.Koda" />
+    <style name="Theme.TermuxApp.DayNight.NoActionBar" parent="Theme.Koda" />
+    <style name="Theme.TermuxActivity.DayNight.NoActionBar" parent="Theme.Koda" />
+    <style name="Theme.MarkdownViewActivity.DayNight" parent="Theme.Koda" />
+</resources>

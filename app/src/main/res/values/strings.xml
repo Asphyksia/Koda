@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Koda</string>
+    <string name="application_name">Koda</string>
+    <string name="shared_user_label">Koda</string>
+
+    <!-- Bootstrap installer strings (required by TermuxInstaller) -->
+    <string name="bootstrap_installer_body">Setting up environment…</string>
+    <string name="bootstrap_error_title">Bootstrap Error</string>
+    <string name="bootstrap_error_body">Failed to install the bootstrap packages.\n\nCheck Settings → Apps → Koda for possible permission issues.</string>
+    <string name="bootstrap_error_abort">Abort</string>
+    <string name="bootstrap_error_try_again">Try Again</string>
+    <string name="bootstrap_error_not_primary_user_message">Koda can only be run as the primary user.\n\nThe prefix directory %1$s is not accessible from secondary users.</string>
+    <string name="bootstrap_error_installed_on_portable_sd">Koda is installed on a portable SD card, which is not supported.\n\nPlease move Koda to internal storage: Settings → Apps → Koda → Storage → Change → Internal.</string>
+
+    <!-- Required by termux-shared -->
+    <string name="action_report_issue">Report Issue</string>
+</resources>

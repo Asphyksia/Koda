@@ -1,0 +1,16 @@
+*.iml
+.gradle/
+local.properties
+.idea/
+*.class
+*.log
+*.jar
+*.apk
+*.ap_
+*.aab
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+app/src/main/cpp/bootstrap-*.zip

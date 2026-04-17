@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F172A">
+
+    <!-- Install Phase -->
+    <LinearLayout
+        android:id="@+id/install_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔧 Setup"
+            android:textSize="24sp"
+            android:textColor="#F8FAFC"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <ProgressBar
+            android:id="@+id/install_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone" />
+
+        <ScrollView
+            android:id="@+id/install_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#1E293B"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/install_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="#E2E8F0"
+                android:fontFamily="monospace"
+                android:lineSpacingExtra="2dp" />
+        </ScrollView>
+
+        <Button
+            android:id="@+id/install_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Install"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Config Phase -->
+    <LinearLayout
+        android:id="@+id/config_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚙️ Configure API"
+            android:textSize="24sp"
+            android:textColor="#F8FAFC"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="API Key"
+            android:textSize="14sp"
+            android:textColor="#94A3B8"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/api_key_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="sk-ant-..."
+            android:textColor="#F8FAFC"
+            android:textColorHint="#475569"
+            android:background="#1E293B"
+            android:padding="14dp"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:inputType="textPassword"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="API Base URL"
+            android:textSize="14sp"
+            android:textColor="#94A3B8"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/base_url_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="https://api.anthropic.com/v1"
+            android:textColor="#F8FAFC"
+            android:textColorHint="#475569"
+            android:background="#1E293B"
+            android:padding="14dp"
+            android:textSize="14sp"
+            android:inputType="textUri"
+            android:layout_marginBottom="24dp" />
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save &amp; Start"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/config_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#F87171"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+</FrameLayout>

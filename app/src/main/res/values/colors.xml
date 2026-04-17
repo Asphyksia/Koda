@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Slate dark palette -->
+    <color name="koda_bg">#FF0F172A</color>
+    <color name="koda_surface">#FF1E293B</color>
+    <color name="koda_text">#FFF8FAFC</color>
+    <color name="koda_text_secondary">#FF94A3B8</color>
+    <color name="koda_accent">#FF7DD3FC</color>
+    <color name="koda_error">#FFF87171</color>
+    <color name="koda_input_bg">#FF334155</color>
+</resources>
