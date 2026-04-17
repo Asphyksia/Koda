@@ -14,15 +14,9 @@ public class TermuxApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // Set package variant from BuildConfig
-        TermuxBootstrap.setPackageVariant(com.termux.BuildConfig.TERMUX_PACKAGE_VARIANT);
-
-        // Set crash handler
+        TermuxBootstrap.setTermuxPackageManagerAndVariant(com.termux.BuildConfig.TERMUX_PACKAGE_VARIANT);
         TermuxCrashUtils.setCrashHandler(this);
-
-        // Set log level
         Logger.setLogLevel(null, Logger.LOG_LEVEL_NORMAL);
-
         Logger.logInfo(LOG_TAG, "Koda application started");
     }
 }
