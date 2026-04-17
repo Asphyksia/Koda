@@ -87,8 +87,8 @@ public class SetupActivity extends AppCompatActivity {
 
         mInstallButton.setOnClickListener(v -> runInstall());
         mSaveButton.setOnClickListener(v -> saveConfig());
-        // RelayGPU as default provider
-        mBaseUrlInput.setText("https://relay.opengpu.network/v1");
+        // RelayGPU as default provider (Anthropic endpoint)
+        mBaseUrlInput.setText("https://relay.opengpu.network/v2/anthropic/v1");
 
         // Start and bind to KodaService
         Intent intent = new Intent(this, KodaService.class);
@@ -227,7 +227,7 @@ public class SetupActivity extends AppCompatActivity {
             return;
         }
         if (baseUrl.isEmpty()) {
-            baseUrl = "https://relay.opengpu.network/v1";
+            baseUrl = "https://relay.opengpu.network/v2/anthropic/v1";
         }
         // Strip trailing slash
         if (baseUrl.endsWith("/")) {
