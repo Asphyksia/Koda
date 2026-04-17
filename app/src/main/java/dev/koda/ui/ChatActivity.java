@@ -47,6 +47,7 @@ import io.noties.prism4j.Prism4j;
 
 import dev.koda.KodaService;
 import dev.koda.data.ChatDatabase;
+import dev.koda.data.ProviderManager;
 
 /**
  * Main chat interface with drawer, persistence, and streaming Markdown.
@@ -179,6 +180,16 @@ public class ChatActivity extends AppCompatActivity {
             return false;
         });
 
+        // Settings button in drawer
+        View settingsBtn = findViewById(R.id.drawer_settings);
+        View settingsLabel = findViewById(R.id.drawer_settings_label);
+        View.OnClickListener settingsClick = v -> {
+            mDrawerLayout.closeDrawers();
+            startActivity(new Intent(this, SettingsActivity.class));
+        };
+        settingsBtn.setOnClickListener(settingsClick);
+        settingsLabel.setOnClickListener(settingsClick);
+
         // Bind service
         Intent intent = new Intent(this, KodaService.class);
         startService(intent);
@@ -191,6 +202,12 @@ public class ChatActivity extends AppCompatActivity {
         } else {
             startNewConversation();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateModelChip();
     }
 
     @Override
@@ -449,6 +466,22 @@ public class ChatActivity extends AppCompatActivity {
 
     private void renderMarkdown(TextView view, String markdown) {
         mMarkwon.setMarkdown(view, markdown);
+    }
+
+    private void updateModelChip() {
+        TextView chip = findViewById(R.id.model_label);
+        if (chip != null) {
+            ProviderManager pm = new ProviderManager(this);
+            ProviderManager.Provider active = pm.getActiveProvider();
+            if (active != null) {
+                // Show short model name
+                String model = active.defaultModel;
+                if (model.contains("/")) model = model.substring(model.lastIndexOf("/") + 1);
+                // Abbreviate common names
+                model = model.replace("claude-", "").replace("anthropic-", "");
+                chip.setText(active.name + " · " + model);
+            }
+        }
     }
 
     // ========== Send ==========

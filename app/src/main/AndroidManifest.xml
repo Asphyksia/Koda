@@ -49,6 +49,13 @@
             android:theme="@style/Theme.Koda"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Settings -->
+        <activity
+            android:name="dev.koda.ui.SettingsActivity"
+            android:exported="false"
+            android:label="Settings"
+            android:theme="@style/Theme.Koda" />
+
         <!-- Background service for OpenClaude -->
         <service
             android:name="dev.koda.KodaService"
