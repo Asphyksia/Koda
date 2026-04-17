@@ -31,6 +31,7 @@ public class KodaLauncherActivity extends AppCompatActivity {
 
     private TextView mStatusText;
     private Button mContinueButton;
+    private boolean mPermissionsRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +46,29 @@ public class KodaLauncherActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        // Check notification permission (Android 13+)
+        // Check notification permission (Android 13+) — only ask once
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                    PERMISSION_REQUEST_CODE);
-                return;
+                if (!mPermissionsRequested) {
+                    mPermissionsRequested = true;
+                    ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSION_REQUEST_CODE);
+                    return;
+                }
+                // User denied — continue anyway, notifications just won't work
             }
         }
 
-        // Check battery optimization
+        checkBatteryAndRoute();
+    }
+
+    private void checkBatteryAndRoute() {
+        // Check battery optimization — show button, don't auto-launch
         PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
         if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
-            mStatusText.setText("Koda needs unrestricted battery access to run in the background.");
+            mStatusText.setText("Koda needs unrestricted battery access to run in the background.\n\nYou can skip this and configure it later in Settings.");
             mContinueButton.setText("Grant Battery Access");
             mContinueButton.setOnClickListener(v -> {
                 Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
@@ -67,10 +76,27 @@ public class KodaLauncherActivity extends AppCompatActivity {
                 startActivityForResult(intent, BATTERY_REQUEST_CODE);
             });
             mContinueButton.setVisibility(android.view.View.VISIBLE);
+
+            // Add a skip button via the existing continue button's behavior:
+            // After 2 seconds, allow skipping
+            mStatusText.postDelayed(() -> {
+                if (!isFinishing()) {
+                    Button skipBtn = new Button(this);
+                    skipBtn.setText("Skip for now");
+                    skipBtn.setOnClickListener(sv -> proceedToRoute());
+                    android.widget.LinearLayout root = findViewById(R.id.launcher_root);
+                    if (root != null) {
+                        root.addView(skipBtn);
+                    }
+                }
+            }, 1500);
             return;
         }
 
-        // All permissions OK — proceed
+        proceedToRoute();
+    }
+
+    private void proceedToRoute() {
         checkAndRoute();
     }
 
@@ -78,7 +104,8 @@ public class KodaLauncherActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            checkPermissions();
+            // Whether granted or denied, move on
+            checkBatteryAndRoute();
         }
     }
 
@@ -86,7 +113,8 @@ public class KodaLauncherActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == BATTERY_REQUEST_CODE) {
-            checkPermissions();
+            // Re-check — if granted, proceed; if not, user can still skip
+            proceedToRoute();
         }
     }
 
