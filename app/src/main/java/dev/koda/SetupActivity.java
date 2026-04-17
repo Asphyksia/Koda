@@ -248,7 +248,7 @@ public class SetupActivity extends AppCompatActivity {
 
             // Set default model based on provider
             if (baseUrl.contains("relay.opengpu.network")) {
-                models.put("default", "anthropic/claude-sonnet-4-6");
+                models.put("default", "claude-sonnet-4-6");
             }
 
             config.put("models", models);
