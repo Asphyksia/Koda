@@ -112,6 +112,7 @@
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:paddingHorizontal="8dp"
+                    android:gravity="top"
                     android:clipToPadding="false" />
             </ScrollView>
 

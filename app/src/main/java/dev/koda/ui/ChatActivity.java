@@ -317,20 +317,24 @@ public class ChatActivity extends AppCompatActivity {
 
     private TextView createUserBubble(String text) {
         TextView bubble = new TextView(this);
+        // WRAP_CONTENT + gravity end → bubble only as wide as content, max 80%
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
-        int m = dp(8);
-        params.setMargins(dp(48), m, m, m);
+        params.gravity = Gravity.END;
+        int mv = dp(3); int mh = dp(8);
+        params.setMargins(dp(56), mv, mh, mv);  // big left margin pushes it right
         bubble.setLayoutParams(params);
-        float r = dp(16); float s = dp(4);
+        // Max width 80% of screen
+        bubble.setMaxWidth((int) (getResources().getDisplayMetrics().widthPixels * 0.80f));
+        float r = dp(18); float s = dp(5);
         bubble.setBackground(makeBubbleBackground(
             ContextCompat.getColor(this, R.color.koda_bubble_user),
             new float[]{ r, r, r, r, s, s, r, r }));
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
-        bubble.setLineSpacing(dp(3), 1f);
+        bubble.setLineSpacing(dp(2), 1f);
         bubble.setText(text);
         bubble.setOnLongClickListener(v -> { copyToClipboard(text); return true; });
         return bubble;
@@ -338,20 +342,21 @@ public class ChatActivity extends AppCompatActivity {
 
     private TextView createAssistantBubble() {
         TextView bubble = new TextView(this);
+        // Assistant: match_parent width but right-margin to not touch edge
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
-        int m = dp(8);
-        params.setMargins(m, m, dp(32), m);
+        int mv = dp(3); int mh = dp(8);
+        params.setMargins(mh, mv, dp(40), mv);
         bubble.setLayoutParams(params);
-        float r = dp(16); float s = dp(4);
+        float r = dp(18); float s = dp(5);
         bubble.setBackground(makeBubbleBackground(
             ContextCompat.getColor(this, R.color.koda_bubble_assistant),
             new float[]{ r, r, r, r, r, r, s, s }));
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
-        bubble.setLineSpacing(dp(3), 1f);
+        bubble.setLineSpacing(dp(2), 1f);
         bubble.setMovementMethod(LinkMovementMethod.getInstance());
         return bubble;
     }
@@ -394,22 +399,32 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void addErrorBubble(String text) {
+        // Humanize technical error messages
+        String display = text;
+        if (text.startsWith("Process exited with code")) {
+            display = "Something went wrong. Try again.";
+        } else if (text.contains("not installed")) {
+            display = "OpenClaude not installed. Open Settings and run Setup.";
+        } else if (text.contains("not connected")) {
+            display = "Service not connected. Restart the app.";
+        }
+
         TextView bubble = new TextView(this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
-        int m = dp(8);
-        params.setMargins(m, m, m, m);
+        int mv = dp(4); int mh = dp(8);
+        params.setMargins(mh, mv, mh, mv);
         bubble.setLayoutParams(params);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(ContextCompat.getColor(this, R.color.koda_error_container));
-        bg.setCornerRadius(dp(12));
+        bg.setCornerRadius(dp(10));
         bg.setStroke(dp(1), ContextCompat.getColor(this, R.color.koda_error_dim));
         bubble.setBackground(bg);
-        bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
+        bubble.setPadding(dp(12), dp(8), dp(12), dp(8));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_error));
-        bubble.setText("⚠ " + text);
+        bubble.setText("⚠ " + display);
         mChatContainer.addView(bubble);
         scrollToBottom();
     }
