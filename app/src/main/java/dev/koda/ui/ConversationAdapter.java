@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import dev.koda.R;
+import com.termux.R;
 import java.util.Locale;
 
 import dev.koda.data.ChatDatabase;

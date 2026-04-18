@@ -32,37 +32,26 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.core.content.ContextCompat;
-
-import dev.koda.R;
-
+import com.termux.R;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import com.termux.R;
 import com.termux.shared.logger.Logger;
-
 import java.util.List;
-
 import io.noties.markwon.Markwon;
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin;
 import io.noties.markwon.ext.tables.TablePlugin;
 import io.noties.markwon.syntax.Prism4jThemeDarkula;
 import io.noties.markwon.syntax.SyntaxHighlightPlugin;
 import io.noties.prism4j.Prism4j;
-
 import dev.koda.KodaService;
 import dev.koda.data.ChatDatabase;
 import dev.koda.data.ProviderManager;
-
 /**
  * Main chat interface with drawer, persistence, and streaming Markdown.
  */
 public class ChatActivity extends AppCompatActivity {
-
     private static final String LOG_TAG = "ChatActivity";
-
     // UI
     private DrawerLayout mDrawerLayout;
     private LinearLayout mDrawerPanel;
@@ -76,23 +65,19 @@ public class ChatActivity extends AppCompatActivity {
     private View mScrollFab;
     private View mEmptyState;
     private TextView mChatTitle;
-
     // Markdown
     private Markwon mMarkwon;
     private StringBuilder mCurrentResponseBuffer;
     private TextView mCurrentAssistantBubble;
     private long mCurrentAssistantMsgId = -1;
-
     // Data
     private ChatDatabase mDb;
     private long mCurrentConvId = -1;
     private String mSessionId = null;
-
     // Service
     private KodaService mService;
     private boolean mBound = false;
     private boolean mIsGenerating = false;
-
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -100,19 +85,14 @@ public class ChatActivity extends AppCompatActivity {
             mService = binder.getService();
             mBound = true;
         }
-
-        @Override
         public void onServiceDisconnected(ComponentName name) {
             mBound = false;
             mService = null;
-        }
     };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
         // Init Markwon
         Prism4j prism4j = new Prism4j(new KodaGrammarLocator());
         mMarkwon = Markwon.builder(this)
@@ -121,10 +101,8 @@ public class ChatActivity extends AppCompatActivity {
             .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDarkula.create()))
             .usePlugin(CodeBlockPlugin.create(this))
             .build();
-
         // Init DB
         mDb = ChatDatabase.getInstance(this);
-
         // Views
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerPanel = findViewById(R.id.drawer_panel);
@@ -137,7 +115,6 @@ public class ChatActivity extends AppCompatActivity {
         mChatTitle = findViewById(R.id.chat_title);
         mScrollFab = findViewById(R.id.scroll_fab);
         mEmptyState = findViewById(R.id.empty_state);
-
         // Scroll FAB: appear when not at bottom, tap to scroll down
         mScrollFab.setOnClickListener(v -> scrollToBottom());
         mChatScroll.getViewTreeObserver().addOnScrollChangedListener(() -> {
@@ -148,7 +125,6 @@ public class ChatActivity extends AppCompatActivity {
             boolean atBottom = scrollY >= maxScroll - dp(80);
             mScrollFab.setVisibility(atBottom ? View.GONE : View.VISIBLE);
         });
-
         // Drawer adapter
         mConvAdapter = new ConversationAdapter(this);
         mConversationList.setAdapter(mConvAdapter);
@@ -156,34 +132,24 @@ public class ChatActivity extends AppCompatActivity {
             ChatDatabase.Conversation conv = mConvAdapter.getItem(position);
             loadConversation(conv.id);
             mDrawerLayout.closeDrawers();
-        });
-
         // Long press to delete conversation
         mConversationList.setOnItemLongClickListener((parent, view, position, id) -> {
-            ChatDatabase.Conversation conv = mConvAdapter.getItem(position);
             deleteConversation(conv.id);
             return true;
-        });
-
         // Menu button → open drawer
         findViewById(R.id.menu_button).setOnClickListener(v -> {
             refreshConversationList();
             mDrawerLayout.openDrawer(mDrawerPanel);
-        });
-
         // New chat buttons (top bar + drawer)
         View.OnClickListener newChatClick = v -> {
             startNewConversation();
-            mDrawerLayout.closeDrawers();
         };
         findViewById(R.id.new_chat_button).setOnClickListener(newChatClick);
         findViewById(R.id.drawer_new_chat).setOnClickListener(newChatClick);
-
         // Send
         mSendButton.setOnClickListener(v -> sendMessage());
         mSendButton.setEnabled(false);
         mSendButton.setAlpha(0.3f);
-
         mInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -193,57 +159,36 @@ public class ChatActivity extends AppCompatActivity {
                 mSendButton.setEnabled(hasText && !mIsGenerating);
                 mSendButton.setAlpha(hasText && !mIsGenerating ? 1.0f : 0.3f);
             }
-        });
-
         mInput.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 sendMessage();
                 return true;
-            }
             return false;
-        });
-
         // Settings button in drawer
         View settingsBtn = findViewById(R.id.drawer_settings);
         View settingsLabel = findViewById(R.id.drawer_settings_label);
         View.OnClickListener settingsClick = v -> {
-            mDrawerLayout.closeDrawers();
             startActivity(new Intent(this, SettingsActivity.class));
-        };
         settingsBtn.setOnClickListener(settingsClick);
         settingsLabel.setOnClickListener(settingsClick);
-
         // Bind service
         Intent intent = new Intent(this, KodaService.class);
         startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         // Load most recent conversation or start new
         List<ChatDatabase.Conversation> convs = mDb.getConversations();
         if (!convs.isEmpty()) {
             loadConversation(convs.get(0).id);
         } else {
-            startNewConversation();
-        }
     }
-
-    @Override
     protected void onResume() {
         super.onResume();
         updateModelChip();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mBound) {
             unbindService(mConnection);
-            mBound = false;
-        }
-    }
-
     // ========== Conversation Management ==========
-
     private void startNewConversation() {
         mCurrentConvId = mDb.createConversation("", "");
         mSessionId = null;
@@ -251,29 +196,19 @@ public class ChatActivity extends AppCompatActivity {
         mChatTitle.setText("Koda");
         // Show empty state instead of system bubble
         if (mEmptyState != null) mEmptyState.setVisibility(View.VISIBLE);
-    }
-
     private void loadConversation(long convId) {
         mCurrentConvId = convId;
-        mChatContainer.removeAllViews();
-
         ChatDatabase.Conversation conv = mDb.getConversation(convId);
         if (conv == null) {
-            startNewConversation();
             return;
-        }
-
         mSessionId = conv.sessionId;
         String title = (conv.title == null || conv.title.isEmpty()) ? "Koda" : conv.title;
         mChatTitle.setText(title);
-
         // Reload messages
         List<ChatDatabase.Message> messages = mDb.getMessages(convId);
-
         // Toggle empty state
         if (mEmptyState != null) {
             mEmptyState.setVisibility(messages.isEmpty() ? View.VISIBLE : View.GONE);
-        }
         for (ChatDatabase.Message msg : messages) {
             switch (msg.role) {
                 case "user":
@@ -287,18 +222,11 @@ public class ChatActivity extends AppCompatActivity {
                         copyToClipboard(rawText);
                         return true;
                     });
-                    break;
                 case "error":
                     addErrorBubble(msg.content);
-                    break;
                 case "system":
                     addSystemBubble(msg.content);
-                    break;
-            }
-        }
         scrollToBottom();
-    }
-
     private void deleteConversation(long convId) {
         mDb.deleteConversation(convId);
         refreshConversationList();
@@ -308,15 +236,9 @@ public class ChatActivity extends AppCompatActivity {
                 loadConversation(convs.get(0).id);
             } else {
                 startNewConversation();
-            }
-        }
         Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
-    }
-
     private void refreshConversationList() {
         mConvAdapter.setConversations(mDb.getConversations());
-    }
-
     /**
      * Auto-generate title from first user message.
      */
@@ -324,20 +246,13 @@ public class ChatActivity extends AppCompatActivity {
         String title = firstMessage.trim();
         if (title.length() > 50) {
             title = title.substring(0, 47) + "...";
-        }
         mDb.updateConversationTitle(mCurrentConvId, title);
-        mChatTitle.setText(title);
-    }
-
     // ========== Bubble Creation ==========
-
     private GradientDrawable makeBubbleBackground(int color, float[] radii) {
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(color);
         bg.setCornerRadii(radii);
         return bg;
-    }
-
     private TextView createUserBubble(String text) {
         TextView bubble = new TextView(this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -346,12 +261,10 @@ public class ChatActivity extends AppCompatActivity {
         int m = dp(8);
         params.setMargins(dp(48), m, m, m);
         bubble.setLayoutParams(params);
-
         float r = dp(16); float s = dp(4);
         bubble.setBackground(makeBubbleBackground(
             ContextCompat.getColor(this, R.color.koda_bubble_user),
             new float[]{ r, r, r, r, s, s, r, r }));
-
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
@@ -359,30 +272,11 @@ public class ChatActivity extends AppCompatActivity {
         bubble.setText(text);
         bubble.setOnLongClickListener(v -> { copyToClipboard(text); return true; });
         return bubble;
-    }
-
     private TextView createAssistantBubble() {
-        TextView bubble = new TextView(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT);
-        int m = dp(8);
         params.setMargins(m, m, dp(32), m);
-        bubble.setLayoutParams(params);
-
-        float r = dp(16); float s = dp(4);
-        bubble.setBackground(makeBubbleBackground(
             ContextCompat.getColor(this, R.color.koda_bubble_assistant),
             new float[]{ r, r, r, r, r, r, s, s }));
-
-        bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
-        bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
-        bubble.setLineSpacing(dp(3), 1f);
         bubble.setMovementMethod(LinkMovementMethod.getInstance());
-        return bubble;
-    }
-
     private void addUserBubble(String text, boolean animate) {
         TextView bubble = createUserBubble(text);
         mChatContainer.addView(bubble);
@@ -390,64 +284,25 @@ public class ChatActivity extends AppCompatActivity {
             bubble.setTranslationY(dp(20));
             bubble.setAlpha(0f);
             bubble.animate().translationY(0).alpha(1f).setDuration(200).start();
-        }
-        scrollToBottom();
-    }
-
     private TextView addAssistantBubble(boolean animate) {
         TextView bubble = createAssistantBubble();
-        mChatContainer.addView(bubble);
-        if (animate) {
             bubble.setTranslationX(-dp(20));
-            bubble.setAlpha(0f);
             bubble.animate().translationX(0).alpha(1f).setDuration(200).start();
-        }
-        scrollToBottom();
-        return bubble;
-    }
-
     private void addSystemBubble(String text) {
-        TextView bubble = new TextView(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(dp(24), dp(16), dp(24), dp(16));
-        bubble.setLayoutParams(params);
-        bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_tertiary));
         bubble.setGravity(Gravity.CENTER);
         bubble.setTypeface(null, Typeface.ITALIC);
-        bubble.setText(text);
-        mChatContainer.addView(bubble);
-    }
-
     private void addErrorBubble(String text) {
-        TextView bubble = new TextView(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT);
-        int m = dp(8);
         params.setMargins(m, m, m, m);
-        bubble.setLayoutParams(params);
-
-        GradientDrawable bg = new GradientDrawable();
         bg.setColor(ContextCompat.getColor(this, R.color.koda_error_container));
         bg.setCornerRadius(dp(12));
         bg.setStroke(dp(1), ContextCompat.getColor(this, R.color.koda_error_dim));
         bubble.setBackground(bg);
-
-        bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
-        bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_error));
         bubble.setText("⚠ " + text);
-        mChatContainer.addView(bubble);
-        scrollToBottom();
-    }
-
-
     // ========== Typing Indicator ==========
-
     private void showTypingIndicator() {
         if (mTypingIndicator != null) {
             mTypingIndicator.setVisibility(View.VISIBLE);
@@ -459,34 +314,20 @@ public class ChatActivity extends AppCompatActivity {
             pulse.start();
             mTypingIndicator.setTag(pulse);
             scrollToBottom();
-        }
-    }
-
     private void hideTypingIndicator() {
-        if (mTypingIndicator != null) {
             Object tag = mTypingIndicator.getTag();
             if (tag instanceof ObjectAnimator) ((ObjectAnimator) tag).cancel();
             mTypingIndicator.setVisibility(View.GONE);
             mTypingIndicator.setAlpha(1f);
-        }
-    }
-
     // ========== Helpers ==========
-
     private void scrollToBottom() {
         mChatScroll.post(() -> mChatScroll.fullScroll(View.FOCUS_DOWN));
-    }
-
     private int dp(int dp) {
         return (int) (dp * getResources().getDisplayMetrics().density);
-    }
-
     private void copyToClipboard(String text) {
         ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setPrimaryClip(ClipData.newPlainText("Koda", text));
         Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show();
-    }
-
     private void setInputEnabled(boolean enabled) {
         mIsGenerating = !enabled;
         mInput.setEnabled(enabled);
@@ -494,12 +335,8 @@ public class ChatActivity extends AppCompatActivity {
         mSendButton.setEnabled(enabled && hasText);
         mSendButton.setAlpha(enabled && hasText ? 1.0f : 0.3f);
         if (enabled) mInput.requestFocus();
-    }
-
     private void renderMarkdown(TextView view, String markdown) {
         mMarkwon.setMarkdown(view, markdown);
-    }
-
     private void updateModelChip() {
         TextView chip = findViewById(R.id.model_label);
         if (chip != null) {
@@ -512,63 +349,41 @@ public class ChatActivity extends AppCompatActivity {
                 // Abbreviate common names
                 model = model.replace("claude-", "").replace("anthropic-", "");
                 chip.setText(active.name + " · " + model);
-            }
-        }
-    }
-
     // ========== Send ==========
-
     private void sendMessage() {
         String message = mInput.getText().toString().trim();
         if (message.isEmpty()) return;
-
         mInput.setText("");
-
         // Haptic feedback
         try {
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             if (vibrator != null && vibrator.hasVibrator()) {
                 vibrator.vibrate(VibrationEffect.createOneShot(30, VibrationEffect.DEFAULT_AMPLITUDE));
-            }
         } catch (Exception ignored) {}
-
         // Hide empty state
         if (mEmptyState != null) mEmptyState.setVisibility(View.GONE);
-
         // Ensure we have a conversation
         if (mCurrentConvId < 0) {
             mCurrentConvId = mDb.createConversation("", "");
-        }
-
         // Auto-title on first message
         List<ChatDatabase.Message> existing = mDb.getMessages(mCurrentConvId);
         if (existing.isEmpty()) {
             autoTitle(message);
-        }
-
         // Save & display user message
         mDb.addMessage(mCurrentConvId, "user", message);
         addUserBubble(message, true);
-
         if (!mBound || mService == null) {
             mDb.addMessage(mCurrentConvId, "error", "Service not connected");
             addErrorBubble("Service not connected");
-            return;
-        }
-
         setInputEnabled(false);
         showTypingIndicator();
         mCurrentResponseBuffer = new StringBuilder();
-
         // Get system prompt for this conversation
         String systemPrompt = null;
         ChatDatabase.Conversation conv = mDb.getConversation(mCurrentConvId);
         if (conv != null && conv.systemPrompt != null && !conv.systemPrompt.isEmpty()) {
             systemPrompt = conv.systemPrompt;
-        }
-
         mService.sendToOpenClaude(message, mSessionId, systemPrompt, new KodaService.StreamCallback() {
-            @Override
             public void onToken(String token) {
                 if (mCurrentAssistantBubble == null) {
                     hideTypingIndicator();
@@ -579,30 +394,18 @@ public class ChatActivity extends AppCompatActivity {
                 mCurrentResponseBuffer.append(token);
                 renderMarkdown(mCurrentAssistantBubble, mCurrentResponseBuffer.toString());
                 scrollToBottom();
-            }
-
-            @Override
             public void onSessionId(String sessionId) {
                 mSessionId = sessionId;
                 mDb.updateConversationSessionId(mCurrentConvId, sessionId);
-            }
-
-            @Override
             public void onUsage(int inputTokens, int outputTokens, double costUsd) {
                 // Token usage tracked but not shown per-message (UI noise).
                 // TODO: accumulate and show in profile/stats screen later.
-            }
-
-            @Override
             public void onComplete(int exitCode) {
                 hideTypingIndicator();
                 if (mCurrentAssistantBubble != null && mCurrentResponseBuffer.length() > 0) {
                     final String rawText = mCurrentResponseBuffer.toString();
                     renderMarkdown(mCurrentAssistantBubble, rawText);
                     mCurrentAssistantBubble.setOnLongClickListener(v -> {
-                        copyToClipboard(rawText);
-                        return true;
-                    });
                     // Update DB with final content
                     if (mCurrentAssistantMsgId > 0) {
                         mDb.updateMessageContent(mCurrentAssistantMsgId, rawText);
@@ -611,28 +414,15 @@ public class ChatActivity extends AppCompatActivity {
                     String err = "Process exited with code " + exitCode;
                     mDb.addMessage(mCurrentConvId, "error", err);
                     addErrorBubble(err);
-                }
                 mCurrentAssistantBubble = null;
                 mCurrentResponseBuffer = null;
                 mCurrentAssistantMsgId = -1;
                 setInputEnabled(true);
-            }
-
-            @Override
             public void onError(String error) {
-                hideTypingIndicator();
                 if (mCurrentAssistantBubble != null &&
                     mCurrentResponseBuffer != null &&
                     mCurrentResponseBuffer.length() == 0) {
                     mChatContainer.removeView(mCurrentAssistantBubble);
-                }
                 mDb.addMessage(mCurrentConvId, "error", error);
                 addErrorBubble(error);
-                mCurrentAssistantBubble = null;
-                mCurrentResponseBuffer = null;
-                mCurrentAssistantMsgId = -1;
-                setInputEnabled(true);
-            }
-        });
-    }
 }
