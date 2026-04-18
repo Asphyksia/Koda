@@ -271,6 +271,7 @@ public class KodaService extends Service {
     public interface StreamCallback {
         void onToken(String token);
         void onSessionId(String sessionId);
+        void onUsage(int inputTokens, int outputTokens, double costUsd);
         void onComplete(int exitCode);
         void onError(String error);
     }
@@ -281,6 +282,10 @@ public class KodaService extends Service {
      * Supports session continuity via --continue flag.
      */
     public void sendToOpenClaude(String message, String sessionId, StreamCallback callback) {
+        sendToOpenClaude(message, sessionId, null, callback);
+    }
+
+    public void sendToOpenClaude(String message, String sessionId, String systemPrompt, StreamCallback callback) {
         new Thread(() -> {
             String openclaude = BIN + "/openclaude";
             if (!new File(openclaude).exists()) {
@@ -325,6 +330,11 @@ public class KodaService extends Service {
             // Resume session for context continuity
             if (sessionId != null && !sessionId.isEmpty()) {
                 cmd.append(" --resume '").append(sessionId).append("'");
+            }
+            // System prompt
+            if (systemPrompt != null && !systemPrompt.isEmpty()) {
+                String escapedPrompt = systemPrompt.replace("'", "'\\''");
+                cmd.append(" --system-prompt '").append(escapedPrompt).append("'");
             }
             cmd.append(" --bare");
             cmd.append(" --thinking disabled");
@@ -376,8 +386,16 @@ public class KodaService extends Service {
                                 break;
 
                             case "result":
-                                // Final result — if we didn't get streaming tokens,
-                                // show the full result text
+                                // Extract usage stats
+                                org.json.JSONObject usage = json.optJSONObject("usage");
+                                double cost = json.optDouble("total_cost_usd", 0);
+                                if (usage != null) {
+                                    int inTokens = usage.optInt("input_tokens", 0)
+                                        + usage.optInt("cache_read_input_tokens", 0)
+                                        + usage.optInt("cache_creation_input_tokens", 0);
+                                    int outTokens = usage.optInt("output_tokens", 0);
+                                    mHandler.post(() -> callback.onUsage(inTokens, outTokens, cost));
+                                }
                                 break;
 
                             case "assistant":

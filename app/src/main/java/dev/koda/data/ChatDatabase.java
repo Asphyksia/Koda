@@ -15,7 +15,7 @@ import java.util.List;
 public class ChatDatabase extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "koda_chat.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static ChatDatabase sInstance;
 
@@ -37,6 +37,7 @@ public class ChatDatabase extends SQLiteOpenHelper {
             "title TEXT NOT NULL DEFAULT ''," +
             "session_id TEXT," +
             "model TEXT," +
+            "system_prompt TEXT DEFAULT ''," +
             "created_at INTEGER NOT NULL," +
             "updated_at INTEGER NOT NULL" +
             ")");
@@ -55,7 +56,11 @@ public class ChatDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Future migrations go here
+        if (oldVersion < 2) {
+            try {
+                db.execSQL("ALTER TABLE conversations ADD COLUMN system_prompt TEXT DEFAULT ''");
+            } catch (Exception ignored) {}
+        }
     }
 
     @Override
@@ -96,6 +101,12 @@ public class ChatDatabase extends SQLiteOpenHelper {
         getWritableDatabase().update("conversations", cv, "id=?", new String[]{String.valueOf(id)});
     }
 
+    public void updateSystemPrompt(long id, String systemPrompt) {
+        ContentValues cv = new ContentValues();
+        cv.put("system_prompt", systemPrompt);
+        getWritableDatabase().update("conversations", cv, "id=?", new String[]{String.valueOf(id)});
+    }
+
     public void deleteConversation(long id) {
         getWritableDatabase().delete("conversations", "id=?", new String[]{String.valueOf(id)});
     }
@@ -126,7 +137,7 @@ public class ChatDatabase extends SQLiteOpenHelper {
 
     public Conversation getConversation(long id) {
         Cursor c = getReadableDatabase().rawQuery(
-            "SELECT id, title, session_id, model, created_at, updated_at FROM conversations WHERE id=?",
+            "SELECT id, title, session_id, model, created_at, updated_at, system_prompt FROM conversations WHERE id=?",
             new String[]{String.valueOf(id)});
         Conversation conv = null;
         if (c.moveToFirst()) {
@@ -137,6 +148,7 @@ public class ChatDatabase extends SQLiteOpenHelper {
             conv.model = c.getString(3);
             conv.createdAt = c.getLong(4);
             conv.updatedAt = c.getLong(5);
+            conv.systemPrompt = c.getString(6);
         }
         c.close();
         return conv;
@@ -186,6 +198,7 @@ public class ChatDatabase extends SQLiteOpenHelper {
         public String title;
         public String sessionId;
         public String model;
+        public String systemPrompt;
         public long createdAt;
         public long updatedAt;
         public String lastMessage;  // from query only

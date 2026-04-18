@@ -110,6 +110,7 @@ public class ChatActivity extends AppCompatActivity {
             .usePlugin(StrikethroughPlugin.create())
             .usePlugin(TablePlugin.create(this))
             .usePlugin(SyntaxHighlightPlugin.create(prism4j, Prism4jThemeDarkula.create()))
+            .usePlugin(CodeBlockPlugin.create(this))
             .build();
 
         // Init DB
@@ -414,6 +415,20 @@ public class ChatActivity extends AppCompatActivity {
         scrollToBottom();
     }
 
+    private void addUsageBubble(String text) {
+        TextView bubble = new TextView(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(dp(8), 0, dp(32), dp(4));
+        bubble.setLayoutParams(params);
+        bubble.setPadding(dp(14), dp(2), dp(14), dp(6));
+        bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        bubble.setTextColor(Color.parseColor("#475569"));
+        bubble.setText(text);
+        mChatContainer.addView(bubble);
+    }
+
     // ========== Typing Indicator ==========
 
     private void showTypingIndicator() {
@@ -517,7 +532,14 @@ public class ChatActivity extends AppCompatActivity {
         showTypingIndicator();
         mCurrentResponseBuffer = new StringBuilder();
 
-        mService.sendToOpenClaude(message, mSessionId, new KodaService.StreamCallback() {
+        // Get system prompt for this conversation
+        String systemPrompt = null;
+        ChatDatabase.Conversation conv = mDb.getConversation(mCurrentConvId);
+        if (conv != null && conv.systemPrompt != null && !conv.systemPrompt.isEmpty()) {
+            systemPrompt = conv.systemPrompt;
+        }
+
+        mService.sendToOpenClaude(message, mSessionId, systemPrompt, new KodaService.StreamCallback() {
             @Override
             public void onToken(String token) {
                 if (mCurrentAssistantBubble == null) {
@@ -535,6 +557,15 @@ public class ChatActivity extends AppCompatActivity {
             public void onSessionId(String sessionId) {
                 mSessionId = sessionId;
                 mDb.updateConversationSessionId(mCurrentConvId, sessionId);
+            }
+
+            @Override
+            public void onUsage(int inputTokens, int outputTokens, double costUsd) {
+                String usageText = String.format("↑%d ↓%d tokens", inputTokens, outputTokens);
+                if (costUsd > 0) {
+                    usageText += String.format(" · $%.4f", costUsd);
+                }
+                addUsageBubble(usageText);
             }
 
             @Override
