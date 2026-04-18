@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:background="@color/koda_bg">
 
-    <!-- Main content -->
+    <!-- ============================================================
+         MAIN CONTENT
+         ============================================================ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,27 +16,29 @@
         android:background="@color/koda_bg"
         android:fitsSystemWindows="true">
 
-        <!-- Top bar -->
+        <!-- ── Top bar ──────────────────────────────────────────── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
             android:background="@color/koda_surface_1"
             android:gravity="center_vertical"
-            android:paddingHorizontal="8dp"
-            android:elevation="4dp">
+            android:paddingStart="4dp"
+            android:paddingEnd="8dp"
+            android:elevation="2dp">
 
-            <!-- Menu button -->
+            <!-- Hamburger -->
             <ImageButton
                 android:id="@+id/menu_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:src="@android:drawable/ic_menu_sort_by_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Menu"
                 android:tint="@color/koda_text_secondary"
                 android:scaleType="center" />
 
+            <!-- Title — gets most of the horizontal weight -->
             <TextView
                 android:id="@+id/chat_title"
                 android:layout_width="0dp"
@@ -42,29 +46,35 @@
                 android:layout_weight="1"
                 android:text="Koda"
                 android:textColor="@color/koda_text_primary"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:paddingStart="8dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="8dp"
                 android:singleLine="true"
                 android:ellipsize="end" />
 
+            <!-- Model chip — compact, subtle -->
             <TextView
                 android:id="@+id/model_label"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="28dp"
                 android:text="sonnet 4.6"
                 android:textColor="@color/koda_text_tertiary"
-                android:textSize="12sp"
-                android:background="@drawable/chip_background"
+                android:textSize="11sp"
+                android:background="@drawable/chip_bg"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp" />
+                android:paddingVertical="4dp"
+                android:gravity="center"
+                android:maxWidth="160dp"
+                android:singleLine="true"
+                android:ellipsize="end" />
 
-            <!-- New chat button -->
+            <!-- New chat -->
             <ImageButton
                 android:id="@+id/new_chat_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="4dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="2dp"
                 android:src="@android:drawable/ic_menu_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="New chat"
@@ -72,7 +82,13 @@
                 android:scaleType="center" />
         </LinearLayout>
 
-        <!-- Chat area + FAB wrapper -->
+        <!-- Subtle separator under top bar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/koda_stroke" />
+
+        <!-- ── Chat area + FAB ───────────────────────────────────── -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -84,19 +100,22 @@
                 android:layout_height="match_parent"
                 android:fillViewport="true"
                 android:scrollbars="none"
-                android:overScrollMode="never">
+                android:overScrollMode="never"
+                android:clipToPadding="false"
+                android:paddingBottom="4dp">
 
                 <LinearLayout
                     android:id="@+id/chat_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="12dp"
+                    android:paddingTop="8dp"
                     android:paddingBottom="8dp"
+                    android:paddingHorizontal="8dp"
                     android:clipToPadding="false" />
             </ScrollView>
 
-            <!-- Empty state -->
+            <!-- ── Empty state ──────────────────────────────────── -->
             <LinearLayout
                 android:id="@+id/empty_state"
                 android:layout_width="match_parent"
@@ -104,54 +123,84 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:visibility="gone"
-                android:paddingHorizontal="40dp">
+                android:paddingHorizontal="48dp"
+                android:paddingBottom="48dp">
 
+                <!-- Icon with subtle glow container -->
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
                     android:text="🐾"
-                    android:textSize="48sp"
-                    android:gravity="center" />
+                    android:textSize="40sp"
+                    android:gravity="center"
+                    android:background="@drawable/empty_state_icon_bg"
+                    android:layout_marginBottom="20dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Koda"
                     android:textColor="@color/koda_text_primary"
-                    android:textSize="28sp"
+                    android:textSize="26sp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:layout_marginTop="12dp" />
+                    android:letterSpacing="-0.02" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI Coding Agent\nPowered by Claude · RelayGPU"
-                    android:textColor="@color/koda_text_tertiary"
+                    android:text="AI Coding Agent"
+                    android:textColor="@color/koda_text_secondary"
                     android:textSize="14sp"
                     android:gravity="center"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="6dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ask me anything →"
-                    android:textColor="@color/koda_stroke_strong"
-                    android:textSize="13sp"
+                    android:text="Powered by Claude via RelayGPU"
+                    android:textColor="@color/koda_text_tertiary"
+                    android:textSize="12sp"
                     android:gravity="center"
-                    android:layout_marginTop="32dp" />
+                    android:layout_marginTop="2dp" />
+
+                <!-- Hint nudge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/empty_hint_bg"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginTop="36dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Type a message to start"
+                        android:textColor="@color/koda_text_tertiary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ↓"
+                        android:textColor="@color/koda_primary"
+                        android:textSize="13sp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Scroll-to-bottom FAB -->
             <TextView
                 android:id="@+id/scroll_fab"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="12dp"
                 android:text="↓"
-                android:textColor="@color/koda_bg"
-                android:textSize="18sp"
+                android:textColor="@color/koda_on_primary"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:background="@drawable/send_button_background"
@@ -160,89 +209,120 @@
 
         </FrameLayout>
 
-        <!-- Typing indicator -->
+        <!-- ── Typing indicator ─────────────────────────────────── -->
         <TextView
             android:id="@+id/typing_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="● ● ●"
             android:textColor="@color/koda_primary"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:letterSpacing="0.3"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="8dp"
+            android:paddingHorizontal="22dp"
+            android:paddingVertical="6dp"
             android:visibility="gone" />
 
-        <!-- Input bar -->
+        <!-- ── Input bar ─────────────────────────────────────────── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="10dp"
-            android:background="@color/koda_surface_1"
-            android:gravity="bottom"
-            android:elevation="8dp">
+            android:orientation="vertical"
+            android:background="@color/koda_surface_1">
 
-            <EditText
-                android:id="@+id/chat_input"
-                android:layout_width="0dp"
+            <!-- Separator above input bar -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/koda_stroke" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Message..."
-                android:textColor="@color/koda_text_primary"
-                android:textColorHint="@color/koda_text_tertiary"
-                android:background="@drawable/input_background"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp"
-                android:textSize="15sp"
-                android:minHeight="48dp"
-                android:maxLines="6"
-                android:scrollbars="vertical"
-                android:imeOptions="actionSend"
-                android:inputType="textMultiLine|textCapSentences"
-                android:lineSpacingExtra="2dp" />
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:gravity="bottom">
 
-            <ImageButton
-                android:id="@+id/send_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
-                android:src="@android:drawable/ic_menu_send"
-                android:background="@drawable/send_button_background"
-                android:contentDescription="Send"
-                android:tint="@color/koda_bg"
-                android:scaleType="center" />
+                <EditText
+                    android:id="@+id/chat_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Message Koda…"
+                    android:textColor="@color/koda_text_primary"
+                    android:textColorHint="@color/koda_text_tertiary"
+                    android:background="@drawable/input_bg"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="11dp"
+                    android:textSize="15sp"
+                    android:minHeight="44dp"
+                    android:maxLines="6"
+                    android:scrollbars="vertical"
+                    android:imeOptions="actionSend"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:lineSpacingExtra="2dp" />
+
+                <ImageButton
+                    android:id="@+id/send_button"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@android:drawable/ic_menu_send"
+                    android:background="@drawable/send_button_background"
+                    android:contentDescription="Send"
+                    android:tint="@color/koda_on_primary"
+                    android:scaleType="centerInside"
+                    android:padding="10dp" />
+            </LinearLayout>
         </LinearLayout>
+
     </LinearLayout>
 
-    <!-- Drawer (conversation list) -->
+    <!-- ============================================================
+         DRAWER
+         ============================================================ -->
     <LinearLayout
         android:id="@+id/drawer_panel"
-        android:layout_width="300dp"
+        android:layout_width="@dimen/drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:orientation="vertical"
-        android:background="@color/koda_bg"
+        android:background="@color/koda_surface_1"
         android:fitsSystemWindows="true">
 
         <!-- Drawer header -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="64dp"
             android:orientation="horizontal"
-            android:background="@color/koda_surface_1"
+            android:background="@color/koda_surface_2"
             android:gravity="center_vertical"
-            android:paddingHorizontal="16dp">
+            android:paddingStart="20dp"
+            android:paddingEnd="8dp">
 
-            <TextView
+            <!-- App branding in drawer header -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Conversations"
-                android:textColor="@color/koda_text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Koda"
+                    android:textColor="@color/koda_text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Conversations"
+                    android:textColor="@color/koda_text_tertiary"
+                    android:textSize="12sp"
+                    android:layout_marginTop="1dp" />
+            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/drawer_new_chat"
@@ -255,25 +335,38 @@
                 android:scaleType="center" />
         </LinearLayout>
 
+        <!-- Separator -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/koda_stroke" />
+
         <!-- Conversation list -->
         <ListView
             android:id="@+id/conversation_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:divider="@color/koda_surface_1"
-            android:dividerHeight="1dp"
-            android:background="@color/koda_bg"
+            android:divider="@color/koda_stroke"
+            android:dividerHeight="0.5dp"
+            android:background="@color/koda_surface_1"
             android:scrollbars="none" />
 
-        <!-- Settings button at bottom of drawer -->
+        <!-- Separator above settings -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/koda_stroke" />
+
+        <!-- Settings footer -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:orientation="horizontal"
-            android:background="@color/koda_surface_1"
+            android:background="@color/koda_surface_2"
             android:gravity="center_vertical"
-            android:paddingHorizontal="16dp">
+            android:paddingStart="12dp"
+            android:paddingEnd="16dp">
 
             <ImageButton
                 android:id="@+id/drawer_settings"
@@ -287,13 +380,15 @@
 
             <TextView
                 android:id="@+id/drawer_settings_label"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Settings"
                 android:textColor="@color/koda_text_secondary"
-                android:textSize="15sp"
-                android:paddingStart="8dp" />
+                android:textSize="14sp"
+                android:paddingStart="4dp" />
         </LinearLayout>
+
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
