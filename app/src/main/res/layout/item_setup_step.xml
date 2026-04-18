@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="@dimen/space_20"
+    android:paddingVertical="@dimen/space_12">
+
+    <!-- State icon: check / spinner / dot / error -->
+    <FrameLayout
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="@dimen/space_16">
+
+        <!-- Pending dot -->
+        <TextView
+            android:id="@+id/step_icon_pending"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="○"
+            android:textColor="@color/koda_stroke_strong"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="visible" />
+
+        <!-- Active spinner -->
+        <ProgressBar
+            android:id="@+id/step_icon_active"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/koda_primary"
+            android:visibility="gone" />
+
+        <!-- Done check -->
+        <TextView
+            android:id="@+id/step_icon_done"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="✓"
+            android:textColor="@color/koda_success"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <!-- Error -->
+        <TextView
+            android:id="@+id/step_icon_error"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="✕"
+            android:textColor="@color/koda_error"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Step label -->
+    <TextView
+        android:id="@+id/step_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Step"
+        android:textColor="@color/koda_text_tertiary"
+        android:textSize="14sp" />
+
+</LinearLayout>

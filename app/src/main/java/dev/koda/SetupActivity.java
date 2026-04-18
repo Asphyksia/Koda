@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.termux.R;
 import com.termux.shared.logger.Logger;
@@ -24,33 +25,74 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Setup wizard:
- *   Phase 1: Install OpenClaude (if not installed)
- *   Phase 2: Configure API key + provider URL
- *   → Done → ChatActivity
+ * Setup wizard — two phases:
+ *   Phase 1 (install): guided checklist, no raw logs visible by default
+ *   Phase 2 (config):  API key + provider URL form
  */
 public class SetupActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "SetupActivity";
 
-    // Install phase views
-    private View mInstallContainer;
+    // ── Install phase ─────────────────────────────────────────
+    private View     mInstallContainer;
+    private TextView mInstallSubtitle;
     private ProgressBar mInstallProgress;
-    private TextView mInstallStatus;
-    private ScrollView mInstallScroll;
-    private Button mInstallButton;
+    private TextView mInstallHint;
 
-    // Config phase views
-    private View mConfigContainer;
+    // Checklist step views (5 steps)
+    private View[]   mStepViews;
+
+    // Success state
+    private View     mInstallSuccess;
+
+    // Error state
+    private View     mInstallError;
+    private TextView mInstallErrorMsg;
+    private TextView mInstallShowLogs;
+    private ScrollView mInstallScroll;
+    private TextView mInstallStatus;  // raw log (hidden by default)
+    private Button   mInstallButton;
+
+    // ── Config phase ──────────────────────────────────────────
+    private View     mConfigContainer;
     private EditText mApiKeyInput;
     private EditText mBaseUrlInput;
-    private Button mSaveButton;
+    private Button   mSaveButton;
     private TextView mConfigStatus;
 
+    // ── Service ───────────────────────────────────────────────
     private KodaService mService;
     private boolean mBound = false;
+
+    // ── Log accumulator (never shown unless error + user taps) ─
+    private final StringBuilder mRawLog = new StringBuilder();
+
+    // ── Step definitions ──────────────────────────────────────
+    private static final int STEP_ENVIRONMENT = 0;
+    private static final int STEP_NODE        = 1;
+    private static final int STEP_OPENCLAUDE  = 2;
+    private static final int STEP_VERIFY      = 3;
+    private static final int STEP_FINALIZE    = 4;
+
+    private static final String[] STEP_LABELS = {
+        "Building environment",
+        "Installing Node.js",
+        "Installing OpenClaude",
+        "Verifying dependencies",
+        "Finalizing setup"
+    };
+
+    private static final String[] STEP_HINTS = {
+        "Setting up the Termux base environment…",
+        "This may take a minute",
+        "Downloading packages, please wait…",
+        "Checking everything is in place…",
+        "Almost done!"
+    };
 
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -73,24 +115,49 @@ public class SetupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_koda_setup);
 
+        // Install phase
         mInstallContainer = findViewById(R.id.install_container);
-        mInstallProgress = findViewById(R.id.install_progress);
-        mInstallStatus = findViewById(R.id.install_status);
-        mInstallScroll = findViewById(R.id.install_scroll);
-        mInstallButton = findViewById(R.id.install_button);
+        mInstallSubtitle  = findViewById(R.id.install_subtitle);
+        mInstallProgress  = findViewById(R.id.install_progress);
+        mInstallHint      = findViewById(R.id.install_hint);
+        mInstallSuccess   = findViewById(R.id.install_success);
+        mInstallError     = findViewById(R.id.install_error);
+        mInstallErrorMsg  = findViewById(R.id.install_error_msg);
+        mInstallShowLogs  = findViewById(R.id.install_show_logs);
+        mInstallScroll    = findViewById(R.id.install_scroll);
+        mInstallStatus    = findViewById(R.id.install_status);
+        mInstallButton    = findViewById(R.id.install_button);
 
+        // Step views (5 items matching step_1..step_5 ids)
+        int[] stepIds = { R.id.step_1, R.id.step_2, R.id.step_3, R.id.step_4, R.id.step_5 };
+        mStepViews = new View[5];
+        for (int i = 0; i < 5; i++) {
+            mStepViews[i] = findViewById(stepIds[i]);
+            setStepLabel(i, STEP_LABELS[i]);
+            setStepState(i, StepState.PENDING);
+        }
+
+        // Config phase
         mConfigContainer = findViewById(R.id.config_container);
-        mApiKeyInput = findViewById(R.id.api_key_input);
-        mBaseUrlInput = findViewById(R.id.base_url_input);
-        mSaveButton = findViewById(R.id.save_button);
-        mConfigStatus = findViewById(R.id.config_status);
+        mApiKeyInput     = findViewById(R.id.api_key_input);
+        mBaseUrlInput    = findViewById(R.id.base_url_input);
+        mSaveButton      = findViewById(R.id.save_button);
+        mConfigStatus    = findViewById(R.id.config_status);
 
-        mInstallButton.setOnClickListener(v -> runInstall());
-        mSaveButton.setOnClickListener(v -> saveConfig());
-        // RelayGPU as default provider (Anthropic endpoint — SDK adds /v1/messages)
         mBaseUrlInput.setText("https://relay.opengpu.network/v2/anthropic");
+        mSaveButton.setOnClickListener(v -> saveConfig());
+        mInstallButton.setOnClickListener(v -> {
+            mRawLog.setLength(0);
+            resetSteps();
+            mInstallError.setVisibility(View.GONE);
+            runInstall();
+        });
+        mInstallShowLogs.setOnClickListener(v -> {
+            boolean showing = mInstallScroll.getVisibility() == View.VISIBLE;
+            mInstallScroll.setVisibility(showing ? View.GONE : View.VISIBLE);
+            mInstallShowLogs.setText(showing ? "Show technical details" : "Hide technical details");
+        });
 
-        // Start and bind to KodaService
         Intent intent = new Intent(this, KodaService.class);
         startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -99,10 +166,7 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
+        if (mBound) { unbindService(mConnection); mBound = false; }
     }
 
     private void decidePhase() {
@@ -113,7 +177,77 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-    // ========== Install Phase ==========
+    // =========================================================
+    // Step state machine
+    // =========================================================
+
+    private enum StepState { PENDING, ACTIVE, DONE, ERROR }
+
+    private void setStepState(int stepIndex, StepState state) {
+        if (stepIndex < 0 || stepIndex >= mStepViews.length) return;
+        View row = mStepViews[stepIndex];
+        if (row == null) return;
+
+        View pending = row.findViewById(R.id.step_icon_pending);
+        View active  = row.findViewById(R.id.step_icon_active);
+        View done    = row.findViewById(R.id.step_icon_done);
+        View error   = row.findViewById(R.id.step_icon_error);
+        TextView label = row.findViewById(R.id.step_label);
+
+        // Hide all icons first
+        pending.setVisibility(View.GONE);
+        active.setVisibility(View.GONE);
+        done.setVisibility(View.GONE);
+        error.setVisibility(View.GONE);
+
+        switch (state) {
+            case PENDING:
+                pending.setVisibility(View.VISIBLE);
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_tertiary));
+                label.setTypeface(null, android.graphics.Typeface.NORMAL);
+                break;
+            case ACTIVE:
+                active.setVisibility(View.VISIBLE);
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
+                label.setTypeface(null, android.graphics.Typeface.BOLD);
+                mInstallHint.setText(STEP_HINTS[stepIndex]);
+                break;
+            case DONE:
+                done.setVisibility(View.VISIBLE);
+                // Animate check in
+                done.setAlpha(0f);
+                done.setScaleX(0.5f);
+                done.setScaleY(0.5f);
+                done.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(200).start();
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_secondary));
+                label.setTypeface(null, android.graphics.Typeface.NORMAL);
+                break;
+            case ERROR:
+                error.setVisibility(View.VISIBLE);
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_error));
+                label.setTypeface(null, android.graphics.Typeface.NORMAL);
+                break;
+        }
+    }
+
+    private void setStepLabel(int stepIndex, String label) {
+        if (stepIndex < 0 || stepIndex >= mStepViews.length) return;
+        View row = mStepViews[stepIndex];
+        if (row == null) return;
+        TextView tv = row.findViewById(R.id.step_label);
+        if (tv != null) tv.setText(label);
+    }
+
+    private void resetSteps() {
+        for (int i = 0; i < 5; i++) setStepState(i, StepState.PENDING);
+        mInstallHint.setText("");
+        mInstallSuccess.setVisibility(View.GONE);
+        mInstallButton.setVisibility(View.GONE);
+    }
+
+    // =========================================================
+    // Install phase
+    // =========================================================
 
     private void showInstallPhase() {
         mInstallContainer.setVisibility(View.VISIBLE);
@@ -121,87 +255,134 @@ public class SetupActivity extends AppCompatActivity {
         runInstall();
     }
 
-    private void log(String line) {
-        mInstallStatus.append(line + "\n");
-        // Auto-scroll to bottom
-        mInstallScroll.post(() -> mInstallScroll.fullScroll(View.FOCUS_DOWN));
+    private void appendLog(String line) {
+        mRawLog.append(line).append("\n");
+        // Keep TextView in sync (it's hidden unless user taps)
+        mInstallStatus.setText(mRawLog.toString());
     }
 
     private void runInstall() {
         if (!mBound || mService == null) {
-            log("⏳ Waiting for service...");
+            mInstallHint.setText("Waiting for service…");
             return;
         }
 
-        mInstallButton.setEnabled(false);
         mInstallButton.setVisibility(View.GONE);
         mInstallProgress.setVisibility(View.VISIBLE);
-        mInstallStatus.setText(""); // Clear previous output
-        log("⏳ Installing OpenClaude...");
-        log("   This may take 1-2 minutes on WiFi.\n");
+        setStepState(STEP_ENVIRONMENT, StepState.ACTIVE);
 
         mService.installOpenclaude(new KodaService.InstallProgressCallback() {
             @Override
             public void onStepStart(int step, String message) {
-                log("📦 Step " + step + ": " + message);
+                appendLog("STEP " + step + ": " + message);
+                // Map internal step numbers (1-based) to our 5 steps
+                int idx = mapStep(step, message);
+                // Mark previous steps done
+                for (int i = 0; i < idx; i++) setStepState(i, StepState.DONE);
+                setStepState(idx, StepState.ACTIVE);
             }
 
             @Override
             public void onStepComplete(int step) {
-                log("✅ Step " + step + " complete\n");
+                appendLog("STEP " + step + " done");
+                int idx = Math.min(step - 1, 4);
+                setStepState(idx, StepState.DONE);
             }
 
             @Override
             public void onOutput(String line) {
-                // Show npm output lines (trimmed)
-                if (!line.trim().isEmpty()) {
-                    log("   " + line.trim());
-                }
+                if (!line.trim().isEmpty()) appendLog(line.trim());
             }
 
             @Override
             public void onError(String error) {
-                log("\n❌ " + error);
-                showRetry();
+                appendLog("ERROR: " + error);
+                mInstallProgress.setVisibility(View.GONE);
+                showInstallError(error);
             }
 
             @Override
             public void onComplete() {
                 mInstallProgress.setVisibility(View.GONE);
                 if (KodaService.isOpenclaudeInstalled()) {
-                    log("\n✅ OpenClaude installed successfully!");
-                    mInstallStatus.postDelayed(() -> showConfigPhase(), 1000);
+                    // Mark all steps done
+                    for (int i = 0; i < 5; i++) setStepState(i, StepState.DONE);
+                    mInstallHint.setText("");
+                    showInstallSuccess();
                 } else {
-                    log("\n⚠️ Install completed but openclaude not found.");
-                    log("   Tap Retry to try again.");
-                    showRetry();
+                    showInstallError("Installation completed but OpenClaude was not found.");
                 }
             }
         });
     }
 
-    private void showRetry() {
-        mInstallProgress.setVisibility(View.GONE);
-        mInstallButton.setEnabled(true);
-        mInstallButton.setText("Retry");
-        mInstallButton.setVisibility(View.VISIBLE);
+    /**
+     * Maps the installer's step number + message to our 5 checklist steps.
+     * Installer emits: step 1 = bootstrap/env, step 2 = openclaude/npm
+     */
+    private int mapStep(int step, String message) {
+        String msg = message.toLowerCase();
+        if (msg.contains("bootstrap") || msg.contains("environment") || step == 1)
+            return STEP_ENVIRONMENT;
+        if (msg.contains("node"))
+            return STEP_NODE;
+        if (msg.contains("openclaude") || msg.contains("npm") || msg.contains("install"))
+            return STEP_OPENCLAUDE;
+        if (msg.contains("verif") || msg.contains("check"))
+            return STEP_VERIFY;
+        return STEP_FINALIZE;
     }
 
-    // ========== Config Phase ==========
+    private void showInstallSuccess() {
+        mInstallSuccess.setVisibility(View.VISIBLE);
+        // Animate all children in
+        for (int i = 0; i < ((android.view.ViewGroup) mInstallSuccess).getChildCount(); i++) {
+            View child = ((android.view.ViewGroup) mInstallSuccess).getChildAt(i);
+            child.animate()
+                .alpha(1f)
+                .setStartDelay(i * 120L)
+                .setDuration(220)
+                .start();
+        }
+        mInstallHint.setText("");
+        mInstallSuccess.postDelayed(() -> showConfigPhase(), 1400);
+    }
+
+    private void showInstallError(String errorMsg) {
+        // Mark the active step as error
+        for (int i = 0; i < 5; i++) {
+            View row = mStepViews[i];
+            if (row != null) {
+                View activeIcon = row.findViewById(R.id.step_icon_active);
+                if (activeIcon != null && activeIcon.getVisibility() == View.VISIBLE) {
+                    setStepState(i, StepState.ERROR);
+                    break;
+                }
+            }
+        }
+        mInstallError.setVisibility(View.VISIBLE);
+        mInstallErrorMsg.setText("Something went wrong: " + errorMsg);
+        mInstallButton.setVisibility(View.VISIBLE);
+        mInstallButton.setText("Retry");
+        mInstallHint.setText("");
+    }
+
+    // =========================================================
+    // Config phase
+    // =========================================================
 
     private void showConfigPhase() {
         mInstallContainer.setVisibility(View.GONE);
         mConfigContainer.setVisibility(View.VISIBLE);
 
-        // Pre-fill from existing config if available
         try {
             File configFile = new File(TermuxConstants.TERMUX_HOME_DIR_PATH + "/.openclaude/openclaude.json");
             if (configFile.exists()) {
                 String content = new String(java.nio.file.Files.readAllBytes(configFile.toPath()));
                 JSONObject config = new JSONObject(content);
-                JSONObject providers = config.optJSONObject("models");
-                if (providers != null) {
-                    providers = providers.optJSONObject("providers");
+                JSONObject models = config.optJSONObject("models");
+                if (models != null) {
+                    JSONObject providers = models.optJSONObject("providers");
                     if (providers != null && providers.keys().hasNext()) {
                         JSONObject p = providers.optJSONObject(providers.keys().next());
                         if (p != null) {
@@ -219,23 +400,17 @@ public class SetupActivity extends AppCompatActivity {
     }
 
     private void saveConfig() {
-        String apiKey = mApiKeyInput.getText().toString().trim();
+        String apiKey  = mApiKeyInput.getText().toString().trim();
         String baseUrl = mBaseUrlInput.getText().toString().trim();
 
         if (apiKey.isEmpty()) {
             mConfigStatus.setText("API key is required");
             return;
         }
-        if (baseUrl.isEmpty()) {
-            baseUrl = "https://relay.opengpu.network/v2/anthropic";
-        }
-        // Strip trailing slash
-        if (baseUrl.endsWith("/")) {
-            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
-        }
+        if (baseUrl.isEmpty()) baseUrl = "https://relay.opengpu.network/v2/anthropic";
+        if (baseUrl.endsWith("/")) baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
 
         try {
-            // Build config JSON
             JSONObject config = new JSONObject();
             JSONObject models = new JSONObject();
             JSONObject providers = new JSONObject();
@@ -245,31 +420,25 @@ public class SetupActivity extends AppCompatActivity {
             provider.put("api", "anthropic-messages");
             providers.put("default", provider);
             models.put("providers", providers);
-
-            // Set default model based on provider
             if (baseUrl.contains("relay.opengpu.network")) {
                 models.put("default", "anthropic/claude-sonnet-4-6");
             }
-
             config.put("models", models);
 
-            // Write to file
             File configDir = new File(TermuxConstants.TERMUX_HOME_DIR_PATH + "/.openclaude");
             if (!configDir.exists()) configDir.mkdirs();
             File configFile = new File(configDir, "openclaude.json");
-
             try (FileWriter writer = new FileWriter(configFile)) {
                 writer.write(config.toString(2));
             }
             configFile.setReadable(true, true);
             configFile.setWritable(true, true);
 
-            mConfigStatus.setText("✅ Saved!");
             mConfigStatus.setTextColor(
-                androidx.core.content.ContextCompat.getColor(this, com.termux.R.color.koda_success));
+                ContextCompat.getColor(this, R.color.koda_success));
+            mConfigStatus.setText("✓ Saved!");
             Toast.makeText(this, "Setup complete!", Toast.LENGTH_SHORT).show();
 
-            // Go to chat
             startActivity(new Intent(this, dev.koda.ui.ChatActivity.class));
             finish();
 

@@ -6,49 +6,60 @@
     android:fitsSystemWindows="true">
 
     <!-- ============================================================
-         INSTALL PHASE
+         INSTALL PHASE — guided checklist
          ============================================================ -->
     <LinearLayout
         android:id="@+id/install_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/space_24"
+        android:paddingVertical="@dimen/space_32"
         android:visibility="gone">
 
-        <!-- Header -->
+        <!-- ── Header ──────────────────────────────────────── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/space_20"
-            android:paddingTop="@dimen/space_32"
-            android:paddingBottom="@dimen/space_16">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/space_32">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔧"
-                android:textSize="36sp" />
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/ic_launcher"
+                android:scaleType="centerCrop"
+                android:background="@drawable/launcher_logo_bg"
+                android:layout_marginEnd="@dimen/space_16" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Setting up Koda"
-                android:textColor="@color/koda_text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_marginTop="@dimen/space_8" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Installing OpenClaude and dependencies…"
-                android:textColor="@color/koda_text_tertiary"
-                android:textSize="13sp"
-                android:layout_marginTop="@dimen/space_4" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Setting up Koda"
+                    android:textColor="@color/koda_text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/install_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Preparing your coding environment"
+                    android:textColor="@color/koda_text_tertiary"
+                    android:textSize="13sp"
+                    android:layout_marginTop="@dimen/space_2" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Progress bar -->
+        <!-- ── Progress bar ────────────────────────────────── -->
         <ProgressBar
             android:id="@+id/install_progress"
             style="?android:attr/progressBarStyleHorizontal"
@@ -56,45 +67,145 @@
             android:layout_height="3dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/koda_primary"
-            android:progressTint="@color/koda_primary"
+            android:layout_marginBottom="@dimen/space_24"
             android:visibility="gone" />
 
-        <!-- Log output -->
-        <ScrollView
-            android:id="@+id/install_scroll"
+        <!-- ── Checklist card ───────────────────────────────── -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="none"
-            android:overScrollMode="never"
-            android:padding="@dimen/space_4">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_surface"
+            android:paddingVertical="@dimen/space_8"
+            android:layout_marginBottom="@dimen/space_20">
 
-            <LinearLayout
+            <!-- Step 1 -->
+            <include layout="@layout/item_setup_step"
+                android:id="@+id/step_1" />
+            <!-- Step 2 -->
+            <include layout="@layout/item_setup_step"
+                android:id="@+id/step_2" />
+            <!-- Step 3 -->
+            <include layout="@layout/item_setup_step"
+                android:id="@+id/step_3" />
+            <!-- Step 4 -->
+            <include layout="@layout/item_setup_step"
+                android:id="@+id/step_4" />
+            <!-- Step 5 -->
+            <include layout="@layout/item_setup_step"
+                android:id="@+id/step_5" />
+        </LinearLayout>
+
+        <!-- ── Help text (active step hint) ────────────────── -->
+        <TextView
+            android:id="@+id/install_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/koda_text_tertiary"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/space_20" />
+
+        <!-- ── Success state (hidden until done) ───────────── -->
+        <LinearLayout
+            android:id="@+id/install_success"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/space_16">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✓"
+                android:textColor="@color/koda_success"
+                android:textSize="40sp"
+                android:gravity="center"
+                android:alpha="0" />
+
+            <TextView
+                android:id="@+id/install_success_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ready"
+                android:textColor="@color/koda_text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/space_8"
+                android:alpha="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Koda is ready to use"
+                android:textColor="@color/koda_text_secondary"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/space_4"
+                android:alpha="0" />
+        </LinearLayout>
+
+        <!-- ── Error state ──────────────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/install_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_surface"
+            android:padding="@dimen/space_16"
+            android:layout_marginBottom="@dimen/space_16"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/install_error_msg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/card_surface"
-                android:padding="@dimen/space_16"
-                android:layout_margin="@dimen/space_16">
+                android:text=""
+                android:textColor="@color/koda_error"
+                android:textSize="13sp"
+                android:layout_marginBottom="@dimen/space_12" />
+
+            <!-- Technical details (collapsed by default) -->
+            <TextView
+                android:id="@+id/install_show_logs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show technical details"
+                android:textColor="@color/koda_text_tertiary"
+                android:textSize="12sp"
+                android:paddingVertical="@dimen/space_4" />
+
+            <ScrollView
+                android:id="@+id/install_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:scrollbars="vertical"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/space_8"
+                android:background="@drawable/code_preview_bg"
+                android:padding="@dimen/space_8">
 
                 <TextView
                     android:id="@+id/install_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textColor="@color/koda_text_secondary"
                     android:fontFamily="monospace"
-                    android:lineSpacingExtra="3dp" />
-            </LinearLayout>
-        </ScrollView>
+                    android:lineSpacingExtra="2dp" />
+            </ScrollView>
+        </LinearLayout>
 
-        <!-- Retry button (hidden until needed) -->
+        <!-- ── Retry button ─────────────────────────────────── -->
         <Button
             android:id="@+id/install_button"
             style="@style/Koda.Button.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/space_16"
             android:text="Retry"
             android:visibility="gone" />
 
@@ -162,7 +273,6 @@
                 android:padding="@dimen/space_20"
                 android:layout_marginBottom="@dimen/space_16">
 
-                <!-- API Key field -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -188,7 +298,6 @@
                     android:inputType="textPassword"
                     android:layout_marginBottom="@dimen/space_16" />
 
-                <!-- Base URL field -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -212,10 +321,8 @@
                     android:textSize="13sp"
                     android:fontFamily="monospace"
                     android:inputType="textUri" />
-
             </LinearLayout>
 
-            <!-- Status message -->
             <TextView
                 android:id="@+id/config_status"
                 android:layout_width="match_parent"
@@ -226,7 +333,6 @@
                 android:gravity="center"
                 android:layout_marginBottom="@dimen/space_12" />
 
-            <!-- Save button -->
             <Button
                 android:id="@+id/save_button"
                 style="@style/Koda.Button.Primary"
@@ -234,7 +340,6 @@
                 android:layout_height="wrap_content"
                 android:text="Start Koda" />
 
-            <!-- Fine print -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
