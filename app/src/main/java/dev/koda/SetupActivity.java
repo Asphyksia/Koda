@@ -24,7 +24,6 @@ import com.termux.shared.termux.TermuxConstants;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -411,28 +410,34 @@ public class SetupActivity extends AppCompatActivity {
         if (baseUrl.endsWith("/")) baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
 
         try {
-            JSONObject config = new JSONObject();
-            JSONObject models = new JSONObject();
-            JSONObject providers = new JSONObject();
-            JSONObject provider = new JSONObject();
-            provider.put("baseUrl", baseUrl);
-            provider.put("apiKey", apiKey);
-            provider.put("api", "anthropic-messages");
-            providers.put("default", provider);
-            models.put("providers", providers);
-            if (baseUrl.contains("relay.opengpu.network")) {
-                models.put("default", "anthropic/claude-sonnet-4-6");
-            }
-            config.put("models", models);
+            // 1. Update ProviderManager (SharedPreferences) so Settings stays in sync
+            dev.koda.data.ProviderManager pm = new dev.koda.data.ProviderManager(this);
+            dev.koda.data.ProviderManager.Provider active = pm.getActiveProvider();
 
-            File configDir = new File(TermuxConstants.TERMUX_HOME_DIR_PATH + "/.openclaude");
-            if (!configDir.exists()) configDir.mkdirs();
-            File configFile = new File(configDir, "openclaude.json");
-            try (FileWriter writer = new FileWriter(configFile)) {
-                writer.write(config.toString(2));
+            if (active == null) {
+                // No provider yet — create one
+                active = new dev.koda.data.ProviderManager.Provider();
+                active.name = "RelayGPU";
+                active.type = "anthropic";
+                active.models = new String[]{ "anthropic/claude-sonnet-4-6" };
             }
-            configFile.setReadable(true, true);
-            configFile.setWritable(true, true);
+            active.apiKey = apiKey;
+            active.baseUrl = baseUrl;
+            if (active.defaultModel == null || active.defaultModel.isEmpty()) {
+                active.defaultModel = baseUrl.contains("relay.opengpu.network")
+                    ? "anthropic/claude-sonnet-4-6"
+                    : "claude-sonnet-4-6";
+            }
+
+            if (active.id == null || active.id.isEmpty()) {
+                pm.addProvider(active);
+                pm.setActiveProvider(active.id);
+            } else {
+                pm.updateProvider(active);
+                // setActiveProvider triggers syncToOpenclaudeConfig internally
+                pm.setActiveProvider(active.id);
+            }
+            // syncToOpenclaudeConfig is called inside setActiveProvider — no need to write manually
 
             mConfigStatus.setTextColor(
                 ContextCompat.getColor(this, R.color.koda_success));
