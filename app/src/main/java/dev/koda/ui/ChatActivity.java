@@ -13,12 +13,15 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
@@ -66,6 +69,8 @@ public class ChatActivity extends AppCompatActivity {
     private EditText mInput;
     private ImageButton mSendButton;
     private View mTypingIndicator;
+    private View mScrollFab;
+    private View mEmptyState;
     private TextView mChatTitle;
 
     // Markdown
@@ -126,6 +131,19 @@ public class ChatActivity extends AppCompatActivity {
         mSendButton = findViewById(R.id.send_button);
         mTypingIndicator = findViewById(R.id.typing_indicator);
         mChatTitle = findViewById(R.id.chat_title);
+        mScrollFab = findViewById(R.id.scroll_fab);
+        mEmptyState = findViewById(R.id.empty_state);
+
+        // Scroll FAB: appear when not at bottom, tap to scroll down
+        mScrollFab.setOnClickListener(v -> scrollToBottom());
+        mChatScroll.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            View child = mChatScroll.getChildAt(0);
+            if (child == null) return;
+            int scrollY = mChatScroll.getScrollY();
+            int maxScroll = child.getHeight() - mChatScroll.getHeight();
+            boolean atBottom = scrollY >= maxScroll - dp(80);
+            mScrollFab.setVisibility(atBottom ? View.GONE : View.VISIBLE);
+        });
 
         // Drawer adapter
         mConvAdapter = new ConversationAdapter(this);
@@ -227,7 +245,8 @@ public class ChatActivity extends AppCompatActivity {
         mSessionId = null;
         mChatContainer.removeAllViews();
         mChatTitle.setText("Koda");
-        addSystemBubble("🐾 Koda v0.3\nAI Coding Agent — powered by Claude");
+        // Show empty state instead of system bubble
+        if (mEmptyState != null) mEmptyState.setVisibility(View.VISIBLE);
     }
 
     private void loadConversation(long convId) {
@@ -246,6 +265,11 @@ public class ChatActivity extends AppCompatActivity {
 
         // Reload messages
         List<ChatDatabase.Message> messages = mDb.getMessages(convId);
+
+        // Toggle empty state
+        if (mEmptyState != null) {
+            mEmptyState.setVisibility(messages.isEmpty() ? View.VISIBLE : View.GONE);
+        }
         for (ChatDatabase.Message msg : messages) {
             switch (msg.role) {
                 case "user":
@@ -493,6 +517,17 @@ public class ChatActivity extends AppCompatActivity {
         if (message.isEmpty()) return;
 
         mInput.setText("");
+
+        // Haptic feedback
+        try {
+            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if (vibrator != null && vibrator.hasVibrator()) {
+                vibrator.vibrate(VibrationEffect.createOneShot(30, VibrationEffect.DEFAULT_AMPLITUDE));
+            }
+        } catch (Exception ignored) {}
+
+        // Hide empty state
+        if (mEmptyState != null) mEmptyState.setVisibility(View.GONE);
 
         // Ensure we have a conversation
         if (mCurrentConvId < 0) {

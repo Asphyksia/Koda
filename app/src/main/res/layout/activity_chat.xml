@@ -72,25 +72,93 @@
                 android:scaleType="center" />
         </LinearLayout>
 
-        <!-- Chat area -->
-        <ScrollView
-            android:id="@+id/chat_scroll"
+        <!-- Chat area + FAB wrapper -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true"
-            android:scrollbars="none"
-            android:overScrollMode="never">
+            android:layout_weight="1">
 
-            <LinearLayout
-                android:id="@+id/chat_container"
+            <ScrollView
+                android:id="@+id/chat_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:scrollbars="none"
+                android:overScrollMode="never">
+
+                <LinearLayout
+                    android:id="@+id/chat_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="8dp"
+                    android:clipToPadding="false" />
+            </ScrollView>
+
+            <!-- Empty state -->
+            <LinearLayout
+                android:id="@+id/empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:paddingTop="12dp"
-                android:paddingBottom="8dp"
-                android:clipToPadding="false" />
-        </ScrollView>
+                android:gravity="center"
+                android:visibility="gone"
+                android:paddingHorizontal="40dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🐾"
+                    android:textSize="48sp"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Koda"
+                    android:textColor="#F1F5F9"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AI Coding Agent\nPowered by Claude · RelayGPU"
+                    android:textColor="#64748B"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ask me anything →"
+                    android:textColor="#334155"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:layout_marginTop="32dp" />
+            </LinearLayout>
+
+            <!-- Scroll-to-bottom FAB -->
+            <TextView
+                android:id="@+id/scroll_fab"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="12dp"
+                android:text="↓"
+                android:textColor="#0F172A"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@drawable/send_button_background"
+                android:visibility="gone"
+                android:elevation="4dp" />
+
+        </FrameLayout>
 
         <!-- Typing indicator -->
         <TextView
