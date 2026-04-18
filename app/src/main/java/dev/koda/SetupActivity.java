@@ -265,6 +265,8 @@ public class SetupActivity extends AppCompatActivity {
             configFile.setWritable(true, true);
 
             mConfigStatus.setText("✅ Saved!");
+            mConfigStatus.setTextColor(
+                androidx.core.content.ContextCompat.getColor(this, com.termux.R.color.koda_success));
             Toast.makeText(this, "Setup complete!", Toast.LENGTH_SHORT).show();
 
             // Go to chat

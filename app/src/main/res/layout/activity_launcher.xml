@@ -5,46 +5,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="32dp"
-    android:background="#0F172A">
+    android:paddingHorizontal="@dimen/space_40"
+    android:paddingBottom="@dimen/space_64"
+    android:background="@color/koda_bg"
+    android:fitsSystemWindows="true">
 
+    <!-- Icon -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:text="🐾"
-        android:textSize="64sp"
-        android:layout_marginBottom="16dp" />
+        android:textSize="44sp"
+        android:gravity="center"
+        android:background="@drawable/empty_state_icon_bg"
+        android:layout_marginBottom="@dimen/space_20" />
 
+    <!-- App name -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Koda"
-        android:textSize="32sp"
-        android:textColor="#F8FAFC"
+        android:textSize="30sp"
+        android:textColor="@color/koda_text_primary"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
+        android:letterSpacing="-0.02" />
 
+    <!-- Tagline -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="AI Coding Agent"
-        android:textSize="16sp"
-        android:textColor="#94A3B8"
-        android:layout_marginBottom="32dp" />
+        android:textSize="14sp"
+        android:textColor="@color/koda_text_tertiary"
+        android:layout_marginTop="@dimen/space_4"
+        android:layout_marginBottom="@dimen/space_40" />
 
+    <!-- Status message -->
     <TextView
         android:id="@+id/launcher_status"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Initializing..."
-        android:textSize="14sp"
-        android:textColor="#CBD5E1"
+        android:text="Initializing…"
+        android:textSize="13sp"
+        android:textColor="@color/koda_text_secondary"
         android:gravity="center"
-        android:layout_marginBottom="24dp" />
+        android:lineSpacingExtra="3dp"
+        android:layout_marginBottom="@dimen/space_24" />
 
+    <!-- Continue / Grant button (hidden until needed) -->
     <Button
         android:id="@+id/launcher_continue"
-        android:layout_width="wrap_content"
+        style="@style/Koda.Button.Primary"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Continue"
         android:visibility="gone" />
