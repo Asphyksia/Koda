@@ -338,6 +338,7 @@ public class KodaService extends Service {
             }
             cmd.append(" --bare");
             cmd.append(" --thinking disabled");
+            cmd.append(" --dangerously-skip-permissions");  // no TTY = no interactive confirm
             cmd.append(" 2>/dev/null");  // stderr to /dev/null, we parse stdout JSON
 
             String script = cmd.toString();
