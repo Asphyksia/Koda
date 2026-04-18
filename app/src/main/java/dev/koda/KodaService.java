@@ -110,6 +110,7 @@ public class KodaService extends Service {
         env.add("HOME=" + HOME);
         env.add("PREFIX=" + PREFIX);
         env.add("TMPDIR=" + PREFIX + "/tmp");
+        env.add("CLAUDE_CODE_TMPDIR=" + PREFIX + "/tmp");  // Claude hardcodes /tmp for non-Windows
         env.add("LANG=en_US.UTF-8");
         env.add("PATH=" + BIN + ":" + PREFIX + "/bin/applets");
         env.add("LD_LIBRARY_PATH=" + libDir);
