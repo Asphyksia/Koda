@@ -3,8 +3,19 @@
 
     <!-- ============================================================
          KODA DESIGN SYSTEM — Styles
-         Reusable styles for all components
+         NOTE: Android uses dot-notation to imply parent hierarchy.
+         All base styles (Koda, Koda.Text, Koda.Button, etc.) must
+         be defined explicitly to avoid AAPT "style not found" errors.
          ============================================================ -->
+
+    <!-- Base roots (required by AAPT dot-notation inheritance) -->
+    <style name="Koda" parent="@android:style/Widget" />
+    <style name="Koda.Text" parent="Koda" />
+    <style name="Koda.Button" parent="Koda" />
+    <style name="Koda.Card" parent="Koda" />
+    <style name="Koda.Input" parent="Koda" />
+    <style name="Koda.Chip" parent="Koda" />
+    <style name="Koda.Badge" parent="Koda" />
 
 
     <!-- ── TEXT ─────────────────────────────────────────────────── -->
@@ -41,7 +52,6 @@
 
     <!-- ── BUTTONS ───────────────────────────────────────────────── -->
 
-    <!-- Primary: filled, high emphasis -->
     <style name="Koda.Button.Primary">
         <item name="android:background">@drawable/btn_primary</item>
         <item name="android:textColor">@color/koda_on_primary</item>
@@ -53,7 +63,6 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <!-- Secondary: tonal/outlined, medium emphasis -->
     <style name="Koda.Button.Secondary">
         <item name="android:background">@drawable/btn_secondary</item>
         <item name="android:textColor">@color/koda_primary</item>
@@ -65,7 +74,6 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <!-- Ghost: no fill, text only, low emphasis -->
     <style name="Koda.Button.Ghost">
         <item name="android:background">@drawable/btn_ghost</item>
         <item name="android:textColor">@color/koda_text_secondary</item>
@@ -76,7 +84,6 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <!-- Destructive: error color, for deletes/resets -->
     <style name="Koda.Button.Destructive">
         <item name="android:background">@drawable/btn_destructive</item>
         <item name="android:textColor">@color/koda_error</item>
@@ -90,7 +97,7 @@
 
     <!-- ── CARDS ─────────────────────────────────────────────────── -->
 
-    <style name="Koda.Card">
+    <style name="Koda.Card.Default">
         <item name="android:background">@drawable/card_surface</item>
         <item name="android:padding">@dimen/card_padding_h</item>
         <item name="android:elevation">@dimen/elevation_sm</item>
@@ -105,7 +112,7 @@
 
     <!-- ── INPUT ─────────────────────────────────────────────────── -->
 
-    <style name="Koda.Input">
+    <style name="Koda.Input.Default">
         <item name="android:background">@drawable/input_bg</item>
         <item name="android:textColor">@color/koda_text_primary</item>
         <item name="android:textColorHint">@color/koda_text_tertiary</item>
@@ -117,7 +124,7 @@
 
     <!-- ── CHIPS ─────────────────────────────────────────────────── -->
 
-    <style name="Koda.Chip">
+    <style name="Koda.Chip.Default">
         <item name="android:background">@drawable/chip_bg</item>
         <item name="android:textColor">@color/koda_text_secondary</item>
         <item name="android:textSize">@dimen/text_sm</item>
@@ -138,7 +145,7 @@
 
     <!-- ── BADGES ────────────────────────────────────────────────── -->
 
-    <style name="Koda.Badge">
+    <style name="Koda.Badge.Default">
         <item name="android:textSize">@dimen/text_xs</item>
         <item name="android:textStyle">bold</item>
         <item name="android:paddingHorizontal">@dimen/space_8</item>
@@ -148,24 +155,48 @@
         <item name="android:letterSpacing">0.05</item>
     </style>
 
-    <style name="Koda.Badge.Active" parent="Koda.Badge">
+    <style name="Koda.Badge.Active">
         <item name="android:background">@drawable/badge_active</item>
         <item name="android:textColor">@color/koda_primary</item>
+        <item name="android:textSize">@dimen/text_xs</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingHorizontal">@dimen/space_8</item>
+        <item name="android:paddingVertical">@dimen/space_4</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="Koda.Badge.Success" parent="Koda.Badge">
+    <style name="Koda.Badge.Success">
         <item name="android:background">@drawable/badge_success</item>
         <item name="android:textColor">@color/koda_success</item>
+        <item name="android:textSize">@dimen/text_xs</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingHorizontal">@dimen/space_8</item>
+        <item name="android:paddingVertical">@dimen/space_4</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="Koda.Badge.Warning" parent="Koda.Badge">
+    <style name="Koda.Badge.Warning">
         <item name="android:background">@drawable/badge_warning</item>
         <item name="android:textColor">@color/koda_warning</item>
+        <item name="android:textSize">@dimen/text_xs</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingHorizontal">@dimen/space_8</item>
+        <item name="android:paddingVertical">@dimen/space_4</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="Koda.Badge.Error" parent="Koda.Badge">
+    <style name="Koda.Badge.Error">
         <item name="android:background">@drawable/badge_error</item>
         <item name="android:textColor">@color/koda_error</item>
+        <item name="android:textSize">@dimen/text_xs</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingHorizontal">@dimen/space_8</item>
+        <item name="android:paddingVertical">@dimen/space_4</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>
