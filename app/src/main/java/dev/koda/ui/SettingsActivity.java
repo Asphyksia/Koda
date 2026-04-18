@@ -19,6 +19,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import dev.koda.R;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
         mProviderMgr = new ProviderManager(this);
 
         ScrollView scroll = new ScrollView(this);
-        scroll.setBackgroundColor(Color.parseColor("#0F172A"));
+        scroll.setBackgroundColor(ContextCompat.getColor(this, R.color.koda_bg));
         scroll.setFillViewport(true);
 
         mContainer = new LinearLayout(this);
@@ -61,7 +66,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Top bar
         LinearLayout topBar = new LinearLayout(this);
         topBar.setOrientation(LinearLayout.HORIZONTAL);
-        topBar.setBackgroundColor(Color.parseColor("#1E293B"));
+        topBar.setBackgroundColor(ContextCompat.getColor(this, R.color.koda_surface_1));
         topBar.setGravity(Gravity.CENTER_VERTICAL);
         topBar.setPadding(dp(8), 0, dp(16), 0);
         LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(
@@ -71,14 +76,14 @@ public class SettingsActivity extends AppCompatActivity {
         ImageButton back = new ImageButton(this);
         back.setImageResource(android.R.drawable.ic_menu_revert);
         back.setBackgroundColor(Color.TRANSPARENT);
-        back.setColorFilter(Color.parseColor("#94A3B8"));
+        back.setColorFilter(ContextCompat.getColor(this, R.color.koda_text_secondary));
         back.setOnClickListener(v -> finish());
         back.setLayoutParams(new LinearLayout.LayoutParams(dp(40), dp(40)));
         topBar.addView(back);
 
         TextView title = new TextView(this);
         title.setText("Settings");
-        title.setTextColor(Color.parseColor("#F8FAFC"));
+        title.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         title.setTypeface(null, Typeface.BOLD);
         title.setPadding(dp(8), 0, 0, 0);
@@ -118,10 +123,10 @@ public class SettingsActivity extends AppCompatActivity {
         card.setLayoutParams(cardParams);
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.parseColor("#1E293B"));
+        bg.setColor(ContextCompat.getColor(this, R.color.koda_surface_1));
         bg.setCornerRadius(dp(12));
         if (isActive) {
-            bg.setStroke(dp(2), Color.parseColor("#7DD3FC"));
+            bg.setStroke(dp(2), ContextCompat.getColor(this, R.color.koda_primary));
         }
         card.setBackground(bg);
         card.setPadding(dp(16), dp(14), dp(16), dp(14));
@@ -133,7 +138,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         TextView name = new TextView(this);
         name.setText(provider.name);
-        name.setTextColor(Color.parseColor("#F1F5F9"));
+        name.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         name.setTypeface(null, Typeface.BOLD);
         name.setLayoutParams(new LinearLayout.LayoutParams(0,
@@ -143,11 +148,11 @@ public class SettingsActivity extends AppCompatActivity {
         if (isActive) {
             TextView badge = new TextView(this);
             badge.setText("ACTIVE");
-            badge.setTextColor(Color.parseColor("#7DD3FC"));
+            badge.setTextColor(ContextCompat.getColor(this, R.color.koda_primary));
             badge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
             badge.setTypeface(null, Typeface.BOLD);
             GradientDrawable badgeBg = new GradientDrawable();
-            badgeBg.setColor(Color.parseColor("#0C4A6E"));
+            badgeBg.setColor(ContextCompat.getColor(this, R.color.koda_primary_container));
             badgeBg.setCornerRadius(dp(6));
             badge.setBackground(badgeBg);
             badge.setPadding(dp(8), dp(3), dp(8), dp(3));
@@ -159,7 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Row 2: Model
         TextView model = new TextView(this);
         model.setText("Model: " + (provider.defaultModel.isEmpty() ? "not set" : provider.defaultModel));
-        model.setTextColor(Color.parseColor("#94A3B8"));
+        model.setTextColor(ContextCompat.getColor(this, R.color.koda_text_secondary));
         model.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         LinearLayout.LayoutParams modelParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -172,7 +177,7 @@ public class SettingsActivity extends AppCompatActivity {
         TextView keyStatus = new TextView(this);
         keyStatus.setText(provider.hasApiKey() ? "🔑 API key configured" : "⚠ No API key");
         keyStatus.setTextColor(provider.hasApiKey() ?
-            Color.parseColor("#4ADE80") : Color.parseColor("#FBBF24"));
+            ContextCompat.getColor(this, R.color.koda_success) : ContextCompat.getColor(this, R.color.koda_warning));
         keyStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         LinearLayout.LayoutParams keyParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -307,7 +312,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void addFormLabel(LinearLayout parent, String text) {
         TextView label = new TextView(this);
         label.setText(text);
-        label.setTextColor(Color.parseColor("#94A3B8"));
+        label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_secondary));
         label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -337,7 +342,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void addSectionHeader(String text) {
         TextView header = new TextView(this);
         header.setText(text);
-        header.setTextColor(Color.parseColor("#7DD3FC"));
+        header.setTextColor(ContextCompat.getColor(this, R.color.koda_primary));
         header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         header.setTypeface(null, Typeface.BOLD);
         header.setLetterSpacing(0.1f);
@@ -361,13 +366,13 @@ public class SettingsActivity extends AppCompatActivity {
         row.setPadding(dp(16), dp(10), dp(16), dp(10));
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.parseColor("#1E293B"));
+        bg.setColor(ContextCompat.getColor(this, R.color.koda_surface_1));
         bg.setCornerRadius(dp(8));
         row.setBackground(bg);
 
         TextView labelTv = new TextView(this);
         labelTv.setText(label);
-        labelTv.setTextColor(Color.parseColor("#94A3B8"));
+        labelTv.setTextColor(ContextCompat.getColor(this, R.color.koda_text_secondary));
         labelTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         labelTv.setLayoutParams(new LinearLayout.LayoutParams(0,
             LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -375,7 +380,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         TextView valueTv = new TextView(this);
         valueTv.setText(value);
-        valueTv.setTextColor(Color.parseColor("#F1F5F9"));
+        valueTv.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
         valueTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         row.addView(valueTv);
 
@@ -385,7 +390,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void addButton(String text, View.OnClickListener onClick) {
         TextView btn = new TextView(this);
         btn.setText(text);
-        btn.setTextColor(Color.parseColor("#7DD3FC"));
+        btn.setTextColor(ContextCompat.getColor(this, R.color.koda_primary));
         btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         btn.setTypeface(null, Typeface.BOLD);
         btn.setGravity(Gravity.CENTER);
@@ -397,9 +402,9 @@ public class SettingsActivity extends AppCompatActivity {
         btn.setPadding(dp(16), dp(14), dp(16), dp(14));
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.parseColor("#0F172A"));
+        bg.setColor(ContextCompat.getColor(this, R.color.koda_bg));
         bg.setCornerRadius(dp(12));
-        bg.setStroke(dp(1), Color.parseColor("#334155"));
+        bg.setStroke(dp(1), ContextCompat.getColor(this, R.color.koda_stroke_strong));
         btn.setBackground(bg);
 
         btn.setOnClickListener(onClick);

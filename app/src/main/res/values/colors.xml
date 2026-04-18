@@ -1,11 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Slate dark palette -->
-    <color name="koda_bg">#FF0F172A</color>
-    <color name="koda_surface">#FF1E293B</color>
-    <color name="koda_text">#FFF8FAFC</color>
-    <color name="koda_text_secondary">#FF94A3B8</color>
-    <color name="koda_accent">#FF7DD3FC</color>
-    <color name="koda_error">#FFF87171</color>
-    <color name="koda_input_bg">#FF334155</color>
+
+    <!-- ============================================================
+         KODA DESIGN SYSTEM — Color Palette
+         Navy charcoal dark theme, blue accent, semantic states
+         ============================================================ -->
+
+    <!-- Background layers (darkest → lightest) -->
+    <color name="koda_bg">#FF0D1117</color>           <!-- base app background — near-black navy -->
+    <color name="koda_surface_1">#FF161C26</color>    <!-- cards, drawer background -->
+    <color name="koda_surface_2">#FF1C2636</color>    <!-- elevated cards, modal bg -->
+    <color name="koda_surface_3">#FF243044</color>    <!-- active states, selected items -->
+    <color name="koda_surface_4">#FF2A3A52</color>    <!-- hover / pressed overlays -->
+
+    <!-- Dividers & strokes -->
+    <color name="koda_stroke">#FF1E2D3D</color>       <!-- subtle border on cards/inputs -->
+    <color name="koda_stroke_strong">#FF2A3F55</color> <!-- more visible stroke when needed -->
+    <color name="koda_divider">#FF141D28</color>       <!-- list dividers -->
+
+    <!-- Primary blue — structural, actions, brand -->
+    <color name="koda_primary">#FF4A90D9</color>           <!-- buttons, active chips, links -->
+    <color name="koda_primary_container">#FF1A3558</color> <!-- chip bg, selected state bg -->
+    <color name="koda_primary_dim">#FF2D5A8A</color>       <!-- muted primary for secondary actions -->
+    <color name="koda_on_primary">#FFFFFFFF</color>        <!-- text on primary bg -->
+
+    <!-- Text hierarchy -->
+    <color name="koda_text_primary">#FFF0F6FF</color>    <!-- main text — soft white -->
+    <color name="koda_text_secondary">#FF8B9EAF</color>  <!-- labels, subtitles -->
+    <color name="koda_text_tertiary">#FF4A5E70</color>   <!-- hints, placeholders, disabled -->
+    <color name="koda_text_on_dark">#FFFFFFFF</color>    <!-- text on colored surfaces -->
+
+    <!-- Semantic: Success (configured, active, ok) -->
+    <color name="koda_success">#FF4CAF7D</color>           <!-- text/icon color -->
+    <color name="koda_success_container">#FF0D2E1E</color> <!-- badge / indicator bg -->
+    <color name="koda_success_dim">#FF1A4A30</color>       <!-- stroke on success -->
+
+    <!-- Semantic: Warning (incomplete, missing key, attention) -->
+    <color name="koda_warning">#FFF0A835</color>           <!-- text/icon color -->
+    <color name="koda_warning_container">#FF2C1E06</color> <!-- badge bg -->
+    <color name="koda_warning_dim">#FF4A3210</color>       <!-- stroke -->
+
+    <!-- Semantic: Error (critical, destructive, failure) -->
+    <color name="koda_error">#FFEF5350</color>             <!-- text/icon color -->
+    <color name="koda_error_container">#FF2A0C0C</color>   <!-- badge bg -->
+    <color name="koda_error_dim">#FF4A1515</color>         <!-- stroke -->
+
+    <!-- User bubble -->
+    <color name="koda_bubble_user">#FF1A3558</color>       <!-- user message bg -->
+    <color name="koda_bubble_assistant">#FF161C26</color>  <!-- assistant message bg -->
+
+    <!-- Ripple / pressed -->
+    <color name="koda_ripple">#1A4A90D9</color>            <!-- 10% primary -->
+    <color name="koda_ripple_light">#0FFFFFFF</color>      <!-- 6% white for light surfaces -->
+
+    <!-- Scrim -->
+    <color name="koda_scrim">#CC000000</color>             <!-- drawer backdrop -->
+
 </resources>

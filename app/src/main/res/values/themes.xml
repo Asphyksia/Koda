@@ -1,18 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ============================================================
+         KODA DESIGN SYSTEM — Theme
+         ============================================================ -->
+
     <style name="Theme.Koda" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="colorPrimary">@color/koda_accent</item>
+        <!-- Core colors -->
+        <item name="colorPrimary">@color/koda_primary</item>
         <item name="colorPrimaryDark">@color/koda_bg</item>
-        <item name="colorAccent">@color/koda_accent</item>
+        <item name="colorAccent">@color/koda_primary</item>
+        <item name="colorOnPrimary">@color/koda_on_primary</item>
+        <item name="colorSurface">@color/koda_surface_1</item>
+        <item name="colorOnSurface">@color/koda_text_primary</item>
+        <item name="colorError">@color/koda_error</item>
+
+        <!-- Window -->
         <item name="android:windowBackground">@color/koda_bg</item>
         <item name="android:statusBarColor">@color/koda_bg</item>
-        <item name="android:navigationBarColor">@color/koda_surface</item>
-        <item name="android:textColor">@color/koda_text</item>
+        <item name="android:navigationBarColor">@color/koda_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Text -->
+        <item name="android:textColor">@color/koda_text_primary</item>
+        <item name="android:textColorHint">@color/koda_text_tertiary</item>
+        <item name="android:textColorSecondary">@color/koda_text_secondary</item>
+
+        <!-- Ripple -->
+        <item name="rippleColor">@color/koda_ripple</item>
+        <item name="android:colorControlHighlight">@color/koda_ripple</item>
+
+        <!-- Drawer scrim -->
+        <item name="scrimBackground">@color/koda_scrim</item>
     </style>
 
-    <!-- Required by termux-shared (TermuxCrashUtils uses these) -->
+    <!-- Required by termux-shared -->
     <style name="Theme.TermuxApp.DayNight.DarkActionBar" parent="Theme.Koda" />
     <style name="Theme.TermuxApp.DayNight.NoActionBar" parent="Theme.Koda" />
     <style name="Theme.TermuxActivity.DayNight.NoActionBar" parent="Theme.Koda" />
     <style name="Theme.MarkdownViewActivity.DayNight" parent="Theme.Koda" />
+
 </resources>

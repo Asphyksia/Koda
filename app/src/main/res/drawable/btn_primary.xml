@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Send button — circular primary -->
+<!-- Primary filled button — ripple over solid primary -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="@color/koda_ripple_light">
     <item>
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
             <solid android:color="@color/koda_primary" />
+            <corners android:radius="@dimen/radius_md" />
         </shape>
     </item>
 </ripple>

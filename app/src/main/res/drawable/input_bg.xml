@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Legacy alias — kept for compatibility. Use @drawable/input_bg in new layouts. -->
+<!-- Chat input field background -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/koda_surface_1" />

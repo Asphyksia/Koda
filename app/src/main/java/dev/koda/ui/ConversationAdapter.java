@@ -11,10 +11,14 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import dev.koda.R;
 import java.util.Locale;
 
 import dev.koda.data.ChatDatabase;
@@ -75,7 +79,7 @@ public class ConversationAdapter extends BaseAdapter {
             LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         String titleText = TextUtils.isEmpty(conv.title) ? "New conversation" : conv.title;
         title.setText(titleText);
-        title.setTextColor(Color.parseColor("#F1F5F9"));
+        title.setTextColor(ContextCompat.getColor(mContext, R.color.koda_text_primary));
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         title.setTypeface(null, Typeface.BOLD);
         title.setSingleLine(true);
@@ -83,7 +87,7 @@ public class ConversationAdapter extends BaseAdapter {
 
         TextView time = new TextView(mContext);
         time.setText(formatTime(conv.updatedAt));
-        time.setTextColor(Color.parseColor("#64748B"));
+        time.setTextColor(ContextCompat.getColor(mContext, R.color.koda_text_tertiary));
         time.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
 
         titleRow.addView(title);
@@ -96,7 +100,7 @@ public class ConversationAdapter extends BaseAdapter {
             String previewText = conv.lastMessage.replace("\n", " ").trim();
             if (previewText.length() > 80) previewText = previewText.substring(0, 80) + "…";
             preview.setText(previewText);
-            preview.setTextColor(Color.parseColor("#94A3B8"));
+            preview.setTextColor(ContextCompat.getColor(mContext, R.color.koda_text_secondary));
             preview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             preview.setSingleLine(true);
             preview.setEllipsize(TextUtils.TruncateAt.END);

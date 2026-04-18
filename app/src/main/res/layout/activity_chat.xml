@@ -4,14 +4,14 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A">
+    android:background="@color/koda_bg">
 
     <!-- Main content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#0F172A"
+        android:background="@color/koda_bg"
         android:fitsSystemWindows="true">
 
         <!-- Top bar -->
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
-            android:background="#1E293B"
+            android:background="@color/koda_surface_1"
             android:gravity="center_vertical"
             android:paddingHorizontal="8dp"
             android:elevation="4dp">
@@ -32,7 +32,7 @@
                 android:src="@android:drawable/ic_menu_sort_by_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Menu"
-                android:tint="#94A3B8"
+                android:tint="@color/koda_text_secondary"
                 android:scaleType="center" />
 
             <TextView
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Koda"
-                android:textColor="#F8FAFC"
+                android:textColor="@color/koda_text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:paddingStart="8dp"
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="sonnet 4.6"
-                android:textColor="#64748B"
+                android:textColor="@color/koda_text_tertiary"
                 android:textSize="12sp"
                 android:background="@drawable/chip_background"
                 android:paddingHorizontal="10dp"
@@ -68,7 +68,7 @@
                 android:src="@android:drawable/ic_menu_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="New chat"
-                android:tint="#7DD3FC"
+                android:tint="@color/koda_primary"
                 android:scaleType="center" />
         </LinearLayout>
 
@@ -117,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Koda"
-                    android:textColor="#F1F5F9"
+                    android:textColor="@color/koda_text_primary"
                     android:textSize="28sp"
                     android:textStyle="bold"
                     android:gravity="center"
@@ -127,7 +127,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="AI Coding Agent\nPowered by Claude · RelayGPU"
-                    android:textColor="#64748B"
+                    android:textColor="@color/koda_text_tertiary"
                     android:textSize="14sp"
                     android:gravity="center"
                     android:layout_marginTop="8dp" />
@@ -136,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ask me anything →"
-                    android:textColor="#334155"
+                    android:textColor="@color/koda_stroke_strong"
                     android:textSize="13sp"
                     android:gravity="center"
                     android:layout_marginTop="32dp" />
@@ -150,7 +150,7 @@
                 android:layout_gravity="bottom|end"
                 android:layout_margin="12dp"
                 android:text="↓"
-                android:textColor="#0F172A"
+                android:textColor="@color/koda_bg"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -166,7 +166,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="● ● ●"
-            android:textColor="#7DD3FC"
+            android:textColor="@color/koda_primary"
             android:textSize="18sp"
             android:letterSpacing="0.3"
             android:paddingHorizontal="20dp"
@@ -180,7 +180,7 @@
             android:orientation="horizontal"
             android:paddingHorizontal="12dp"
             android:paddingVertical="10dp"
-            android:background="#1E293B"
+            android:background="@color/koda_surface_1"
             android:gravity="bottom"
             android:elevation="8dp">
 
@@ -190,8 +190,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Message..."
-                android:textColor="#F8FAFC"
-                android:textColorHint="#475569"
+                android:textColor="@color/koda_text_primary"
+                android:textColorHint="@color/koda_text_tertiary"
                 android:background="@drawable/input_background"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="12dp"
@@ -211,7 +211,7 @@
                 android:src="@android:drawable/ic_menu_send"
                 android:background="@drawable/send_button_background"
                 android:contentDescription="Send"
-                android:tint="#0F172A"
+                android:tint="@color/koda_bg"
                 android:scaleType="center" />
         </LinearLayout>
     </LinearLayout>
@@ -223,7 +223,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:orientation="vertical"
-        android:background="#0F172A"
+        android:background="@color/koda_bg"
         android:fitsSystemWindows="true">
 
         <!-- Drawer header -->
@@ -231,7 +231,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal"
-            android:background="#1E293B"
+            android:background="@color/koda_surface_1"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp">
 
@@ -240,7 +240,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Conversations"
-                android:textColor="#F8FAFC"
+                android:textColor="@color/koda_text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -251,7 +251,7 @@
                 android:src="@android:drawable/ic_menu_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="New chat"
-                android:tint="#7DD3FC"
+                android:tint="@color/koda_primary"
                 android:scaleType="center" />
         </LinearLayout>
 
@@ -261,9 +261,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:divider="#1E293B"
+            android:divider="@color/koda_surface_1"
             android:dividerHeight="1dp"
-            android:background="#0F172A"
+            android:background="@color/koda_bg"
             android:scrollbars="none" />
 
         <!-- Settings button at bottom of drawer -->
@@ -271,7 +271,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:orientation="horizontal"
-            android:background="#1E293B"
+            android:background="@color/koda_surface_1"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp">
 
@@ -282,7 +282,7 @@
                 android:src="@android:drawable/ic_menu_preferences"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Settings"
-                android:tint="#94A3B8"
+                android:tint="@color/koda_text_secondary"
                 android:scaleType="center" />
 
             <TextView
@@ -290,7 +290,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
-                android:textColor="#94A3B8"
+                android:textColor="@color/koda_text_secondary"
                 android:textSize="15sp"
                 android:paddingStart="8dp" />
         </LinearLayout>

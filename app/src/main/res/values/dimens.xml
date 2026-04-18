@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ============================================================
+         KODA DESIGN SYSTEM — Dimensions
+         Consistent spacing, radii, elevations
+         ============================================================ -->
+
+    <!-- Spacing scale -->
+    <dimen name="space_2">2dp</dimen>
+    <dimen name="space_4">4dp</dimen>
+    <dimen name="space_6">6dp</dimen>
+    <dimen name="space_8">8dp</dimen>
+    <dimen name="space_10">10dp</dimen>
+    <dimen name="space_12">12dp</dimen>
+    <dimen name="space_16">16dp</dimen>
+    <dimen name="space_20">20dp</dimen>
+    <dimen name="space_24">24dp</dimen>
+    <dimen name="space_32">32dp</dimen>
+    <dimen name="space_40">40dp</dimen>
+    <dimen name="space_48">48dp</dimen>
+    <dimen name="space_64">64dp</dimen>
+
+    <!-- Border radii -->
+    <dimen name="radius_xs">4dp</dimen>     <!-- small badges, tight elements -->
+    <dimen name="radius_sm">8dp</dimen>     <!-- subtle rounding, inline elements -->
+    <dimen name="radius_md">12dp</dimen>    <!-- chips, small cards -->
+    <dimen name="radius_lg">16dp</dimen>    <!-- cards, dialogs, drawers -->
+    <dimen name="radius_xl">20dp</dimen>    <!-- message bubbles, panels -->
+    <dimen name="radius_pill">100dp</dimen> <!-- full pill (input bar, FAB, send button) -->
+
+    <!-- Stroke widths -->
+    <dimen name="stroke_thin">0.5dp</dimen>
+    <dimen name="stroke_default">1dp</dimen>
+    <dimen name="stroke_medium">1.5dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_none">0dp</dimen>
+    <dimen name="elevation_xs">1dp</dimen>
+    <dimen name="elevation_sm">2dp</dimen>
+    <dimen name="elevation_md">4dp</dimen>
+    <dimen name="elevation_lg">8dp</dimen>
+    <dimen name="elevation_fab">6dp</dimen>
+
+    <!-- Typography scale -->
+    <dimen name="text_xs">11sp</dimen>
+    <dimen name="text_sm">12sp</dimen>
+    <dimen name="text_base">14sp</dimen>
+    <dimen name="text_md">15sp</dimen>
+    <dimen name="text_lg">16sp</dimen>
+    <dimen name="text_xl">18sp</dimen>
+    <dimen name="text_2xl">20sp</dimen>
+    <dimen name="text_3xl">24sp</dimen>
+
+    <!-- Component sizes -->
+    <dimen name="topbar_height">56dp</dimen>
+    <dimen name="input_bar_height">52dp</dimen>
+    <dimen name="send_button_size">40dp</dimen>
+    <dimen name="fab_size">40dp</dimen>
+    <dimen name="icon_size_sm">18dp</dimen>
+    <dimen name="icon_size_md">20dp</dimen>
+    <dimen name="icon_size_lg">24dp</dimen>
+    <dimen name="badge_height">20dp</dimen>
+    <dimen name="chip_height">28dp</dimen>
+
+    <!-- Layout gutters -->
+    <dimen name="screen_margin_h">16dp</dimen>
+    <dimen name="screen_margin_v">12dp</dimen>
+    <dimen name="card_padding_h">16dp</dimen>
+    <dimen name="card_padding_v">14dp</dimen>
+    <dimen name="list_item_padding_v">12dp</dimen>
+
+    <!-- Drawer -->
+    <dimen name="drawer_width">280dp</dimen>
+
+    <!-- Bubble padding -->
+    <dimen name="bubble_padding_h">14dp</dimen>
+    <dimen name="bubble_padding_v">10dp</dimen>
+    <dimen name="bubble_margin_v">4dp</dimen>
+
+</resources>

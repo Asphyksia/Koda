@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings / dialog text input field -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/koda_surface_2" />
+    <stroke android:width="@dimen/stroke_default" android:color="@color/koda_stroke_strong" />
+    <corners android:radius="@dimen/radius_md" />
+</shape>

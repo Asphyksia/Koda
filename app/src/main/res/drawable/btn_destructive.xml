@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Destructive ghost button — error color tonal bg -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#1AEF5350">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/koda_error_container" />
+            <corners android:radius="@dimen/radius_md" />
+        </shape>
+    </item>
+</ripple>

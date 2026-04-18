@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Active chip — primary container bg + primary stroke -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/koda_primary_container" />
+    <stroke android:width="@dimen/stroke_default" android:color="@color/koda_primary_dim" />
+    <corners android:radius="@dimen/radius_pill" />
+</shape>

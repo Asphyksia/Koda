@@ -78,8 +78,8 @@ public class CodeBlockPlugin extends AbstractMarkwonPlugin {
      */
     public static class CodeBlockBackgroundSpan implements LeadingMarginSpan {
 
-        private static final int BG_COLOR = Color.parseColor("#0F172A");
-        private static final int BORDER_COLOR = Color.parseColor("#334155");
+        private static final int BG_COLOR = Color.parseColor("#0D1117");   // koda_bg
+        private static final int BORDER_COLOR = Color.parseColor("#1E2D3D"); // koda_stroke
         private static final int PADDING = 24;
         private static final int RADIUS = 16;
 

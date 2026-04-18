@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Legacy alias — kept for compatibility. Use @drawable/chip_bg in new layouts. -->
+<!-- Standard card surface -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/koda_surface_2" />
+    <solid android:color="@color/koda_surface_1" />
     <stroke android:width="@dimen/stroke_thin" android:color="@color/koda_stroke" />
-    <corners android:radius="@dimen/radius_pill" />
+    <corners android:radius="@dimen/radius_lg" />
 </shape>

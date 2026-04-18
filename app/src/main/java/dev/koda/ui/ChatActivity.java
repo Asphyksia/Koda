@@ -33,6 +33,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
+import dev.koda.R;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -327,9 +331,9 @@ public class ChatActivity extends AppCompatActivity {
 
     // ========== Bubble Creation ==========
 
-    private GradientDrawable makeBubbleBackground(String color, float[] radii) {
+    private GradientDrawable makeBubbleBackground(int color, float[] radii) {
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.parseColor(color));
+        bg.setColor(color);
         bg.setCornerRadii(radii);
         return bg;
     }
@@ -344,12 +348,13 @@ public class ChatActivity extends AppCompatActivity {
         bubble.setLayoutParams(params);
 
         float r = dp(16); float s = dp(4);
-        bubble.setBackground(makeBubbleBackground("#1E3A5F",
+        bubble.setBackground(makeBubbleBackground(
+            ContextCompat.getColor(this, R.color.koda_bubble_user),
             new float[]{ r, r, r, r, s, s, r, r }));
 
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        bubble.setTextColor(Color.parseColor("#E2E8F0"));
+        bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
         bubble.setLineSpacing(dp(3), 1f);
         bubble.setText(text);
         bubble.setOnLongClickListener(v -> { copyToClipboard(text); return true; });
@@ -366,12 +371,13 @@ public class ChatActivity extends AppCompatActivity {
         bubble.setLayoutParams(params);
 
         float r = dp(16); float s = dp(4);
-        bubble.setBackground(makeBubbleBackground("#1E293B",
+        bubble.setBackground(makeBubbleBackground(
+            ContextCompat.getColor(this, R.color.koda_bubble_assistant),
             new float[]{ r, r, r, r, r, r, s, s }));
 
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        bubble.setTextColor(Color.parseColor("#F1F5F9"));
+        bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
         bubble.setLineSpacing(dp(3), 1f);
         bubble.setMovementMethod(LinkMovementMethod.getInstance());
         return bubble;
@@ -409,7 +415,7 @@ public class ChatActivity extends AppCompatActivity {
         bubble.setLayoutParams(params);
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        bubble.setTextColor(Color.parseColor("#64748B"));
+        bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_text_tertiary));
         bubble.setGravity(Gravity.CENTER);
         bubble.setTypeface(null, Typeface.ITALIC);
         bubble.setText(text);
@@ -426,14 +432,14 @@ public class ChatActivity extends AppCompatActivity {
         bubble.setLayoutParams(params);
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.parseColor("#1C1017"));
+        bg.setColor(ContextCompat.getColor(this, R.color.koda_error_container));
         bg.setCornerRadius(dp(12));
-        bg.setStroke(dp(1), Color.parseColor("#7F1D1D"));
+        bg.setStroke(dp(1), ContextCompat.getColor(this, R.color.koda_error_dim));
         bubble.setBackground(bg);
 
         bubble.setPadding(dp(14), dp(10), dp(14), dp(10));
         bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        bubble.setTextColor(Color.parseColor("#FCA5A5"));
+        bubble.setTextColor(ContextCompat.getColor(this, R.color.koda_error));
         bubble.setText("⚠ " + text);
         mChatContainer.addView(bubble);
         scrollToBottom();
