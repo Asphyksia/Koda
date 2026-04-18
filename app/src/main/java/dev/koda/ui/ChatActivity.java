@@ -415,19 +415,6 @@ public class ChatActivity extends AppCompatActivity {
         scrollToBottom();
     }
 
-    private void addUsageBubble(String text) {
-        TextView bubble = new TextView(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(dp(8), 0, dp(32), dp(4));
-        bubble.setLayoutParams(params);
-        bubble.setPadding(dp(14), dp(2), dp(14), dp(6));
-        bubble.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        bubble.setTextColor(Color.parseColor("#475569"));
-        bubble.setText(text);
-        mChatContainer.addView(bubble);
-    }
 
     // ========== Typing Indicator ==========
 
@@ -561,11 +548,8 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onUsage(int inputTokens, int outputTokens, double costUsd) {
-                String usageText = String.format("↑%d ↓%d tokens", inputTokens, outputTokens);
-                if (costUsd > 0) {
-                    usageText += String.format(" · $%.4f", costUsd);
-                }
-                addUsageBubble(usageText);
+                // Token usage tracked but not shown per-message (UI noise).
+                // TODO: accumulate and show in profile/stats screen later.
             }
 
             @Override
