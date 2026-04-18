@@ -35,6 +35,20 @@
         <item name="scrimBackground">@color/koda_scrim</item>
     </style>
 
+    <!-- Dialog theme — dark, matches Koda palette -->
+    <style name="Theme.Koda.Dialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="colorPrimary">@color/koda_primary</item>
+        <item name="colorAccent">@color/koda_primary</item>
+        <item name="colorSurface">@color/koda_surface_2</item>
+        <item name="colorOnSurface">@color/koda_text_primary</item>
+        <item name="android:windowBackground">@color/koda_surface_2</item>
+        <item name="android:textColor">@color/koda_text_primary</item>
+        <item name="android:textColorSecondary">@color/koda_text_secondary</item>
+        <item name="android:textColorHint">@color/koda_text_tertiary</item>
+        <item name="rippleColor">@color/koda_ripple</item>
+        <item name="android:colorControlHighlight">@color/koda_ripple</item>
+    </style>
+
     <!-- Required by termux-shared — must parent from their own base styles, not Theme.Koda,
          because termux-shared resolves styles in its own namespace (com.termux) at link time -->
     <style name="Theme.TermuxApp.DayNight.DarkActionBar" parent="Theme.BaseActivity.DayNight.DarkActionBar" />
