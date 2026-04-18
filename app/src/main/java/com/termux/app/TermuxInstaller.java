@@ -451,6 +451,15 @@ public final class TermuxInstaller {
                 "    sed -i 's/metadata: getAPIMetadata()/metadata: undefined/g' \"$CLIMJS\"\n" +
                 "    echo \"KODA_INFO:Patched metadata out of API requests\"\n" +
                 "fi\n" +
+                "# Patch: replace os.tmpdir() with process.env.TMPDIR||os.tmpdir()\n" +
+                "# Claude SDK hardcodes /tmp instead of honouring $TMPDIR — breaks on Android\n" +
+                "if [ -f \"$CLIMJS\" ]; then\n" +
+                "    sed -i 's/os\\.tmpdir()/process.env.TMPDIR||os.tmpdir()/g' \"$CLIMJS\"\n" +
+                "    echo \"KODA_INFO:Patched os.tmpdir() to use TMPDIR env var\"\n" +
+                "fi\n" +
+                "# Also ensure $PREFIX/tmp exists and is writable\n" +
+                "mkdir -p \"$PREFIX/tmp\"\n" +
+                "chmod 700 \"$PREFIX/tmp\"\n" +
                 "echo \"KODA_STEP:2:DONE\"\n\n" +
                 "# Done\n" +
                 "touch \"$MARKER\"\n" +

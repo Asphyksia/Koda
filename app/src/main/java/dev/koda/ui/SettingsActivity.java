@@ -142,6 +142,58 @@ public class SettingsActivity extends AppCompatActivity {
         addInfoRow(group, "Runtime",    "Termux (aarch64)", true);
 
         mContainer.addView(group);
+
+        addSectionHeader("Maintenance");
+        addGhostButton("Re-apply patches", v -> repatchOpenClaude());
+    }
+
+    private void repatchOpenClaude() {
+        Toast.makeText(this, "Applying patches…", Toast.LENGTH_SHORT).show();
+        String prefix = "/data/data/com.termux/files/usr";
+        String bin    = prefix + "/bin";
+        String bash   = bin + "/bash";
+        String script =
+            "CLIMJS=\"" + prefix + "/lib/node_modules/@gitlawb/openclaude/dist/cli.mjs\"\n" +
+            "if [ ! -f \"$CLIMJS\" ]; then echo 'cli.mjs not found'; exit 1; fi\n" +
+            "sed -i 's/metadata: getAPIMetadata()/metadata: undefined/g' \"$CLIMJS\" && " +
+            "sed -i 's/os\\.tmpdir()/process.env.TMPDIR||os.tmpdir()/g' \"$CLIMJS\" && " +
+            "mkdir -p \"" + prefix + "/tmp\" && " +
+            "chmod 700 \"" + prefix + "/tmp\" && " +
+            "echo OK";
+
+        new Thread(() -> {
+            String[] args = { bash, "-c", script };
+            // Minimal env — just enough for bash + sed
+            String[] env = {
+                "HOME=/data/data/com.termux/files/home",
+                "PREFIX=" + prefix,
+                "PATH=" + bin,
+                "LD_LIBRARY_PATH=" + prefix + "/lib",
+                "LD_PRELOAD=" + prefix + "/lib/libtermux-exec.so",
+                "TMPDIR=" + prefix + "/tmp",
+                "LANG=en_US.UTF-8"
+            };
+            int[] pidOut = new int[1];
+            int fd = dev.koda.KodaProcess.createSubprocessPipe(bash, args, env, pidOut);
+            String out = "";
+            if (fd >= 0) {
+                try (java.io.BufferedReader r = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(
+                            new java.io.FileInputStream("/proc/self/fd/" + fd)))) {
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = r.readLine()) != null) sb.append(line).append("\n");
+                    out = sb.toString().trim();
+                } catch (Exception ignored) {}
+                dev.koda.KodaProcess.waitFor(pidOut[0]);
+                dev.koda.KodaProcess.close(fd);
+            }
+            final String result = out.isEmpty() ? "No output" : out;
+            runOnUiThread(() ->
+                Toast.makeText(this,
+                    result.equals("OK") ? "Patches applied ✓" : "Result: " + result,
+                    Toast.LENGTH_LONG).show());
+        }).start();
     }
 
     // =========================================================
