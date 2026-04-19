@@ -6,92 +6,90 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.termux.R;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.termux.TermuxConstants;
 
-import org.json.JSONObject;
+import dev.koda.data.ProviderCatalog;
+import dev.koda.data.ProviderDef;
+import dev.koda.ui.ChatActivity;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Setup wizard — two phases:
- *   Phase 1 (install): guided checklist, no raw logs visible by default
- *   Phase 2 (config):  API key + provider URL form
+ *
+ * Phase 1: Install OpenClaude (if not present)
+ * Phase 2: Provider wizard
+ *   Step 1 — Choose provider
+ *   Step 2 — Configure credentials + model
  */
 public class SetupActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "SetupActivity";
 
-    // ── Install phase ─────────────────────────────────────────
-    private View     mInstallContainer;
-    private TextView mInstallSubtitle;
-    private ProgressBar mInstallProgress;
-    private TextView mInstallHint;
+    // ─── Views: Install phase ─────────────────────────────────────────────────
+    private View            mInstallContainer;
+    private ProgressBar     mInstallProgress;
+    private TextView        mInstallStatus;
+    private Button          mInstallButton;
 
-    // Checklist step views (5 steps)
-    private View[]   mStepViews;
+    // ─── Views: Wizard ────────────────────────────────────────────────────────
+    private View            mWizardContainer;
+    private TextView        mWizardTitle;
+    private View            mStepDot1;
+    private View            mStepDot2;
 
-    // Success state
-    private View     mInstallSuccess;
+    // Step 1
+    private View            mStep1Container;
+    private LinearLayout    mProvidersPriority;
+    private LinearLayout    mProvidersSecondary;
+    private LinearLayout    mProvidersAdvanced;
 
-    // Error state
-    private View     mInstallError;
-    private TextView mInstallErrorMsg;
-    private TextView mInstallShowLogs;
-    private ScrollView mInstallScroll;
-    private TextView mInstallStatus;  // raw log (hidden by default)
-    private Button   mInstallButton;
+    // Step 2
+    private View            mStep2Container;
+    private TextView        mSelectedProviderIcon;
+    private TextView        mSelectedProviderName;
+    private TextView        mSelectedProviderDesc;
+    private TextView        mChangeProviderBtn;
+    private TextView        mModeLabel;
+    private LinearLayout    mModeChipsContainer;
+    private EditText        mApiKeyInput;
+    private TextView        mToggleKeyVisibility;
+    private TextView        mEndpointLabel;
+    private EditText        mEndpointUrlInput;
+    private TextView        mModelLabel;
+    private LinearLayout    mModelChipsRow1;
+    private LinearLayout    mModelChipsRow2;
+    private EditText        mModelCustomInput;
+    private TextView        mConfigStatus;
 
-    // ── Config phase ──────────────────────────────────────────
-    private View     mConfigContainer;
-    private EditText mApiKeyInput;
-    private EditText mBaseUrlInput;
-    private Button   mSaveButton;
-    private TextView mConfigStatus;
+    // Bottom bar
+    private Button          mBtnBack;
+    private Button          mBtnNext;
 
-    // ── Service ───────────────────────────────────────────────
-    private KodaService mService;
-    private boolean mBound = false;
+    // ─── State ────────────────────────────────────────────────────────────────
+    private int             mCurrentStep = 1;       // 1 = provider list, 2 = config
+    private ProviderDef     mSelectedProvider;
+    private int             mSelectedModeIndex = 0;
+    private String          mSelectedModel;
+    private boolean         mKeyVisible = false;
 
-    // ── Log accumulator (never shown unless error + user taps) ─
-    private final StringBuilder mRawLog = new StringBuilder();
-
-    // ── Step definitions ──────────────────────────────────────
-    private static final int STEP_ENVIRONMENT = 0;
-    private static final int STEP_NODE        = 1;
-    private static final int STEP_OPENCLAUDE  = 2;
-    private static final int STEP_VERIFY      = 3;
-    private static final int STEP_FINALIZE    = 4;
-
-    private static final String[] STEP_LABELS = {
-        "Building environment",
-        "Installing Node.js",
-        "Installing OpenClaude",
-        "Verifying dependencies",
-        "Finalizing setup"
-    };
-
-    private static final String[] STEP_HINTS = {
-        "Setting up the Termux base environment…",
-        "This may take a minute",
-        "Downloading packages, please wait…",
-        "Checking everything is in place…",
-        "Almost done!"
-    };
+    // ─── Service ──────────────────────────────────────────────────────────────
+    private KodaService     mService;
+    private boolean         mBound = false;
 
     private final ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -109,53 +107,15 @@ public class SetupActivity extends AppCompatActivity {
         }
     };
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Lifecycle
+    // ─────────────────────────────────────────────────────────────────────────
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_koda_setup);
-
-        // Install phase
-        mInstallContainer = findViewById(R.id.install_container);
-        mInstallSubtitle  = findViewById(R.id.install_subtitle);
-        mInstallProgress  = findViewById(R.id.install_progress);
-        mInstallHint      = findViewById(R.id.install_hint);
-        mInstallSuccess   = findViewById(R.id.install_success);
-        mInstallError     = findViewById(R.id.install_error);
-        mInstallErrorMsg  = findViewById(R.id.install_error_msg);
-        mInstallShowLogs  = findViewById(R.id.install_show_logs);
-        mInstallScroll    = findViewById(R.id.install_scroll);
-        mInstallStatus    = findViewById(R.id.install_status);
-        mInstallButton    = findViewById(R.id.install_button);
-
-        // Step views (5 items matching step_1..step_5 ids)
-        int[] stepIds = { R.id.step_1, R.id.step_2, R.id.step_3, R.id.step_4, R.id.step_5 };
-        mStepViews = new View[5];
-        for (int i = 0; i < 5; i++) {
-            mStepViews[i] = findViewById(stepIds[i]);
-            setStepLabel(i, STEP_LABELS[i]);
-            setStepState(i, StepState.PENDING);
-        }
-
-        // Config phase
-        mConfigContainer = findViewById(R.id.config_container);
-        mApiKeyInput     = findViewById(R.id.api_key_input);
-        mBaseUrlInput    = findViewById(R.id.base_url_input);
-        mSaveButton      = findViewById(R.id.save_button);
-        mConfigStatus    = findViewById(R.id.config_status);
-
-        mBaseUrlInput.setText("https://relay.opengpu.network/v2/anthropic");
-        mSaveButton.setOnClickListener(v -> saveConfig());
-        mInstallButton.setOnClickListener(v -> {
-            mRawLog.setLength(0);
-            resetSteps();
-            mInstallError.setVisibility(View.GONE);
-            runInstall();
-        });
-        mInstallShowLogs.setOnClickListener(v -> {
-            boolean showing = mInstallScroll.getVisibility() == View.VISIBLE;
-            mInstallScroll.setVisibility(showing ? View.GONE : View.VISIBLE);
-            mInstallShowLogs.setText(showing ? "Show technical details" : "Hide technical details");
-        });
+        bindViews();
 
         Intent intent = new Intent(this, KodaService.class);
         startService(intent);
@@ -165,290 +125,619 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mBound) { unbindService(mConnection); mBound = false; }
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // View binding
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void bindViews() {
+        mInstallContainer       = findViewById(R.id.install_container);
+        mInstallProgress        = findViewById(R.id.install_progress);
+        mInstallStatus          = findViewById(R.id.install_status);
+        mInstallButton          = findViewById(R.id.install_button);
+
+        mWizardContainer        = findViewById(R.id.wizard_container);
+        mWizardTitle            = findViewById(R.id.wizard_title);
+        mStepDot1               = findViewById(R.id.step_dot_1);
+        mStepDot2               = findViewById(R.id.step_dot_2);
+
+        mStep1Container         = findViewById(R.id.step1_container);
+        mProvidersPriority      = findViewById(R.id.providers_priority);
+        mProvidersSecondary     = findViewById(R.id.providers_secondary);
+        mProvidersAdvanced      = findViewById(R.id.providers_advanced);
+
+        mStep2Container         = findViewById(R.id.step2_container);
+        mSelectedProviderIcon   = findViewById(R.id.selected_provider_icon);
+        mSelectedProviderName   = findViewById(R.id.selected_provider_name);
+        mSelectedProviderDesc   = findViewById(R.id.selected_provider_desc);
+        mChangeProviderBtn      = findViewById(R.id.change_provider_btn);
+        mModeLabel              = findViewById(R.id.mode_label);
+        mModeChipsContainer     = findViewById(R.id.mode_chips_container);
+        mApiKeyInput            = findViewById(R.id.api_key_input);
+        mToggleKeyVisibility    = findViewById(R.id.toggle_key_visibility);
+        mEndpointLabel          = findViewById(R.id.endpoint_label);
+        mEndpointUrlInput       = findViewById(R.id.endpoint_url_input);
+        mModelLabel             = findViewById(R.id.model_label);
+        mModelChipsRow1         = findViewById(R.id.model_chips_row1);
+        mModelChipsRow2         = findViewById(R.id.model_chips_row2);
+        mModelCustomInput       = findViewById(R.id.model_custom_input);
+        mConfigStatus           = findViewById(R.id.config_status);
+
+        mBtnBack                = findViewById(R.id.btn_back);
+        mBtnNext                = findViewById(R.id.btn_next);
+
+        mInstallButton.setOnClickListener(v -> runInstallChecks());
+        mChangeProviderBtn.setOnClickListener(v -> goToStep(1));
+        mToggleKeyVisibility.setOnClickListener(v -> toggleKeyVisibility());
+        mBtnBack.setOnClickListener(v -> goToStep(1));
+        mBtnNext.setOnClickListener(v -> onNextClicked());
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Phase selection
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void decidePhase() {
         if (KodaService.isOpenclaudeInstalled()) {
-            showConfigPhase();
+            showWizard();
         } else {
             showInstallPhase();
         }
     }
 
-    // =========================================================
-    // Step state machine
-    // =========================================================
-
-    private enum StepState { PENDING, ACTIVE, DONE, ERROR }
-
-    private void setStepState(int stepIndex, StepState state) {
-        if (stepIndex < 0 || stepIndex >= mStepViews.length) return;
-        View row = mStepViews[stepIndex];
-        if (row == null) return;
-
-        View pending = row.findViewById(R.id.step_icon_pending);
-        View active  = row.findViewById(R.id.step_icon_active);
-        View done    = row.findViewById(R.id.step_icon_done);
-        View error   = row.findViewById(R.id.step_icon_error);
-        TextView label = row.findViewById(R.id.step_label);
-
-        // Hide all icons first
-        pending.setVisibility(View.GONE);
-        active.setVisibility(View.GONE);
-        done.setVisibility(View.GONE);
-        error.setVisibility(View.GONE);
-
-        switch (state) {
-            case PENDING:
-                pending.setVisibility(View.VISIBLE);
-                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_tertiary));
-                label.setTypeface(null, android.graphics.Typeface.NORMAL);
-                break;
-            case ACTIVE:
-                active.setVisibility(View.VISIBLE);
-                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
-                label.setTypeface(null, android.graphics.Typeface.BOLD);
-                mInstallHint.setText(STEP_HINTS[stepIndex]);
-                break;
-            case DONE:
-                done.setVisibility(View.VISIBLE);
-                // Animate check in
-                done.setAlpha(0f);
-                done.setScaleX(0.5f);
-                done.setScaleY(0.5f);
-                done.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(200).start();
-                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_secondary));
-                label.setTypeface(null, android.graphics.Typeface.NORMAL);
-                break;
-            case ERROR:
-                error.setVisibility(View.VISIBLE);
-                label.setTextColor(ContextCompat.getColor(this, R.color.koda_error));
-                label.setTypeface(null, android.graphics.Typeface.NORMAL);
-                break;
-        }
-    }
-
-    private void setStepLabel(int stepIndex, String label) {
-        if (stepIndex < 0 || stepIndex >= mStepViews.length) return;
-        View row = mStepViews[stepIndex];
-        if (row == null) return;
-        TextView tv = row.findViewById(R.id.step_label);
-        if (tv != null) tv.setText(label);
-    }
-
-    private void resetSteps() {
-        for (int i = 0; i < 5; i++) setStepState(i, StepState.PENDING);
-        mInstallHint.setText("");
-        mInstallSuccess.setVisibility(View.GONE);
-        mInstallButton.setVisibility(View.GONE);
-    }
-
-    // =========================================================
-    // Install phase
-    // =========================================================
+    // ─────────────────────────────────────────────────────────────────────────
+    // PHASE 1 — Install
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void showInstallPhase() {
         mInstallContainer.setVisibility(View.VISIBLE);
-        mConfigContainer.setVisibility(View.GONE);
-        runInstall();
-    }
+        mWizardContainer.setVisibility(View.GONE);
 
-    private void appendLog(String line) {
-        mRawLog.append(line).append("\n");
-        // Keep TextView in sync (it's hidden unless user taps)
-        mInstallStatus.setText(mRawLog.toString());
-    }
+        mInstallButton.setEnabled(false);
+        mInstallProgress.setVisibility(View.VISIBLE);
+        mInstallStatus.setText("");
 
-    private void runInstall() {
-        if (!mBound || mService == null) {
-            mInstallHint.setText("Waiting for service…");
+        if (!KodaService.isBootstrapInstalled()) {
+            log("❌ Bootstrap not installed (no bash binary)");
+            mInstallButton.setEnabled(true);
+            mInstallButton.setText("Retry");
+            mInstallProgress.setVisibility(View.GONE);
             return;
         }
+        log("✅ Bootstrap extracted");
+        runFixPaths();
+    }
 
-        mInstallButton.setVisibility(View.GONE);
+    private void log(String line) {
+        mInstallStatus.append(line + "\n");
+    }
+
+    private void runFixPaths() {
+        log("🔧 Verifying bootstrap paths…");
+        if (!mBound || mService == null) return;
+
+        mService.executeCommand(
+            "chmod +x $PREFIX/bin/* 2>/dev/null\necho DONE",
+            result -> {
+                log("✅ Bootstrap paths OK");
+                runCheckNode();
+            });
+    }
+
+    private void runCheckNode() {
+        mService.executeCommand("node --version 2>&1; echo NODE_OK",
+            result -> {
+                String out = result.stdout
+                    .replaceAll("\\r", "")
+                    .replaceAll("\\x1b\\[[0-9;]*[a-zA-Z]", "")
+                    .trim();
+                if (out.contains("NODE_OK") && out.contains("v")) {
+                    log("✅ Node.js: " + out.split("\n")[0].trim());
+                } else {
+                    log("⚠️  Node.js: " + out.replace("\n", " | "));
+                }
+                runCheckNpm();
+            });
+    }
+
+    private void runCheckNpm() {
+        mService.executeCommand("npm --version 2>&1; echo NPM_OK",
+            result -> {
+                String out = result.stdout
+                    .replaceAll("\\r", "")
+                    .replaceAll("\\x1b\\[[0-9;]*[a-zA-Z]", "")
+                    .trim();
+                if (out.contains("NPM_OK")) {
+                    log("✅ npm: v" + out.split("\n")[0].trim());
+                } else {
+                    log("⚠️  npm: " + out.replace("\n", " | "));
+                }
+                runInstallChecks();
+            });
+    }
+
+    private void runInstallChecks() {
+        if (!mBound || mService == null) return;
+
+        mInstallButton.setEnabled(false);
         mInstallProgress.setVisibility(View.VISIBLE);
-        setStepState(STEP_ENVIRONMENT, StepState.ACTIVE);
+        log("⏳ Installing @gitlawb/openclaude…");
+        log("   (this may take 1-2 minutes on WiFi)\n");
 
         mService.installOpenclaude(new KodaService.InstallProgressCallback() {
-            @Override
-            public void onStepStart(int step, String message) {
-                appendLog("STEP " + step + ": " + message);
-                // Map internal step numbers (1-based) to our 5 steps
-                int idx = mapStep(step, message);
-                // Mark previous steps done
-                for (int i = 0; i < idx; i++) setStepState(i, StepState.DONE);
-                setStepState(idx, StepState.ACTIVE);
-            }
-
-            @Override
-            public void onStepComplete(int step) {
-                appendLog("STEP " + step + " done");
-                int idx = Math.min(step - 1, 4);
-                setStepState(idx, StepState.DONE);
-            }
-
-            @Override
-            public void onOutput(String line) {
-                if (!line.trim().isEmpty()) appendLog(line.trim());
-            }
-
-            @Override
-            public void onError(String error) {
-                appendLog("ERROR: " + error);
+            @Override public void onStepStart(int step, String message)  { log("📦 Step " + step + ": " + message); }
+            @Override public void onStepComplete(int step)               { log("✅ Step " + step + " complete"); }
+            @Override public void onError(String error)                  { log("\n❌ Error: " + error); failInstall(); }
+            @Override public void onComplete() {
                 mInstallProgress.setVisibility(View.GONE);
-                showInstallError(error);
-            }
-
-            @Override
-            public void onComplete() {
-                mInstallProgress.setVisibility(View.GONE);
+                log("\n✅ OpenClaude installed!");
                 if (KodaService.isOpenclaudeInstalled()) {
-                    // Mark all steps done
-                    for (int i = 0; i < 5; i++) setStepState(i, StepState.DONE);
-                    mInstallHint.setText("");
-                    showInstallSuccess();
+                    log("✅ Module verified");
+                    mInstallStatus.postDelayed(SetupActivity.this::showWizard, 1200);
                 } else {
-                    showInstallError("Installation completed but OpenClaude was not found.");
+                    log("⚠️  Module not found after install — check output above");
+                    failInstall();
                 }
             }
         });
     }
 
-    /**
-     * Maps the installer's step number + message to our 5 checklist steps.
-     * Installer emits: step 1 = bootstrap/env, step 2 = openclaude/npm
-     */
-    private int mapStep(int step, String message) {
-        String msg = message.toLowerCase();
-        if (msg.contains("bootstrap") || msg.contains("environment") || step == 1)
-            return STEP_ENVIRONMENT;
-        if (msg.contains("node"))
-            return STEP_NODE;
-        if (msg.contains("openclaude") || msg.contains("npm") || msg.contains("install"))
-            return STEP_OPENCLAUDE;
-        if (msg.contains("verif") || msg.contains("check"))
-            return STEP_VERIFY;
-        return STEP_FINALIZE;
+    private void failInstall() {
+        mInstallProgress.setVisibility(View.GONE);
+        mInstallButton.setEnabled(true);
+        mInstallButton.setText("Retry");
     }
 
-    private void showInstallSuccess() {
-        mInstallSuccess.setVisibility(View.VISIBLE);
-        // Animate all children in
-        for (int i = 0; i < ((android.view.ViewGroup) mInstallSuccess).getChildCount(); i++) {
-            View child = ((android.view.ViewGroup) mInstallSuccess).getChildAt(i);
-            child.animate()
-                .alpha(1f)
-                .setStartDelay(i * 120L)
-                .setDuration(220)
-                .start();
+    // ─────────────────────────────────────────────────────────────────────────
+    // PHASE 2 — Wizard
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void showWizard() {
+        mInstallContainer.setVisibility(View.GONE);
+        mWizardContainer.setVisibility(View.VISIBLE);
+
+        buildProviderLists();
+        preSelectFromExistingConfig();
+        goToStep(1);
+    }
+
+    // ─── Step navigation ──────────────────────────────────────────────────────
+
+    private void goToStep(int step) {
+        mCurrentStep = step;
+
+        if (step == 1) {
+            mWizardTitle.setText("Choose Provider");
+            mStep1Container.setVisibility(View.VISIBLE);
+            mStep2Container.setVisibility(View.GONE);
+            mBtnBack.setVisibility(View.GONE);
+            mBtnNext.setText(mSelectedProvider != null ? "Next →" : "Next →");
+            mBtnNext.setEnabled(mSelectedProvider != null);
+            updateStepDots(1);
+        } else {
+            mWizardTitle.setText("Configure");
+            mStep1Container.setVisibility(View.GONE);
+            mStep2Container.setVisibility(View.VISIBLE);
+            mBtnBack.setVisibility(View.VISIBLE);
+            mBtnNext.setText("Save & Start");
+            mBtnNext.setEnabled(true);
+            updateStepDots(2);
+            populateStep2();
         }
-        mInstallHint.setText("");
-        mInstallSuccess.postDelayed(() -> showConfigPhase(), 1400);
     }
 
-    private void showInstallError(String errorMsg) {
-        // Mark the active step as error
-        for (int i = 0; i < 5; i++) {
-            View row = mStepViews[i];
-            if (row != null) {
-                View activeIcon = row.findViewById(R.id.step_icon_active);
-                if (activeIcon != null && activeIcon.getVisibility() == View.VISIBLE) {
-                    setStepState(i, StepState.ERROR);
-                    break;
-                }
+    private void updateStepDots(int activeStep) {
+        mStepDot1.setBackgroundResource(
+            activeStep == 1 ? R.drawable.step_dot_active : R.drawable.step_dot_done);
+        mStepDot2.setBackgroundResource(
+            activeStep == 2 ? R.drawable.step_dot_active : R.drawable.step_dot_inactive);
+    }
+
+    private void onNextClicked() {
+        if (mCurrentStep == 1) {
+            if (mSelectedProvider == null) return;
+            goToStep(2);
+        } else {
+            saveConfig();
+        }
+    }
+
+    // ─── Step 1: Build provider lists ─────────────────────────────────────────
+
+    private void buildProviderLists() {
+        mProvidersPriority.removeAllViews();
+        mProvidersSecondary.removeAllViews();
+        mProvidersAdvanced.removeAllViews();
+
+        for (ProviderDef p : ProviderCatalog.PRIORITY) {
+            mProvidersPriority.addView(buildProviderCard(p));
+        }
+        for (ProviderDef p : ProviderCatalog.SECONDARY) {
+            mProvidersSecondary.addView(buildProviderCard(p));
+        }
+        for (ProviderDef p : ProviderCatalog.ADVANCED) {
+            mProvidersAdvanced.addView(buildProviderCard(p));
+        }
+    }
+
+    private View buildProviderCard(ProviderDef provider) {
+        View card = LayoutInflater.from(this)
+            .inflate(R.layout.item_provider_card, null, false);
+
+        ((TextView) card.findViewById(R.id.provider_icon)).setText(provider.iconEmoji);
+        ((TextView) card.findViewById(R.id.provider_name)).setText(provider.displayName);
+        ((TextView) card.findViewById(R.id.provider_description)).setText(provider.description);
+
+        card.setTag(provider);
+        card.setOnClickListener(v -> selectProvider(provider));
+        refreshCardSelection(card, provider);
+        return card;
+    }
+
+    private void selectProvider(ProviderDef provider) {
+        mSelectedProvider = provider;
+        mSelectedModeIndex = 0;
+        mSelectedModel = provider.modes.get(0).defaultModel;
+
+        // Refresh all cards
+        refreshAllCards(mProvidersPriority);
+        refreshAllCards(mProvidersSecondary);
+        refreshAllCards(mProvidersAdvanced);
+
+        mBtnNext.setEnabled(true);
+    }
+
+    private void refreshAllCards(LinearLayout container) {
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View card = container.getChildAt(i);
+            Object tag = card.getTag();
+            if (tag instanceof ProviderDef) {
+                refreshCardSelection(card, (ProviderDef) tag);
             }
         }
-        mInstallError.setVisibility(View.VISIBLE);
-        mInstallErrorMsg.setText("Something went wrong: " + errorMsg);
-        mInstallButton.setVisibility(View.VISIBLE);
-        mInstallButton.setText("Retry");
-        mInstallHint.setText("");
     }
 
-    // =========================================================
-    // Config phase
-    // =========================================================
+    private void refreshCardSelection(View card, ProviderDef provider) {
+        boolean selected = mSelectedProvider != null && mSelectedProvider.id.equals(provider.id);
+        card.setBackgroundResource(
+            selected ? R.drawable.provider_card_selected_bg : R.drawable.provider_card_ripple);
+        View check = card.findViewById(R.id.provider_check);
+        if (check != null) {
+            check.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
 
-    private void showConfigPhase() {
-        mInstallContainer.setVisibility(View.GONE);
-        mConfigContainer.setVisibility(View.VISIBLE);
+    // ─── Step 2: Configure ────────────────────────────────────────────────────
+
+    private void populateStep2() {
+        if (mSelectedProvider == null) return;
+
+        // Summary card
+        mSelectedProviderIcon.setText(mSelectedProvider.iconEmoji);
+        mSelectedProviderName.setText(mSelectedProvider.displayName);
+        mSelectedProviderDesc.setText(mSelectedProvider.description);
+
+        // Mode chips
+        List<ProviderDef.AccessMode> modes = mSelectedProvider.modes;
+        if (modes.size() > 1) {
+            mModeLabel.setVisibility(View.VISIBLE);
+            mModeChipsContainer.setVisibility(View.VISIBLE);
+            mModeChipsContainer.removeAllViews();
+            for (int i = 0; i < modes.size(); i++) {
+                final int idx = i;
+                TextView chip = new TextView(this);
+                chip.setText(modes.get(i).label);
+                chip.setTextColor(i == mSelectedModeIndex ? 0xFF38BDF8 : 0xFF94A3B8);
+                chip.setTextSize(13f);
+                chip.setPadding(dp(14), dp(8), dp(14), dp(8));
+                chip.setBackgroundResource(
+                    i == mSelectedModeIndex
+                        ? R.drawable.mode_chip_selected_bg
+                        : R.drawable.mode_chip_bg);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMarginEnd(dp(8));
+                chip.setLayoutParams(lp);
+                chip.setOnClickListener(v -> {
+                    mSelectedModeIndex = idx;
+                    mSelectedModel = modes.get(idx).defaultModel;
+                    populateStep2(); // re-render
+                });
+                mModeChipsContainer.addView(chip);
+            }
+        } else {
+            mModeLabel.setVisibility(View.GONE);
+            mModeChipsContainer.setVisibility(View.GONE);
+        }
+
+        // Endpoint field visibility
+        ProviderDef.AccessMode mode = modes.get(mSelectedModeIndex);
+        if (mode.requiresCustomUrl) {
+            mEndpointLabel.setVisibility(View.VISIBLE);
+            mEndpointUrlInput.setVisibility(View.VISIBLE);
+        } else {
+            mEndpointLabel.setVisibility(View.GONE);
+            mEndpointUrlInput.setVisibility(View.GONE);
+        }
+
+        // Model chips
+        populateModelChips(mode);
+
+        // Custom model input: always shown for custom provider or when no suggested models
+        boolean showCustomInput = mSelectedProvider.id.equals("custom")
+            || mode.suggestedModels.isEmpty();
+        mModelCustomInput.setVisibility(showCustomInput ? View.VISIBLE : View.GONE);
+
+        // Pre-fill from existing config
+        prefillFromConfig();
+
+        mConfigStatus.setText("");
+    }
+
+    private void populateModelChips(ProviderDef.AccessMode mode) {
+        mModelChipsRow1.removeAllViews();
+        mModelChipsRow2.removeAllViews();
+
+        List<String> models = mode.suggestedModels;
+        if (models.isEmpty()) return;
+
+        // Split into two rows: first 3 in row 1, rest in row 2
+        for (int i = 0; i < models.size(); i++) {
+            final String modelId = models.get(i);
+            String label = shortModelLabel(modelId);
+
+            TextView chip = new TextView(this);
+            chip.setText(label);
+            chip.setTextSize(11f);
+            chip.setPadding(dp(10), dp(6), dp(10), dp(6));
+            chip.setSingleLine(true);
+            chip.setEllipsize(android.text.TextUtils.TruncateAt.END);
+
+            boolean isSelected = modelId.equals(mSelectedModel);
+            chip.setBackgroundResource(
+                isSelected ? R.drawable.model_chip_selected_bg : R.drawable.model_chip_bg);
+            chip.setTextColor(isSelected ? 0xFF0F172A : 0xFF94A3B8);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMarginEnd(dp(6));
+            lp.bottomMargin = dp(4);
+            chip.setLayoutParams(lp);
+
+            chip.setOnClickListener(v -> {
+                mSelectedModel = modelId;
+                // Also fill the custom input if visible (for reference)
+                if (mModelCustomInput.getVisibility() == View.VISIBLE) {
+                    mModelCustomInput.setText(modelId);
+                }
+                populateModelChips(mSelectedProvider.modes.get(mSelectedModeIndex));
+            });
+
+            if (i < 3) {
+                mModelChipsRow1.addView(chip);
+            } else {
+                mModelChipsRow2.addView(chip);
+            }
+        }
+    }
+
+    /**
+     * Pre-fill API key and endpoint from existing config if available.
+     * Allows re-configuration without re-typing the key.
+     */
+    private void prefillFromConfig() {
+        if (mSelectedProvider == null) return;
 
         try {
-            File configFile = new File(TermuxConstants.TERMUX_HOME_DIR_PATH + "/.openclaude/openclaude.json");
-            if (configFile.exists()) {
-                String content = new String(java.nio.file.Files.readAllBytes(configFile.toPath()));
-                JSONObject config = new JSONObject(content);
-                JSONObject models = config.optJSONObject("models");
-                if (models != null) {
-                    JSONObject providers = models.optJSONObject("providers");
-                    if (providers != null && providers.keys().hasNext()) {
-                        JSONObject p = providers.optJSONObject(providers.keys().next());
-                        if (p != null) {
-                            String key = p.optString("apiKey", "");
-                            String url = p.optString("baseUrl", "");
-                            if (!key.isEmpty()) mApiKeyInput.setText(key);
-                            if (!url.isEmpty()) mBaseUrlInput.setText(url);
-                        }
+            String existingKey = KodaConfig.getApiKey(mSelectedProvider.id);
+            if (!existingKey.isEmpty()) {
+                mApiKeyInput.setText(existingKey);
+            }
+
+            ProviderDef.AccessMode mode = mSelectedProvider.modes.get(mSelectedModeIndex);
+            if (mode.requiresCustomUrl) {
+                String existingUrl = KodaConfig.getBaseUrl(mSelectedProvider.id);
+                if (!existingUrl.isEmpty()) {
+                    mEndpointUrlInput.setText(existingUrl);
+                }
+            }
+        } catch (Exception e) {
+            Logger.logWarn(LOG_TAG, "prefillFromConfig failed: " + e.getMessage());
+        }
+    }
+
+    // ─── Pre-select existing config ───────────────────────────────────────────
+
+    private void preSelectFromExistingConfig() {
+        try {
+            org.json.JSONObject config = KodaConfig.readConfig();
+            if (!config.has("agents")) return;
+
+            org.json.JSONObject agents = config.getJSONObject("agents");
+            if (!agents.has("defaults")) return;
+
+            org.json.JSONObject defaults = agents.getJSONObject("defaults");
+            if (!defaults.has("model")) return;
+
+            Object modelObj = defaults.get("model");
+            String primary = "";
+            if (modelObj instanceof org.json.JSONObject) {
+                primary = ((org.json.JSONObject) modelObj).optString("primary", "");
+            } else if (modelObj instanceof String) {
+                primary = (String) modelObj;
+            }
+
+            if (primary.isEmpty()) return;
+
+            // primary = "provider/model"
+            String[] parts = primary.split("/", 2);
+            if (parts.length < 2) return;
+
+            String providerId = parts[0];
+            String modelId = parts[1];
+
+            ProviderDef found = ProviderCatalog.findById(providerId);
+            if (found == null) return;
+
+            mSelectedProvider = found;
+            mSelectedModel = modelId;
+
+            // Find the right mode index based on the existing base URL
+            String existingUrl = KodaConfig.getBaseUrl(providerId);
+            if (!existingUrl.isEmpty()) {
+                for (int i = 0; i < found.modes.size(); i++) {
+                    ProviderDef.AccessMode m = found.modes.get(i);
+                    if (!m.baseUrl.isEmpty() && existingUrl.startsWith(
+                            m.baseUrl.substring(0, Math.min(m.baseUrl.length(), 30)))) {
+                        mSelectedModeIndex = i;
+                        break;
                     }
                 }
             }
+
         } catch (Exception e) {
-            Logger.logWarn(LOG_TAG, "Could not pre-fill config: " + e.getMessage());
+            Logger.logWarn(LOG_TAG, "preSelectFromExistingConfig failed: " + e.getMessage());
         }
     }
 
-    private void saveConfig() {
-        String apiKey  = mApiKeyInput.getText().toString().trim();
-        String baseUrl = mBaseUrlInput.getText().toString().trim();
+    // ─── Save & validate ──────────────────────────────────────────────────────
 
-        if (apiKey.isEmpty()) {
-            mConfigStatus.setText("API key is required");
+    private void saveConfig() {
+        if (mSelectedProvider == null) {
+            showError("Please select a provider.");
             return;
         }
-        if (baseUrl.isEmpty()) baseUrl = "https://relay.opengpu.network/v2/anthropic";
-        if (baseUrl.endsWith("/")) baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
 
-        try {
-            // 1. Update ProviderManager (SharedPreferences) so Settings stays in sync
-            dev.koda.data.ProviderManager pm = new dev.koda.data.ProviderManager(this);
-            dev.koda.data.ProviderManager.Provider active = pm.getActiveProvider();
+        ProviderDef.AccessMode mode = mSelectedProvider.modes.get(mSelectedModeIndex);
 
-            if (active == null) {
-                // No provider yet — create one
-                active = new dev.koda.data.ProviderManager.Provider();
-                active.name = "RelayGPU";
-                active.type = "anthropic";
-                active.models = new String[]{ "anthropic/claude-sonnet-4-6" };
-            }
-            active.apiKey = apiKey;
-            active.baseUrl = baseUrl;
-            if (active.defaultModel == null || active.defaultModel.isEmpty()) {
-                active.defaultModel = baseUrl.contains("relay.opengpu.network")
-                    ? "anthropic/claude-sonnet-4-6"
-                    : "claude-sonnet-4-6";
-            }
-
-            if (active.id == null || active.id.isEmpty()) {
-                pm.addProvider(active);
-                pm.setActiveProvider(active.id);
-            } else {
-                pm.updateProvider(active);
-                // setActiveProvider triggers syncToOpenclaudeConfig internally
-                pm.setActiveProvider(active.id);
-            }
-            // syncToOpenclaudeConfig is called inside setActiveProvider — no need to write manually
-
-            mConfigStatus.setTextColor(
-                ContextCompat.getColor(this, R.color.koda_success));
-            mConfigStatus.setText("✓ Saved!");
-            Toast.makeText(this, "Setup complete!", Toast.LENGTH_SHORT).show();
-
-            startActivity(new Intent(this, dev.koda.ui.ChatActivity.class));
-            finish();
-
-        } catch (Exception e) {
-            mConfigStatus.setText("Error: " + e.getMessage());
+        String apiKey = mApiKeyInput.getText().toString().trim();
+        if (apiKey.isEmpty()) {
+            showError("API key is required.");
+            mApiKeyInput.requestFocus();
+            return;
         }
+
+        // Determine base URL
+        String baseUrl;
+        if (mode.requiresCustomUrl) {
+            baseUrl = mEndpointUrlInput.getText().toString().trim();
+            if (baseUrl.isEmpty()) {
+                showError("Endpoint URL is required for this provider.");
+                mEndpointUrlInput.requestFocus();
+                return;
+            }
+        } else {
+            baseUrl = mode.baseUrl;
+        }
+
+        // Determine model
+        String model = mSelectedModel;
+        if (mModelCustomInput.getVisibility() == View.VISIBLE) {
+            String customModel = mModelCustomInput.getText().toString().trim();
+            if (!customModel.isEmpty()) {
+                model = customModel;
+            }
+        }
+        if (model == null || model.isEmpty()) {
+            if (!mode.suggestedModels.isEmpty()) {
+                model = mode.suggestedModels.get(0);
+            } else {
+                showError("Please select or enter a model.");
+                return;
+            }
+        }
+
+        mConfigStatus.setTextColor(0xFF94A3B8);
+        mConfigStatus.setText("Saving…");
+        mBtnNext.setEnabled(false);
+
+        final String finalModel = model;
+        final String finalBaseUrl = baseUrl;
+        final String finalApiKey = apiKey;
+        final String providerId = mSelectedProvider.id;
+
+        // Build model list for custom providers
+        List<String> modelList = mode.suggestedModels.isEmpty()
+            ? java.util.Collections.singletonList(finalModel)
+            : mode.suggestedModels;
+
+        // Write config using KodaConfig
+        boolean ok = KodaConfig.setActiveProvider(
+            providerId,
+            finalModel,
+            finalApiKey,
+            mode.requiresCustomUrl || !mode.baseUrl.isEmpty() ? finalBaseUrl : null,
+            modelList
+        );
+
+        if (!ok) {
+            showError("Failed to write config. Check storage permissions.");
+            mBtnNext.setEnabled(true);
+            return;
+        }
+
+        // If provider uses a non-standard base URL, also store in auth profiles
+        if (!finalBaseUrl.isEmpty() && !finalBaseUrl.equals(
+                KodaConfig.getBaseUrl(providerId))) {
+            KodaConfig.setApiKey(providerId, finalModel, finalApiKey, finalBaseUrl);
+        }
+
+        mConfigStatus.setTextColor(0xFF4ADE80);
+        mConfigStatus.setText("✅ Configuration saved!");
+
+        Toast.makeText(this, "Setup complete!", Toast.LENGTH_SHORT).show();
+
+        mConfigStatus.postDelayed(() -> {
+            startActivity(new Intent(this, ChatActivity.class));
+            finish();
+        }, 600);
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    private void showError(String msg) {
+        mConfigStatus.setTextColor(0xFFFF8A80);
+        mConfigStatus.setText(msg);
+    }
+
+    private void toggleKeyVisibility() {
+        mKeyVisible = !mKeyVisible;
+        if (mKeyVisible) {
+            mApiKeyInput.setInputType(
+                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            mToggleKeyVisibility.setText("🙈");
+        } else {
+            mApiKeyInput.setInputType(
+                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            mToggleKeyVisibility.setText("👁");
+        }
+        // Keep cursor at end
+        mApiKeyInput.setSelection(mApiKeyInput.getText().length());
+    }
+
+    /**
+     * Shorten long model IDs for chip display.
+     * e.g. "anthropic/claude-sonnet-4-6" → "claude-sonnet-4-6"
+     *      "deepseek-ai/DeepSeek-V3.1"   → "DeepSeek-V3.1"
+     */
+    private String shortModelLabel(String modelId) {
+        if (modelId == null) return "";
+        int slash = modelId.lastIndexOf('/');
+        if (slash >= 0 && slash < modelId.length() - 1) {
+            return modelId.substring(slash + 1);
+        }
+        return modelId;
+    }
+
+    private int dp(int px) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(px * density);
     }
 }

@@ -2,354 +2,475 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/koda_bg"
-    android:fitsSystemWindows="true">
+    android:background="@color/koda_background">
 
-    <!-- ============================================================
-         INSTALL PHASE — guided checklist
-         ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         PHASE 1: Install OpenClaude
+         ═══════════════════════════════════════════════════════════════ -->
     <LinearLayout
         android:id="@+id/install_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="@dimen/space_24"
-        android:paddingVertical="@dimen/space_32"
+        android:padding="32dp"
         android:visibility="gone">
 
-        <!-- ── Header ──────────────────────────────────────── -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/space_32">
+            android:layout_marginBottom="8dp"
+            android:text="🤖"
+            android:textSize="64sp" />
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@mipmap/ic_launcher"
-                android:scaleType="centerCrop"
-                android:background="@drawable/launcher_logo_bg"
-                android:layout_marginEnd="@dimen/space_16" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="Install OpenClaude"
+            android:textColor="@color/koda_primary_text"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Setting up your AI coding agent…"
+            android:textColor="@color/koda_secondary_text"
+            android:textSize="13sp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/koda_card_bg"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/install_status"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:fontFamily="monospace"
+                android:gravity="start"
+                android:text=""
+                android:textColor="#94A3B8"
+                android:textSize="12sp" />
+        </ScrollView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Setting up Koda"
-                    android:textColor="@color/koda_text_primary"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/install_subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Preparing your coding environment"
-                    android:textColor="@color/koda_text_tertiary"
-                    android:textSize="13sp"
-                    android:layout_marginTop="@dimen/space_2" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ── Progress bar ────────────────────────────────── -->
         <ProgressBar
             android:id="@+id/install_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
+            android:layout_height="4dp"
+            android:layout_marginBottom="20dp"
             android:indeterminate="true"
-            android:indeterminateTint="@color/koda_primary"
-            android:layout_marginBottom="@dimen/space_24"
+            android:progressTint="@color/koda_accent"
             android:visibility="gone" />
 
-        <!-- ── Checklist card ───────────────────────────────── -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/card_surface"
-            android:paddingVertical="@dimen/space_8"
-            android:layout_marginBottom="@dimen/space_20">
-
-            <!-- Step 1 -->
-            <include layout="@layout/item_setup_step"
-                android:id="@+id/step_1" />
-            <!-- Step 2 -->
-            <include layout="@layout/item_setup_step"
-                android:id="@+id/step_2" />
-            <!-- Step 3 -->
-            <include layout="@layout/item_setup_step"
-                android:id="@+id/step_3" />
-            <!-- Step 4 -->
-            <include layout="@layout/item_setup_step"
-                android:id="@+id/step_4" />
-            <!-- Step 5 -->
-            <include layout="@layout/item_setup_step"
-                android:id="@+id/step_5" />
-        </LinearLayout>
-
-        <!-- ── Help text (active step hint) ────────────────── -->
-        <TextView
-            android:id="@+id/install_hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="@color/koda_text_tertiary"
-            android:textSize="12sp"
-            android:gravity="center"
-            android:layout_marginBottom="@dimen/space_20" />
-
-        <!-- ── Success state (hidden until done) ───────────── -->
-        <LinearLayout
-            android:id="@+id/install_success"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone"
-            android:layout_marginBottom="@dimen/space_16">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✓"
-                android:textColor="@color/koda_success"
-                android:textSize="40sp"
-                android:gravity="center"
-                android:alpha="0" />
-
-            <TextView
-                android:id="@+id/install_success_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ready"
-                android:textColor="@color/koda_text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/space_8"
-                android:alpha="0" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Koda is ready to use"
-                android:textColor="@color/koda_text_secondary"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/space_4"
-                android:alpha="0" />
-        </LinearLayout>
-
-        <!-- ── Error state ──────────────────────────────────── -->
-        <LinearLayout
-            android:id="@+id/install_error"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/card_surface"
-            android:padding="@dimen/space_16"
-            android:layout_marginBottom="@dimen/space_16"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/install_error_msg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/koda_error"
-                android:textSize="13sp"
-                android:layout_marginBottom="@dimen/space_12" />
-
-            <!-- Technical details (collapsed by default) -->
-            <TextView
-                android:id="@+id/install_show_logs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Show technical details"
-                android:textColor="@color/koda_text_tertiary"
-                android:textSize="12sp"
-                android:paddingVertical="@dimen/space_4" />
-
-            <ScrollView
-                android:id="@+id/install_scroll"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:scrollbars="vertical"
-                android:visibility="gone"
-                android:layout_marginTop="@dimen/space_8"
-                android:background="@drawable/code_preview_bg"
-                android:padding="@dimen/space_8">
-
-                <TextView
-                    android:id="@+id/install_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="10sp"
-                    android:textColor="@color/koda_text_secondary"
-                    android:fontFamily="monospace"
-                    android:lineSpacingExtra="2dp" />
-            </ScrollView>
-        </LinearLayout>
-
-        <!-- ── Retry button ─────────────────────────────────── -->
         <Button
             android:id="@+id/install_button"
-            style="@style/Koda.Button.Secondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Retry"
-            android:visibility="gone" />
-
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:background="@drawable/koda_button_bg"
+            android:paddingHorizontal="32dp"
+            android:text="Install"
+            android:textColor="#0F172A"
+            android:textSize="15sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- ============================================================
-         CONFIG PHASE
-         ============================================================ -->
-    <ScrollView
-        android:id="@+id/config_container"
+    <!-- ═══════════════════════════════════════════════════════════════
+         PHASE 2: Provider Wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/wizard_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none"
-        android:overScrollMode="never"
-        android:fillViewport="true"
+        android:orientation="vertical"
         android:visibility="gone">
 
+        <!-- Top bar -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="56dp"
             android:gravity="center_vertical"
-            android:minHeight="100dp"
-            android:paddingHorizontal="@dimen/space_24"
-            android:paddingTop="@dimen/space_48"
-            android:paddingBottom="@dimen/space_32">
-
-            <!-- Branding -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🐾"
-                android:textSize="40sp"
-                android:gravity="center"
-                android:layout_gravity="center" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:background="#0B1120">
 
             <TextView
+                android:id="@+id/wizard_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Choose Provider"
+                android:textColor="@color/koda_primary_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Step indicators -->
+            <LinearLayout
+                android:id="@+id/step_indicators"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Almost there"
-                android:textColor="@color/koda_text_primary"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/space_12" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enter your API credentials to start chatting"
-                android:textColor="@color/koda_text_tertiary"
-                android:textSize="13sp"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/space_4"
-                android:layout_marginBottom="@dimen/space_32" />
+                <View
+                    android:id="@+id/step_dot_1"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/step_dot_active" />
 
-            <!-- Form card -->
+                <View
+                    android:layout_width="16dp"
+                    android:layout_height="1dp"
+                    android:background="#334155"
+                    android:layout_marginHorizontal="4dp"/>
+
+                <View
+                    android:id="@+id/step_dot_2"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/step_dot_inactive" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Wizard pages container (scrollable) -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:overScrollMode="never">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/card_surface"
-                android:padding="@dimen/space_20"
-                android:layout_marginBottom="@dimen/space_16">
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="API KEY"
-                    android:textColor="@color/koda_text_tertiary"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1"
-                    android:layout_marginBottom="@dimen/space_4" />
-
-                <EditText
-                    android:id="@+id/api_key_input"
+                <!-- ───────── STEP 1: Choose Provider ───────── -->
+                <LinearLayout
+                    android:id="@+id/step1_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="relay_sk_..."
-                    android:textColor="@color/koda_text_primary"
-                    android:textColorHint="@color/koda_text_tertiary"
-                    android:background="@drawable/input_field_bg"
-                    android:paddingHorizontal="@dimen/space_12"
-                    android:paddingVertical="@dimen/space_12"
-                    android:textSize="14sp"
-                    android:fontFamily="monospace"
-                    android:inputType="textPassword"
-                    android:layout_marginBottom="@dimen/space_16" />
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp"
+                    android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="BASE URL"
-                    android:textColor="@color/koda_text_tertiary"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1"
-                    android:layout_marginBottom="@dimen/space_4" />
+                    <!-- Section: Priority providers -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="RECOMMENDED"
+                        android:textColor="@color/koda_accent"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"/>
 
-                <EditText
-                    android:id="@+id/base_url_input"
+                    <LinearLayout
+                        android:id="@+id/providers_priority"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Section: Secondary providers -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="MORE PROVIDERS"
+                        android:textColor="@color/koda_secondary_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"/>
+
+                    <LinearLayout
+                        android:id="@+id/providers_secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Section: Advanced -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="ADVANCED"
+                        android:textColor="@color/koda_secondary_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"/>
+
+                    <LinearLayout
+                        android:id="@+id/providers_advanced"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="24dp"/>
+
+                </LinearLayout>
+
+                <!-- ───────── STEP 2: Configure Provider ───────── -->
+                <LinearLayout
+                    android:id="@+id/step2_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="https://relay.opengpu.network/v2/anthropic"
-                    android:textColor="@color/koda_text_primary"
-                    android:textColorHint="@color/koda_text_tertiary"
-                    android:background="@drawable/input_field_bg"
-                    android:paddingHorizontal="@dimen/space_12"
-                    android:paddingVertical="@dimen/space_12"
-                    android:textSize="13sp"
-                    android:fontFamily="monospace"
-                    android:inputType="textUri" />
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp"
+                    android:visibility="gone">
+
+                    <!-- Selected provider summary card -->
+                    <LinearLayout
+                        android:id="@+id/selected_provider_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/koda_card_bg"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="14dp">
+
+                        <TextView
+                            android:id="@+id/selected_provider_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
+                            android:text="⚡"
+                            android:textSize="28sp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/selected_provider_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="RelayGPU"
+                                android:textColor="@color/koda_primary_text"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/selected_provider_desc"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Multi-model relay"
+                                android:textColor="@color/koda_secondary_text"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/change_provider_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Change"
+                            android:textColor="@color/koda_accent"
+                            android:textSize="13sp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"/>
+                    </LinearLayout>
+
+                    <!-- Access mode chips (hidden if only one mode) -->
+                    <TextView
+                        android:id="@+id/mode_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="ACCESS MODE"
+                        android:textColor="@color/koda_secondary_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:visibility="gone"/>
+
+                    <LinearLayout
+                        android:id="@+id/mode_chips_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="20dp"
+                        android:visibility="gone"/>
+
+                    <!-- API Key field -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="API KEY"
+                        android:textColor="@color/koda_secondary_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/koda_input_bg"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/api_key_input"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:hint="Paste your API key…"
+                            android:inputType="textPassword"
+                            android:padding="14dp"
+                            android:textColor="@color/koda_primary_text"
+                            android:textColorHint="#475569"
+                            android:textSize="14sp"
+                            android:singleLine="true" />
+
+                        <TextView
+                            android:id="@+id/toggle_key_visibility"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:gravity="center"
+                            android:text="👁"
+                            android:textSize="16sp"
+                            android:layout_marginEnd="4dp"/>
+                    </LinearLayout>
+
+                    <!-- Custom endpoint URL (shown only for azure/custom) -->
+                    <TextView
+                        android:id="@+id/endpoint_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:text="ENDPOINT URL"
+                        android:textColor="@color/koda_secondary_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:visibility="gone"/>
+
+                    <EditText
+                        android:id="@+id/endpoint_url_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/koda_input_bg"
+                        android:hint="https://your-deployment.openai.azure.com/v1"
+                        android:inputType="textUri"
+                        android:padding="14dp"
+                        android:textColor="@color/koda_primary_text"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:visibility="gone"/>
+
+                    <!-- Model selector -->
+                    <TextView
+                        android:id="@+id/model_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="MODEL"
+                        android:textColor="@color/koda_secondary_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"/>
+
+                    <!-- Model chips — populated dynamically -->
+                    <LinearLayout
+                        android:id="@+id/model_chips_row1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"/>
+
+                    <LinearLayout
+                        android:id="@+id/model_chips_row2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Custom model input (for custom provider or free-type) -->
+                    <EditText
+                        android:id="@+id/model_custom_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/koda_input_bg"
+                        android:hint="Or type a model ID…"
+                        android:inputType="text"
+                        android:padding="14dp"
+                        android:textColor="@color/koda_primary_text"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:visibility="gone"/>
+
+                    <!-- Status / validation feedback -->
+                    <TextView
+                        android:id="@+id/config_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:minHeight="20dp"
+                        android:text=""
+                        android:textColor="#FF8A80"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
             </LinearLayout>
+        </ScrollView>
 
-            <TextView
-                android:id="@+id/config_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/koda_error"
-                android:textSize="13sp"
-                android:gravity="center"
-                android:layout_marginBottom="@dimen/space_12" />
+        <!-- Bottom action bar -->
+        <LinearLayout
+            android:id="@+id/wizard_bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:background="#0B1120">
 
             <Button
-                android:id="@+id/save_button"
-                style="@style/Koda.Button.Primary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Start Koda" />
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="@drawable/koda_button_outline_bg"
+                android:paddingHorizontal="20dp"
+                android:text="Back"
+                android:textColor="@color/koda_accent"
+                android:textSize="14sp"
+                android:visibility="gone"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Your API key is stored locally on this device only."
-                android:textColor="@color/koda_text_tertiary"
-                android:textSize="11sp"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/space_12" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="@drawable/koda_button_bg"
+                android:paddingHorizontal="28dp"
+                android:text="Next →"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:enabled="false" />
         </LinearLayout>
-    </ScrollView>
+
+    </LinearLayout>
 
 </FrameLayout>
