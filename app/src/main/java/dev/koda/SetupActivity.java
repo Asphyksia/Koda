@@ -432,7 +432,8 @@ public class SetupActivity extends AppCompatActivity {
                 final int idx = i;
                 TextView chip = new TextView(this);
                 chip.setText(modes.get(i).label);
-                chip.setTextColor(i == mSelectedModeIndex ? 0xFF38BDF8 : 0xFF94A3B8);
+                chip.setTextColor(getColor(i == mSelectedModeIndex
+                    ? R.color.koda_primary : R.color.koda_text_secondary));
                 chip.setTextSize(13f);
                 chip.setPadding(dp(14), dp(8), dp(14), dp(8));
                 chip.setBackgroundResource(
@@ -502,7 +503,7 @@ public class SetupActivity extends AppCompatActivity {
             boolean isSelected = modelId.equals(mSelectedModel);
             chip.setBackgroundResource(
                 isSelected ? R.drawable.model_chip_selected_bg : R.drawable.model_chip_bg);
-            chip.setTextColor(isSelected ? 0xFF0F172A : 0xFF94A3B8);
+            chip.setTextColor(getColor(isSelected ? R.color.koda_on_primary : R.color.koda_text_secondary));
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -654,7 +655,7 @@ public class SetupActivity extends AppCompatActivity {
             }
         }
 
-        mConfigStatus.setTextColor(0xFF94A3B8);
+        mConfigStatus.setTextColor(getColor(R.color.koda_text_secondary));
         mConfigStatus.setText("Saving…");
         mBtnNext.setEnabled(false);
 
@@ -689,7 +690,7 @@ public class SetupActivity extends AppCompatActivity {
             KodaConfig.setApiKey(providerId, finalModel, finalApiKey, finalBaseUrl);
         }
 
-        mConfigStatus.setTextColor(0xFF4ADE80);
+        mConfigStatus.setTextColor(getColor(R.color.koda_success));
         mConfigStatus.setText("✅ Configuration saved!");
 
         Toast.makeText(this, "Setup complete!", Toast.LENGTH_SHORT).show();
@@ -703,7 +704,7 @@ public class SetupActivity extends AppCompatActivity {
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private void showError(String msg) {
-        mConfigStatus.setTextColor(0xFFFF8A80);
+        mConfigStatus.setTextColor(getColor(R.color.koda_error));
         mConfigStatus.setText(msg);
     }
 

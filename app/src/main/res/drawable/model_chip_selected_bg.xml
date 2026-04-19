@@ -2,6 +2,6 @@
 <!-- Model chip — selected -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#38BDF8"/>
+    <solid android:color="@color/koda_primary"/>
     <corners android:radius="20dp"/>
 </shape>

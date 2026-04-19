@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/koda_background">
+    android:background="@color/koda_bg">
 
     <!-- ═══════════════════════════════════════════════════════════════
          PHASE 1: Install OpenClaude
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="Install OpenClaude"
-            android:textColor="@color/koda_primary_text"
+            android:textColor="@color/koda_text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:text="Setting up your AI coding agent…"
-            android:textColor="@color/koda_secondary_text"
+            android:textColor="@color/koda_text_secondary"
             android:textSize="13sp" />
 
         <ScrollView
@@ -45,7 +45,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/koda_card_bg"
+            android:background="@drawable/card_surface"
             android:padding="16dp">
 
             <TextView
@@ -55,7 +55,7 @@
                 android:fontFamily="monospace"
                 android:gravity="start"
                 android:text=""
-                android:textColor="#94A3B8"
+                android:textColor="@color/koda_text_secondary"
                 android:textSize="12sp" />
         </ScrollView>
 
@@ -66,17 +66,17 @@
             android:layout_height="4dp"
             android:layout_marginBottom="20dp"
             android:indeterminate="true"
-            android:progressTint="@color/koda_accent"
+            android:progressTint="@color/koda_primary"
             android:visibility="gone" />
 
         <Button
             android:id="@+id/install_button"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:background="@drawable/koda_button_bg"
+            android:background="@drawable/btn_primary"
             android:paddingHorizontal="32dp"
             android:text="Install"
-            android:textColor="#0F172A"
+            android:textColor="@color/koda_on_primary"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -98,7 +98,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:background="#0B1120">
+            android:background="@color/koda_surface_1">
 
             <TextView
                 android:id="@+id/wizard_title"
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Choose Provider"
-                android:textColor="@color/koda_primary_text"
+                android:textColor="@color/koda_text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -127,7 +127,7 @@
                 <View
                     android:layout_width="16dp"
                     android:layout_height="1dp"
-                    android:background="#334155"
+                    android:background="@color/koda_stroke"
                     android:layout_marginHorizontal="4dp"/>
 
                 <View
@@ -167,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="RECOMMENDED"
-                        android:textColor="@color/koda_accent"
+                        android:textColor="@color/koda_primary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"/>
@@ -185,7 +185,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="MORE PROVIDERS"
-                        android:textColor="@color/koda_secondary_text"
+                        android:textColor="@color/koda_text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"/>
@@ -203,7 +203,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="ADVANCED"
-                        android:textColor="@color/koda_secondary_text"
+                        android:textColor="@color/koda_text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"/>
@@ -234,7 +234,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
-                        android:background="@drawable/koda_card_bg"
+                        android:background="@drawable/card_surface"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="14dp">
@@ -258,7 +258,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="RelayGPU"
-                                android:textColor="@color/koda_primary_text"
+                                android:textColor="@color/koda_text_primary"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
 
@@ -267,7 +267,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Multi-model relay"
-                                android:textColor="@color/koda_secondary_text"
+                                android:textColor="@color/koda_text_secondary"
                                 android:textSize="12sp" />
                         </LinearLayout>
 
@@ -276,7 +276,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Change"
-                            android:textColor="@color/koda_accent"
+                            android:textColor="@color/koda_primary"
                             android:textSize="13sp"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="4dp"/>
@@ -289,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="ACCESS MODE"
-                        android:textColor="@color/koda_secondary_text"
+                        android:textColor="@color/koda_text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"
@@ -309,7 +309,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
                         android:text="API KEY"
-                        android:textColor="@color/koda_secondary_text"
+                        android:textColor="@color/koda_text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"/>
@@ -318,7 +318,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        android:background="@drawable/koda_input_bg"
+                        android:background="@drawable/input_field_bg"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -331,8 +331,8 @@
                             android:hint="Paste your API key…"
                             android:inputType="textPassword"
                             android:padding="14dp"
-                            android:textColor="@color/koda_primary_text"
-                            android:textColorHint="#475569"
+                            android:textColor="@color/koda_text_primary"
+                            android:textColorHint="@color/koda_text_tertiary"
                             android:textSize="14sp"
                             android:singleLine="true" />
 
@@ -353,7 +353,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
                         android:text="ENDPOINT URL"
-                        android:textColor="@color/koda_secondary_text"
+                        android:textColor="@color/koda_text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"
@@ -364,12 +364,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        android:background="@drawable/koda_input_bg"
+                        android:background="@drawable/input_field_bg"
                         android:hint="https://your-deployment.openai.azure.com/v1"
                         android:inputType="textUri"
                         android:padding="14dp"
-                        android:textColor="@color/koda_primary_text"
-                        android:textColorHint="#475569"
+                        android:textColor="@color/koda_text_primary"
+                        android:textColorHint="@color/koda_text_tertiary"
                         android:textSize="14sp"
                         android:visibility="gone"/>
 
@@ -380,12 +380,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="MODEL"
-                        android:textColor="@color/koda_secondary_text"
+                        android:textColor="@color/koda_text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.1"/>
 
-                    <!-- Model chips — populated dynamically -->
                     <LinearLayout
                         android:id="@+id/model_chips_row1"
                         android:layout_width="match_parent"
@@ -400,18 +399,18 @@
                         android:orientation="horizontal"
                         android:layout_marginBottom="16dp"/>
 
-                    <!-- Custom model input (for custom provider or free-type) -->
+                    <!-- Custom model input -->
                     <EditText
                         android:id="@+id/model_custom_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
-                        android:background="@drawable/koda_input_bg"
+                        android:background="@drawable/input_field_bg"
                         android:hint="Or type a model ID…"
                         android:inputType="text"
                         android:padding="14dp"
-                        android:textColor="@color/koda_primary_text"
-                        android:textColorHint="#475569"
+                        android:textColor="@color/koda_text_primary"
+                        android:textColorHint="@color/koda_text_tertiary"
                         android:textSize="14sp"
                         android:visibility="gone"/>
 
@@ -424,7 +423,7 @@
                         android:gravity="center"
                         android:minHeight="20dp"
                         android:text=""
-                        android:textColor="#FF8A80"
+                        android:textColor="@color/koda_error"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -440,16 +439,16 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:background="#0B1120">
+            android:background="@color/koda_surface_1">
 
             <Button
                 android:id="@+id/btn_back"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
-                android:background="@drawable/koda_button_outline_bg"
+                android:background="@drawable/btn_ghost"
                 android:paddingHorizontal="20dp"
                 android:text="Back"
-                android:textColor="@color/koda_accent"
+                android:textColor="@color/koda_primary"
                 android:textSize="14sp"
                 android:visibility="gone"/>
 
@@ -462,10 +461,10 @@
                 android:id="@+id/btn_next"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
-                android:background="@drawable/koda_button_bg"
+                android:background="@drawable/btn_primary"
                 android:paddingHorizontal="28dp"
                 android:text="Next →"
-                android:textColor="#0F172A"
+                android:textColor="@color/koda_on_primary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:enabled="false" />

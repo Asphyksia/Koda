@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Card background for selected provider — accent border -->
+<!-- Provider card — selected: primary stroke -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#1E293B"/>
+    <solid android:color="@color/koda_surface_2"/>
+    <stroke android:width="2dp" android:color="@color/koda_primary"/>
     <corners android:radius="12dp"/>
-    <stroke android:width="2dp" android:color="#38BDF8"/>
 </shape>

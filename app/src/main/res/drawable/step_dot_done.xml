@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Step indicator dot — done (check) -->
+<!-- Step indicator dot — done -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="#4ADE80"/>
+    <solid android:color="@color/koda_success"/>
 </shape>
