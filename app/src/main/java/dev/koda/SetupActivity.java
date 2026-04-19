@@ -24,6 +24,7 @@ import com.termux.shared.termux.TermuxConstants;
 
 import dev.koda.data.ProviderCatalog;
 import dev.koda.data.ProviderDef;
+import dev.koda.data.ProviderManager;
 import dev.koda.ui.ChatActivity;
 
 import java.util.List;
@@ -86,6 +87,7 @@ public class SetupActivity extends AppCompatActivity {
     private int             mSelectedModeIndex = 0;
     private String          mSelectedModel;
     private boolean         mKeyVisible = false;
+    private ProviderManager mProviderManager;
 
     // ─── Service ──────────────────────────────────────────────────────────────
     private KodaService     mService;
@@ -116,6 +118,7 @@ public class SetupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_koda_setup);
         bindViews();
+        mProviderManager = new ProviderManager(this);
 
         Intent intent = new Intent(this, KodaService.class);
         startService(intent);
@@ -272,6 +275,7 @@ public class SetupActivity extends AppCompatActivity {
         mService.installOpenclaude(new KodaService.InstallProgressCallback() {
             @Override public void onStepStart(int step, String message)  { log("📦 Step " + step + ": " + message); }
             @Override public void onStepComplete(int step)               { log("✅ Step " + step + " complete"); }
+            @Override public void onOutput(String line)                  { log(line); }
             @Override public void onError(String error)                  { log("\n❌ Error: " + error); failInstall(); }
             @Override public void onComplete() {
                 mInstallProgress.setVisibility(View.GONE);
@@ -531,23 +535,21 @@ public class SetupActivity extends AppCompatActivity {
 
     /**
      * Pre-fill API key and endpoint from existing config if available.
-     * Allows re-configuration without re-typing the key.
      */
     private void prefillFromConfig() {
         if (mSelectedProvider == null) return;
 
         try {
-            String existingKey = KodaConfig.getApiKey(mSelectedProvider.id);
-            if (!existingKey.isEmpty()) {
-                mApiKeyInput.setText(existingKey);
+            ProviderManager.Provider active = mProviderManager.getActiveProvider();
+            if (active == null) return;
+
+            if (!active.apiKey.isEmpty()) {
+                mApiKeyInput.setText(active.apiKey);
             }
 
             ProviderDef.AccessMode mode = mSelectedProvider.modes.get(mSelectedModeIndex);
-            if (mode.requiresCustomUrl) {
-                String existingUrl = KodaConfig.getBaseUrl(mSelectedProvider.id);
-                if (!existingUrl.isEmpty()) {
-                    mEndpointUrlInput.setText(existingUrl);
-                }
+            if (mode.requiresCustomUrl && active.baseUrl != null && !active.baseUrl.isEmpty()) {
+                mEndpointUrlInput.setText(active.baseUrl);
             }
         } catch (Exception e) {
             Logger.logWarn(LOG_TAG, "prefillFromConfig failed: " + e.getMessage());
@@ -558,51 +560,22 @@ public class SetupActivity extends AppCompatActivity {
 
     private void preSelectFromExistingConfig() {
         try {
-            org.json.JSONObject config = KodaConfig.readConfig();
-            if (!config.has("agents")) return;
+            ProviderManager.Provider active = mProviderManager.getActiveProvider();
+            if (active == null) return;
 
-            org.json.JSONObject agents = config.getJSONObject("agents");
-            if (!agents.has("defaults")) return;
-
-            org.json.JSONObject defaults = agents.getJSONObject("defaults");
-            if (!defaults.has("model")) return;
-
-            Object modelObj = defaults.get("model");
-            String primary = "";
-            if (modelObj instanceof org.json.JSONObject) {
-                primary = ((org.json.JSONObject) modelObj).optString("primary", "");
-            } else if (modelObj instanceof String) {
-                primary = (String) modelObj;
-            }
-
-            if (primary.isEmpty()) return;
-
-            // primary = "provider/model"
-            String[] parts = primary.split("/", 2);
-            if (parts.length < 2) return;
-
-            String providerId = parts[0];
-            String modelId = parts[1];
-
-            ProviderDef found = ProviderCatalog.findById(providerId);
-            if (found == null) return;
-
-            mSelectedProvider = found;
-            mSelectedModel = modelId;
-
-            // Find the right mode index based on the existing base URL
-            String existingUrl = KodaConfig.getBaseUrl(providerId);
-            if (!existingUrl.isEmpty()) {
-                for (int i = 0; i < found.modes.size(); i++) {
-                    ProviderDef.AccessMode m = found.modes.get(i);
-                    if (!m.baseUrl.isEmpty() && existingUrl.startsWith(
-                            m.baseUrl.substring(0, Math.min(m.baseUrl.length(), 30)))) {
+            // Match by baseUrl prefix against known providers
+            for (ProviderDef def : ProviderCatalog.all()) {
+                for (int i = 0; i < def.modes.size(); i++) {
+                    ProviderDef.AccessMode mode = def.modes.get(i);
+                    if (!mode.baseUrl.isEmpty() && active.baseUrl != null
+                            && active.baseUrl.startsWith(mode.baseUrl.substring(0, Math.min(mode.baseUrl.length(), 30)))) {
+                        mSelectedProvider = def;
                         mSelectedModeIndex = i;
-                        break;
+                        mSelectedModel = active.defaultModel != null ? active.defaultModel : mode.defaultModel;
+                        return;
                     }
                 }
             }
-
         } catch (Exception e) {
             Logger.logWarn(LOG_TAG, "preSelectFromExistingConfig failed: " + e.getMessage());
         }
@@ -662,32 +635,31 @@ public class SetupActivity extends AppCompatActivity {
         final String finalModel = model;
         final String finalBaseUrl = baseUrl;
         final String finalApiKey = apiKey;
-        final String providerId = mSelectedProvider.id;
 
-        // Build model list for custom providers
-        List<String> modelList = mode.suggestedModels.isEmpty()
-            ? java.util.Collections.singletonList(finalModel)
-            : mode.suggestedModels;
+        // Build ProviderManager.Provider and save
+        try {
+            ProviderManager.Provider p = new ProviderManager.Provider();
+            p.id = mSelectedProvider.id;
+            p.name = mSelectedProvider.displayName;
+            p.apiKey = finalApiKey;
+            p.baseUrl = finalBaseUrl;
+            p.defaultModel = finalModel;
+            p.type = mode.apiType.equals(ProviderDef.API_TYPE_ANTHROPIC) ? "anthropic" : "openai";
+            p.models = mode.suggestedModels.toArray(new String[0]);
 
-        // Write config using KodaConfig
-        boolean ok = KodaConfig.setActiveProvider(
-            providerId,
-            finalModel,
-            finalApiKey,
-            mode.requiresCustomUrl || !mode.baseUrl.isEmpty() ? finalBaseUrl : null,
-            modelList
-        );
+            // Add or update in ProviderManager
+            ProviderManager.Provider existing = mProviderManager.getProvider(p.id);
+            if (existing != null) {
+                mProviderManager.updateProvider(p);
+            } else {
+                mProviderManager.addProvider(p);
+            }
+            mProviderManager.setActiveProvider(p.id);
 
-        if (!ok) {
-            showError("Failed to write config. Check storage permissions.");
+        } catch (Exception e) {
+            showError("Failed to write config: " + e.getMessage());
             mBtnNext.setEnabled(true);
             return;
-        }
-
-        // If provider uses a non-standard base URL, also store in auth profiles
-        if (!finalBaseUrl.isEmpty() && !finalBaseUrl.equals(
-                KodaConfig.getBaseUrl(providerId))) {
-            KodaConfig.setApiKey(providerId, finalModel, finalApiKey, finalBaseUrl);
         }
 
         mConfigStatus.setTextColor(getColor(R.color.koda_success));
