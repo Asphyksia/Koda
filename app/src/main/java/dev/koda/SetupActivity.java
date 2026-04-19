@@ -13,15 +13,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.termux.R;
 import com.termux.shared.logger.Logger;
-import com.termux.shared.termux.TermuxConstants;
-
 import dev.koda.data.ProviderCatalog;
 import dev.koda.data.ProviderDef;
 import dev.koda.data.ProviderManager;
@@ -43,9 +43,47 @@ public class SetupActivity extends AppCompatActivity {
 
     // ─── Views: Install phase ─────────────────────────────────────────────────
     private View            mInstallContainer;
+    private TextView        mInstallSubtitle;
     private ProgressBar     mInstallProgress;
-    private TextView        mInstallStatus;
+    private TextView        mInstallHint;
+
+    // Checklist step views (5 steps)
+    private View[]          mStepViews;
+
+    // Success / error states
+    private View            mInstallSuccess;
+    private View            mInstallError;
+    private TextView        mInstallErrorMsg;
+    private TextView        mInstallShowLogs;
+    private ScrollView      mInstallScroll;
+    private TextView        mInstallStatus;   // raw log (hidden unless error)
     private Button          mInstallButton;
+
+    // Log accumulator
+    private final StringBuilder mRawLog = new StringBuilder();
+
+    // ─── Step definitions ─────────────────────────────────────────────────────
+    private static final int STEP_ENVIRONMENT = 0;
+    private static final int STEP_NODE        = 1;
+    private static final int STEP_OPENCLAUDE  = 2;
+    private static final int STEP_VERIFY      = 3;
+    private static final int STEP_FINALIZE    = 4;
+
+    private static final String[] STEP_LABELS = {
+        "Building environment",
+        "Installing Node.js",
+        "Installing OpenClaude",
+        "Verifying dependencies",
+        "Finalizing setup"
+    };
+
+    private static final String[] STEP_HINTS = {
+        "Setting up the Termux base environment…",
+        "This may take a minute",
+        "Downloading packages, please wait…",
+        "Checking everything is in place…",
+        "Almost done!"
+    };
 
     // ─── Views: Wizard ────────────────────────────────────────────────────────
     private View            mWizardContainer;
@@ -140,9 +178,25 @@ public class SetupActivity extends AppCompatActivity {
 
     private void bindViews() {
         mInstallContainer       = findViewById(R.id.install_container);
+        mInstallSubtitle        = findViewById(R.id.install_subtitle);
         mInstallProgress        = findViewById(R.id.install_progress);
+        mInstallHint            = findViewById(R.id.install_hint);
+        mInstallSuccess         = findViewById(R.id.install_success);
+        mInstallError           = findViewById(R.id.install_error);
+        mInstallErrorMsg        = findViewById(R.id.install_error_msg);
+        mInstallShowLogs        = findViewById(R.id.install_show_logs);
+        mInstallScroll          = findViewById(R.id.install_scroll);
         mInstallStatus          = findViewById(R.id.install_status);
         mInstallButton          = findViewById(R.id.install_button);
+
+        // Step checklist views
+        int[] stepIds = { R.id.step_1, R.id.step_2, R.id.step_3, R.id.step_4, R.id.step_5 };
+        mStepViews = new View[5];
+        for (int i = 0; i < 5; i++) {
+            mStepViews[i] = findViewById(stepIds[i]);
+            setStepLabel(i, STEP_LABELS[i]);
+            setStepState(i, StepState.PENDING);
+        }
 
         mWizardContainer        = findViewById(R.id.wizard_container);
         mWizardTitle            = findViewById(R.id.wizard_title);
@@ -174,7 +228,17 @@ public class SetupActivity extends AppCompatActivity {
         mBtnBack                = findViewById(R.id.btn_back);
         mBtnNext                = findViewById(R.id.btn_next);
 
-        mInstallButton.setOnClickListener(v -> runInstallChecks());
+        mInstallButton.setOnClickListener(v -> {
+            mRawLog.setLength(0);
+            resetSteps();
+            mInstallError.setVisibility(View.GONE);
+            runInstall();
+        });
+        mInstallShowLogs.setOnClickListener(v -> {
+            boolean showing = mInstallScroll.getVisibility() == View.VISIBLE;
+            mInstallScroll.setVisibility(showing ? View.GONE : View.VISIBLE);
+            mInstallShowLogs.setText(showing ? "Show technical details" : "Hide technical details");
+        });
         mChangeProviderBtn.setOnClickListener(v -> goToStep(1));
         mToggleKeyVisibility.setOnClickListener(v -> toggleKeyVisibility());
         mBtnBack.setOnClickListener(v -> goToStep(1));
@@ -200,101 +264,177 @@ public class SetupActivity extends AppCompatActivity {
     private void showInstallPhase() {
         mInstallContainer.setVisibility(View.VISIBLE);
         mWizardContainer.setVisibility(View.GONE);
+        runInstall();
+    }
 
-        mInstallButton.setEnabled(false);
-        mInstallProgress.setVisibility(View.VISIBLE);
-        mInstallStatus.setText("");
+    // ─────────────────────────────────────────────────────────────────────────
+    // Step state machine
+    // ─────────────────────────────────────────────────────────────────────────
 
-        if (!KodaService.isBootstrapInstalled()) {
-            log("❌ Bootstrap not installed (no bash binary)");
-            mInstallButton.setEnabled(true);
-            mInstallButton.setText("Retry");
-            mInstallProgress.setVisibility(View.GONE);
+    private enum StepState { PENDING, ACTIVE, DONE, ERROR }
+
+    private void setStepState(int stepIndex, StepState state) {
+        if (stepIndex < 0 || stepIndex >= mStepViews.length) return;
+        View row = mStepViews[stepIndex];
+        if (row == null) return;
+
+        View pending = row.findViewById(R.id.step_icon_pending);
+        View active  = row.findViewById(R.id.step_icon_active);
+        View done    = row.findViewById(R.id.step_icon_done);
+        View error   = row.findViewById(R.id.step_icon_error);
+        TextView label = row.findViewById(R.id.step_label);
+
+        pending.setVisibility(View.GONE);
+        active.setVisibility(View.GONE);
+        done.setVisibility(View.GONE);
+        error.setVisibility(View.GONE);
+
+        switch (state) {
+            case PENDING:
+                pending.setVisibility(View.VISIBLE);
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_tertiary));
+                label.setTypeface(null, android.graphics.Typeface.NORMAL);
+                break;
+            case ACTIVE:
+                active.setVisibility(View.VISIBLE);
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_primary));
+                label.setTypeface(null, android.graphics.Typeface.BOLD);
+                if (mInstallHint != null) mInstallHint.setText(STEP_HINTS[stepIndex]);
+                break;
+            case DONE:
+                done.setVisibility(View.VISIBLE);
+                done.setAlpha(0f);
+                done.setScaleX(0.5f);
+                done.setScaleY(0.5f);
+                done.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(200).start();
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_text_secondary));
+                label.setTypeface(null, android.graphics.Typeface.NORMAL);
+                break;
+            case ERROR:
+                error.setVisibility(View.VISIBLE);
+                label.setTextColor(ContextCompat.getColor(this, R.color.koda_error));
+                label.setTypeface(null, android.graphics.Typeface.NORMAL);
+                break;
+        }
+    }
+
+    private void setStepLabel(int stepIndex, String text) {
+        if (stepIndex < 0 || stepIndex >= mStepViews.length) return;
+        View row = mStepViews[stepIndex];
+        if (row == null) return;
+        TextView tv = row.findViewById(R.id.step_label);
+        if (tv != null) tv.setText(text);
+    }
+
+    private void resetSteps() {
+        for (int i = 0; i < 5; i++) setStepState(i, StepState.PENDING);
+        if (mInstallHint != null) mInstallHint.setText("");
+        if (mInstallSuccess != null) mInstallSuccess.setVisibility(View.GONE);
+        if (mInstallButton != null) mInstallButton.setVisibility(View.GONE);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Install execution
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void appendLog(String line) {
+        mRawLog.append(line).append("\n");
+        if (mInstallStatus != null) mInstallStatus.setText(mRawLog.toString());
+    }
+
+    private void runInstall() {
+        if (!mBound || mService == null) {
+            if (mInstallHint != null) mInstallHint.setText("Waiting for service…");
             return;
         }
-        log("✅ Bootstrap extracted");
-        runFixPaths();
-    }
 
-    private void log(String line) {
-        mInstallStatus.append(line + "\n");
-    }
-
-    private void runFixPaths() {
-        log("🔧 Verifying bootstrap paths…");
-        if (!mBound || mService == null) return;
-
-        mService.executeCommand(
-            "chmod +x $PREFIX/bin/* 2>/dev/null\necho DONE",
-            result -> {
-                log("✅ Bootstrap paths OK");
-                runCheckNode();
-            });
-    }
-
-    private void runCheckNode() {
-        mService.executeCommand("node --version 2>&1; echo NODE_OK",
-            result -> {
-                String out = result.stdout
-                    .replaceAll("\\r", "")
-                    .replaceAll("\\x1b\\[[0-9;]*[a-zA-Z]", "")
-                    .trim();
-                if (out.contains("NODE_OK") && out.contains("v")) {
-                    log("✅ Node.js: " + out.split("\n")[0].trim());
-                } else {
-                    log("⚠️  Node.js: " + out.replace("\n", " | "));
-                }
-                runCheckNpm();
-            });
-    }
-
-    private void runCheckNpm() {
-        mService.executeCommand("npm --version 2>&1; echo NPM_OK",
-            result -> {
-                String out = result.stdout
-                    .replaceAll("\\r", "")
-                    .replaceAll("\\x1b\\[[0-9;]*[a-zA-Z]", "")
-                    .trim();
-                if (out.contains("NPM_OK")) {
-                    log("✅ npm: v" + out.split("\n")[0].trim());
-                } else {
-                    log("⚠️  npm: " + out.replace("\n", " | "));
-                }
-                runInstallChecks();
-            });
-    }
-
-    private void runInstallChecks() {
-        if (!mBound || mService == null) return;
-
-        mInstallButton.setEnabled(false);
+        mInstallButton.setVisibility(View.GONE);
         mInstallProgress.setVisibility(View.VISIBLE);
-        log("⏳ Installing @gitlawb/openclaude…");
-        log("   (this may take 1-2 minutes on WiFi)\n");
+        setStepState(STEP_ENVIRONMENT, StepState.ACTIVE);
 
         mService.installOpenclaude(new KodaService.InstallProgressCallback() {
-            @Override public void onStepStart(int step, String message)  { log("📦 Step " + step + ": " + message); }
-            @Override public void onStepComplete(int step)               { log("✅ Step " + step + " complete"); }
-            @Override public void onOutput(String line)                  { log(line); }
-            @Override public void onError(String error)                  { log("\n❌ Error: " + error); failInstall(); }
-            @Override public void onComplete() {
+            @Override
+            public void onStepStart(int step, String message) {
+                appendLog("STEP " + step + ": " + message);
+                int idx = mapStep(step, message);
+                for (int i = 0; i < idx; i++) setStepState(i, StepState.DONE);
+                setStepState(idx, StepState.ACTIVE);
+            }
+
+            @Override
+            public void onStepComplete(int step) {
+                appendLog("STEP " + step + " done");
+                int idx = Math.min(step - 1, 4);
+                setStepState(idx, StepState.DONE);
+            }
+
+            @Override
+            public void onOutput(String line) {
+                if (!line.trim().isEmpty()) appendLog(line.trim());
+            }
+
+            @Override
+            public void onError(String error) {
+                appendLog("ERROR: " + error);
                 mInstallProgress.setVisibility(View.GONE);
-                log("\n✅ OpenClaude installed!");
+                showInstallError(error);
+            }
+
+            @Override
+            public void onComplete() {
+                mInstallProgress.setVisibility(View.GONE);
                 if (KodaService.isOpenclaudeInstalled()) {
-                    log("✅ Module verified");
-                    mInstallStatus.postDelayed(SetupActivity.this::showWizard, 1200);
+                    for (int i = 0; i < 5; i++) setStepState(i, StepState.DONE);
+                    if (mInstallHint != null) mInstallHint.setText("");
+                    showInstallSuccess();
                 } else {
-                    log("⚠️  Module not found after install — check output above");
-                    failInstall();
+                    showInstallError("Installation completed but OpenClaude was not found.");
                 }
             }
         });
     }
 
-    private void failInstall() {
-        mInstallProgress.setVisibility(View.GONE);
-        mInstallButton.setEnabled(true);
+    private int mapStep(int step, String message) {
+        String msg = message.toLowerCase();
+        if (msg.contains("bootstrap") || msg.contains("environment") || step == 1)
+            return STEP_ENVIRONMENT;
+        if (msg.contains("node"))
+            return STEP_NODE;
+        if (msg.contains("openclaude") || msg.contains("npm") || msg.contains("install"))
+            return STEP_OPENCLAUDE;
+        if (msg.contains("verif") || msg.contains("check"))
+            return STEP_VERIFY;
+        return STEP_FINALIZE;
+    }
+
+    private void showInstallSuccess() {
+        mInstallSuccess.setVisibility(View.VISIBLE);
+        android.view.ViewGroup vg = (android.view.ViewGroup) mInstallSuccess;
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            child.setAlpha(0f);
+            child.animate().alpha(1f).setStartDelay(i * 120L).setDuration(220).start();
+        }
+        if (mInstallHint != null) mInstallHint.setText("");
+        mInstallSuccess.postDelayed(this::showWizard, 1400);
+    }
+
+    private void showInstallError(String errorMsg) {
+        for (int i = 0; i < 5; i++) {
+            View row = mStepViews[i];
+            if (row != null) {
+                View activeIcon = row.findViewById(R.id.step_icon_active);
+                if (activeIcon != null && activeIcon.getVisibility() == View.VISIBLE) {
+                    setStepState(i, StepState.ERROR);
+                    break;
+                }
+            }
+        }
+        mInstallError.setVisibility(View.VISIBLE);
+        mInstallErrorMsg.setText("Something went wrong: " + errorMsg);
+        mInstallButton.setVisibility(View.VISIBLE);
         mInstallButton.setText("Retry");
+        if (mInstallHint != null) mInstallHint.setText("");
     }
 
     // ─────────────────────────────────────────────────────────────────────────
