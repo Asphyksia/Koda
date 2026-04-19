@@ -124,12 +124,18 @@ public final class ProviderCatalog {
 
     // ─── NVIDIA NIM ───────────────────────────────────────────────────────────
     public static final ProviderDef NVIDIA = ProviderDef.standard(
-        "nvidia", "NVIDIA NIM", "GPU-accelerated inference",
+        "nvidia", "NVIDIA NIM", "133+ models on NVIDIA GPU cloud",
         "🖥️",
         ProviderDef.API_TYPE_OPENAI,
         "https://integrate.api.nvidia.com/v1",
         "meta/llama-3.3-70b-instruct",
-        "meta/llama-3.3-70b-instruct", "nvidia/llama-3.1-nemotron-ultra-253b-v1"
+        "meta/llama-3.3-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1",
+        "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+        "qwen/qwen3.5-397b-a17b",
+        "mistralai/mistral-large-3-675b-instruct-2512",
+        "deepseek-ai/deepseek-v3.2",
+        "meta/llama-4-maverick-17b-128e-instruct"
     );
 
     // ─── Azure OpenAI ─────────────────────────────────────────────────────────
