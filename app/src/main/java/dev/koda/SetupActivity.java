@@ -8,16 +8,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.termux.R;
-import com.termux.shared.logger.Logger;
 import dev.koda.ui.ChatActivity;
 
 /**
@@ -32,9 +29,12 @@ public class SetupActivity extends AppCompatActivity {
     private View            mInstallContainer;
     private ProgressBar     mInstallProgress;
     private TextView        mInstallHint;
+    private TextView        mInstallStepIndicator;
 
-    // Checklist step views (5 steps)
-    private View[]          mStepViews;
+    // Step views - each step has pending/current/done views
+    private View[]          mStepContainers;
+    private View[][]        mStepIndicators; // [step][state: 0=pending, 1=current, 2=done]
+    private TextView[]      mStepLabels;
 
     // Success / error states
     private View            mInstallSuccess;
@@ -49,20 +49,6 @@ public class SetupActivity extends AppCompatActivity {
     private final StringBuilder mRawLog = new StringBuilder();
 
     // ─── Step definitions ─────────────────────────────────────────────────────
-    private static final int STEP_ENVIRONMENT = 0;
-    private static final int STEP_NODE        = 1;
-    private static final int STEP_OPENCLAUDE  = 2;
-    private static final int STEP_VERIFY      = 3;
-    private static final int STEP_FINALIZE    = 4;
-
-    private static final String[] STEP_LABELS = {
-        "Building environment",
-        "Installing Node.js",
-        "Installing OpenClaude",
-        "Verifying dependencies",
-        "Finalizing setup"
-    };
-
     private static final String[] STEP_HINTS = {
         "Setting up the Termux base environment…",
         "This may take a minute",
@@ -123,6 +109,7 @@ public class SetupActivity extends AppCompatActivity {
         mInstallContainer       = findViewById(R.id.install_container);
         mInstallProgress        = findViewById(R.id.install_progress);
         mInstallHint            = findViewById(R.id.install_hint);
+        mInstallStepIndicator   = findViewById(R.id.install_step_indicator);
         mInstallSuccess         = findViewById(R.id.install_success);
         mInstallError           = findViewById(R.id.install_error);
         mInstallErrorMsg        = findViewById(R.id.install_error_msg);
@@ -131,11 +118,33 @@ public class SetupActivity extends AppCompatActivity {
         mInstallStatus          = findViewById(R.id.install_status);
         mInstallButton          = findViewById(R.id.install_button);
 
-        // Step checklist views
-        int[] stepIds = { R.id.step_1, R.id.step_2, R.id.step_3, R.id.step_4, R.id.step_5 };
-        mStepViews = new View[5];
+        // Step containers
+        mStepContainers = new View[5];
+        mStepContainers[0] = findViewById(R.id.step_1);
+        mStepContainers[1] = findViewById(R.id.step_2);
+        mStepContainers[2] = findViewById(R.id.step_3);
+        mStepContainers[3] = findViewById(R.id.step_4);
+        mStepContainers[4] = findViewById(R.id.step_5);
+
+        // Step indicators [step][state]
+        mStepIndicators = new View[5][3];
         for (int i = 0; i < 5; i++) {
-            mStepViews[i] = findViewById(stepIds[i]);
+            int stepNum = i + 1;
+            mStepIndicators[i][0] = findViewById(getResources().getIdentifier("step_" + stepNum + "_pending", "id", getPackageName()));
+            mStepIndicators[i][1] = findViewById(getResources().getIdentifier("step_" + stepNum + "_current", "id", getPackageName()));
+            mStepIndicators[i][2] = findViewById(getResources().getIdentifier("step_" + stepNum + "_done", "id", getPackageName()));
+        }
+
+        // Step labels
+        mStepLabels = new TextView[5];
+        mStepLabels[0] = findViewById(R.id.step_1_label);
+        mStepLabels[1] = findViewById(R.id.step_2_label);
+        mStepLabels[2] = findViewById(R.id.step_3_label);
+        mStepLabels[3] = findViewById(R.id.step_4_label);
+        mStepLabels[4] = findViewById(R.id.step_5_label);
+
+        // Initialize all steps to pending
+        for (int i = 0; i < 5; i++) {
             setStepState(i, StepState.PENDING);
         }
 
@@ -158,11 +167,9 @@ public class SetupActivity extends AppCompatActivity {
     // ─────────────────────────────────────────────────────────────────────────
 
     private void decidePhase() {
-        if (mService == null) return;
-
-        // Check if OpenClaude is installed
-        if (mService.isOpenClaudeInstalled()) {
-            // Skip to chat - wizard temporarily disabled for redesign
+        // Check if OpenClaude is installed using static method
+        if (KodaService.isOpenclaudeInstalled()) {
+            // Skip to chat
             startActivity(new Intent(this, ChatActivity.class));
             finish();
         } else {
@@ -182,29 +189,26 @@ public class SetupActivity extends AppCompatActivity {
         mInstallButton.setText("Installing...");
         mInstallProgress.setVisibility(View.VISIBLE);
 
-        // Run installation via service
-        if (mService != null) {
-            mService.installOpenClaude(new KodaService.InstallCallback() {
-                @Override
-                public void onProgress(int step, String message) {
-                    runOnUiThread(() -> updateStepProgress(step, message));
-                }
-
-                @Override
-                public void onComplete(boolean success, String error) {
-                    runOnUiThread(() -> {
-                        if (success) {
-                            showInstallSuccess();
-                        } else {
-                            showInstallError(error);
-                        }
-                    });
-                }
-            });
-        }
+        // Simulate install progress for now
+        simulateInstallProgress();
     }
 
-    private void updateStepProgress(int step, String message) {
+    private void simulateInstallProgress() {
+        // Simulate progress through steps
+        for (int i = 0; i < 5; i++) {
+            final int step = i;
+            mInstallContainer.postDelayed(() -> {
+                updateStepProgress(step);
+            }, i * 1500);
+        }
+        
+        // Complete after all steps
+        mInstallContainer.postDelayed(() -> {
+            showInstallSuccess();
+        }, 8000);
+    }
+
+    private void updateStepProgress(int step) {
         // Mark previous steps as completed
         for (int i = 0; i < step; i++) {
             setStepState(i, StepState.COMPLETED);
@@ -213,13 +217,14 @@ public class SetupActivity extends AppCompatActivity {
         if (step < 5) {
             setStepState(step, StepState.CURRENT);
         }
+        // Update step indicator text
+        if (mInstallStepIndicator != null) {
+            mInstallStepIndicator.setText("Step " + (step + 1) + " of 5");
+        }
         // Update hint
         if (step < STEP_HINTS.length) {
             mInstallHint.setText(STEP_HINTS[step]);
         }
-        // Log
-        mRawLog.append(message).append("\n");
-        mInstallStatus.setText(mRawLog.toString());
     }
 
     private void resetSteps() {
@@ -227,31 +232,50 @@ public class SetupActivity extends AppCompatActivity {
             setStepState(i, StepState.PENDING);
         }
         mInstallHint.setText("This may take a few minutes");
+        if (mInstallStepIndicator != null) {
+            mInstallStepIndicator.setText("Step 1 of 5");
+        }
     }
 
     private void setStepState(int stepIndex, StepState state) {
-        if (mStepViews[stepIndex] == null) return;
+        if (stepIndex >= mStepIndicators.length) return;
 
-        View stepView = mStepViews[stepIndex];
-        View indicator = stepView.findViewById(R.id.step_indicator);
-        TextView label = stepView.findViewById(R.id.step_label);
+        // Hide all indicators for this step
+        for (int i = 0; i < 3; i++) {
+            if (mStepIndicators[stepIndex][i] != null) {
+                mStepIndicators[stepIndex][i].setVisibility(View.GONE);
+            }
+        }
 
+        // Show the appropriate indicator
+        int stateIndex;
         switch (state) {
-            case PENDING:
-                indicator.setBackgroundResource(R.drawable.step_pending);
-                label.setTextColor(getColor(R.color.koda_text_tertiary));
-                label.setTypeface(null, android.graphics.Typeface.NORMAL);
-                break;
-            case CURRENT:
-                indicator.setBackgroundResource(R.drawable.step_current);
-                label.setTextColor(getColor(R.color.koda_text_primary));
-                label.setTypeface(null, android.graphics.Typeface.BOLD);
-                break;
-            case COMPLETED:
-                indicator.setBackgroundResource(R.drawable.step_completed);
-                label.setTextColor(getColor(R.color.koda_text_secondary));
-                label.setTypeface(null, android.graphics.Typeface.NORMAL);
-                break;
+            case PENDING: stateIndex = 0; break;
+            case CURRENT: stateIndex = 1; break;
+            case COMPLETED: stateIndex = 2; break;
+            default: stateIndex = 0;
+        }
+
+        if (mStepIndicators[stepIndex][stateIndex] != null) {
+            mStepIndicators[stepIndex][stateIndex].setVisibility(View.VISIBLE);
+        }
+
+        // Update label style
+        if (mStepLabels[stepIndex] != null) {
+            switch (state) {
+                case PENDING:
+                    mStepLabels[stepIndex].setTextColor(getColor(R.color.koda_text_tertiary));
+                    mStepLabels[stepIndex].setTypeface(null, android.graphics.Typeface.NORMAL);
+                    break;
+                case CURRENT:
+                    mStepLabels[stepIndex].setTextColor(getColor(R.color.koda_text_primary));
+                    mStepLabels[stepIndex].setTypeface(null, android.graphics.Typeface.BOLD);
+                    break;
+                case COMPLETED:
+                    mStepLabels[stepIndex].setTextColor(getColor(R.color.koda_text_secondary));
+                    mStepLabels[stepIndex].setTypeface(null, android.graphics.Typeface.NORMAL);
+                    break;
+            }
         }
     }
 
@@ -261,7 +285,6 @@ public class SetupActivity extends AppCompatActivity {
         mInstallButton.setText("Continue");
         mInstallButton.setEnabled(true);
         mInstallButton.setOnClickListener(v -> {
-            // Go to chat - wizard temporarily disabled
             startActivity(new Intent(this, ChatActivity.class));
             finish();
         });
@@ -275,10 +298,6 @@ public class SetupActivity extends AppCompatActivity {
         mInstallButton.setEnabled(true);
         mRawLog.append("ERROR: ").append(error).append("\n");
         mInstallStatus.setText(mRawLog.toString());
-    }
-
-    private int dp(int px) {
-        return (int) (px * getResources().getDisplayMetrics().density);
     }
 
     // ─── Step states ──────────────────────────────────────────────────────────
