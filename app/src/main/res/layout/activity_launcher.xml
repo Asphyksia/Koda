@@ -34,48 +34,47 @@
             android:paddingBottom="28dp">
 
             <!-- ══════════════════════════════════════════
-                 BRAND HEADER - Estructura estable desde cero
-                 Contenedor padre → Wordmark container → K + oda
+                 BRAND HEADER - Koda + v0.3 badge
                  ══════════════════════════════════════════ -->
             <LinearLayout
                 android:id="@+id/header_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- Wordmark Koda - contenedor exclusivo -->
-                <LinearLayout
+                <!-- K Logo -->
+                <ImageView
+                    android:id="@+id/launcher_logo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_k_logo"
+                    android:scaleType="fitCenter" />
+
+                <!-- oda -->
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:text="oda"
+                    android:textColor="@color/koda_text_primary"
+                    android:textSize="36sp"
+                    android:layout_marginStart="4dp"
+                    android:includeFontPadding="false" />
 
-                    <!-- K Logo -->
-                    <ImageView
-                        android:id="@+id/launcher_logo"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:src="@drawable/ic_k_logo"
-                        android:scaleType="fitCenter" />
-
-                    <!-- Espacio fijo K-oda -->
-                    <Space
-                        android:layout_width="3dp"
-                        android:layout_height="0dp" />
-
-                    <!-- oda -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="oda"
-                        android:textColor="@color/koda_text_primary"
-                        android:textSize="32sp"
-                        android:includeFontPadding="false" />
-
-                </LinearLayout>
+                <!-- v0.3 badge -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="v0.3"
+                    android:textColor="@color/koda_text_tertiary"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="12dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="3dp"
+                    android:background="@drawable/badge_subtle" />
 
             </LinearLayout>
 
