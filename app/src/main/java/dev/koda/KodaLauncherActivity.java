@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import com.termux.R;
 import com.termux.app.TermuxInstaller;
 
+import dev.koda.ui.BaseActivity;
 import dev.koda.ui.ChatActivity;
 
 /**
@@ -34,7 +35,7 @@ import dev.koda.ui.ChatActivity;
  * Handles permissions → bootstrap → routing to Setup or Chat.
  * Shows a hero card with animated code preview on first launch.
  */
-public class KodaLauncherActivity extends AppCompatActivity {
+public class KodaLauncherActivity extends BaseActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final int BATTERY_REQUEST_CODE    = 1002;
