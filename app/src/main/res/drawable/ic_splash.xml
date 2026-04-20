@@ -8,6 +8,6 @@
         android:width="48dp"
         android:height="48dp"
         android:gravity="center">
-        <bitmap android:src="@mipmap/ic_launcher_foreground" />
+        <bitmap android:src="@drawable/ic_launcher_foreground" />
     </item>
 </layer-list>
