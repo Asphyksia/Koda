@@ -65,7 +65,7 @@
         <item name="materialCardViewStyle">@style/Widget.Koda.CardView</item>
         <item name="materialButtonStyle">@style/Widget.Koda.Button</item>
         <item name="materialButtonOutlinedStyle">@style/Widget.Koda.Button.Outlined</item>
-        <item name="materialButtonTextStyle">@style/Widget.Koda.Button.Text</item>
+        <item name="borderlessButtonStyle">@style/Widget.Koda.Button.Text</item>
     </style>
 
     <!-- Material 3 Component Styles -->
