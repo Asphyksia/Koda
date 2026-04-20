@@ -45,27 +45,27 @@
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- K Logo - prominent, aligned with text baseline -->
+                <!-- K Logo - vector, elegant -->
                 <ImageView
                     android:id="@+id/launcher_logo"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:src="@drawable/ic_k_logo"
                     android:scaleType="fitCenter"
-                    android:layout_gravity="bottom" />
+                    android:layout_gravity="center_vertical" />
 
-                <!-- "oda" lowercase, accompanying the K -->
+                <!-- "oda" lowercase, aligned -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="oda"
                     android:textColor="@color/koda_text_primary"
-                    android:textSize="28sp"
+                    android:textSize="32sp"
                     android:textStyle="normal"
                     android:letterSpacing="-0.02"
                     android:includeFontPadding="false"
-                    android:layout_marginStart="-8dp"
-                    android:layout_gravity="bottom" />
+                    android:layout_marginStart="-4dp"
+                    android:layout_gravity="center_vertical" />
 
                 <View
                     android:layout_width="8dp"
