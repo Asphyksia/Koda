@@ -8,20 +8,24 @@
 
     <!-- Background layers (darkest → lightest) -->
     <color name="koda_bg">#FF0D1117</color>           <!-- base app background — near-black navy -->
-    <color name="koda_surface_1">#FF161C26</color>    <!-- cards, drawer background -->
-    <color name="koda_surface_2">#FF1C2636</color>    <!-- elevated cards, modal bg -->
-    <color name="koda_surface_3">#FF243044</color>    <!-- active states, selected items -->
-    <color name="koda_surface_4">#FF2A3A52</color>    <!-- hover / pressed overlays -->
+    <color name="koda_surface_1">#FF161B22</color>    <!-- cards, elevated surfaces — slightly lighter -->
+    <color name="koda_surface_2">#FF1C2128</color>    <!-- code blocks, secondary surfaces -->
+    <color name="koda_surface_3">#FF21262D</color>    <!-- active states, selected items -->
+    <color name="koda_surface_4">#FF2D333B</color>    <!-- hover / pressed overlays -->
+
+    <!-- Glassmorphism / Premium surfaces -->
+    <color name="koda_surface_glass">#0D161B22</color> <!-- 5% opacity surface for glass effect -->
+    <color name="koda_surface_glass_border">#1AFFFFFF</color> <!-- 10% white border -->
 
     <!-- Dividers & strokes -->
-    <color name="koda_stroke">#FF1E2D3D</color>       <!-- subtle border on cards/inputs -->
-    <color name="koda_stroke_strong">#FF2A3F55</color> <!-- more visible stroke when needed -->
-    <color name="koda_divider">#FF141D28</color>       <!-- list dividers -->
+    <color name="koda_stroke">#FF21262D</color>       <!-- subtle border on cards/inputs -->
+    <color name="koda_stroke_strong">#FF30363D</color> <!-- more visible stroke when needed -->
+    <color name="koda_divider">#FF161B22</color>      <!-- list dividers -->
 
-    <!-- Primary blue — structural, actions, brand -->
-    <color name="koda_primary">#FF4A90D9</color>           <!-- buttons, active chips, links -->
-    <color name="koda_primary_container">#FF1A3558</color> <!-- chip bg, selected state bg -->
-    <color name="koda_primary_dim">#FF2D5A8A</color>       <!-- muted primary for secondary actions -->
+    <!-- Primary - More vibrant blue -->
+    <color name="koda_primary">#FF58A6FF</color>           <!-- brighter, more premium blue -->
+    <color name="koda_primary_container">#FF1F6FEB</color> <!-- chip bg, selected state bg -->
+    <color name="koda_primary_dim">#FF388BFD</color>       <!-- muted primary for secondary actions -->
     <color name="koda_on_primary">#FFFFFFFF</color>        <!-- text on primary bg -->
 
     <!-- Text hierarchy -->
