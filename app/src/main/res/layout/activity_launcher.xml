@@ -34,35 +34,36 @@
             android:paddingBottom="28dp">
 
             <!-- ══════════════════════════════════════════
-                 BRAND HEADER - Koda wordmark + auxiliary v0.3
-                 Optical alignment, tight kerning, clean reading
+                 BRAND HEADER - Koda wordmark + badge v0.3
+                 Clean separation, premium integration
                  ══════════════════════════════════════════ -->
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/header_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- Main wordmark: K + oda -->
+                <!-- Wordmark: K + oda -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="bottom">
 
-                    <!-- K Logo - optical baseline with text -->
+                    <!-- K Logo -->
                     <ImageView
                         android:id="@+id/launcher_logo"
                         android:layout_width="54dp"
                         android:layout_height="54dp"
                         android:src="@drawable/ic_k_logo"
                         android:scaleType="fitCenter"
-                        android:layout_marginBottom="1dp" />
+                        android:layout_marginBottom="2dp" />
 
-                    <!-- oda - tight to K, shared baseline -->
+                    <!-- oda -->
                     <TextView
-                        android:id="@+id/oda_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="oda"
@@ -71,23 +72,23 @@
                         android:textStyle="normal"
                         android:letterSpacing="-0.02"
                         android:includeFontPadding="false"
-                        android:layout_marginStart="-4dp"
-                        android:lineSpacingExtra="0dp" />
+                        android:layout_marginStart="-2dp" />
                 </LinearLayout>
 
-                <!-- v0.3 badge - auxiliary, bottom-right of wordmark -->
+                <!-- v0.3 badge - separate but integrated -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="v0.3"
-                    android:textColor="@color/koda_text_quaternary"
-                    android:textSize="10sp"
+                    android:textColor="@color/koda_text_tertiary"
+                    android:textSize="11sp"
                     android:fontFamily="monospace"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginStart="58dp"
-                    android:layout_marginBottom="2dp" />
+                    android:layout_marginStart="10dp"
+                    android:paddingHorizontal="7dp"
+                    android:paddingVertical="2dp"
+                    android:background="@drawable/badge_subtle" />
 
-            </FrameLayout>
+            </LinearLayout>
 
             <!-- ══════════════════════════════════════════
                  CODE PREVIEW - Premium glass, mejor contraste
