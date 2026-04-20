@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Koda "K" Logo - Circuit style, no background
+  Premium tech aesthetic matching the main logo
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    
+    <!-- Circuit lines and K shape -->
+    <path
+        android:fillColor="#FF58A6FF"
+        android:pathData="M12,8 L12,40 L16,40 L16,26 L24,34 L30,34 L22,24 L30,14 L24,14 L16,22 L16,8 Z" />
+    
+    <!-- Circuit dots/nodes -->
+    <circle
+        android:fillColor="#FF58A6FF"
+        android:cx="12"
+        android:cy="8"
+        android:r="2" />
+    <circle
+        android:fillColor="#FF58A6FF"
+        android:cx="12"
+        android:cy="40"
+        android:r="2" />
+    <circle
+        android:fillColor="#FF58A6FF"
+        android:cx="30"
+        android:cy="14"
+        android:r="2" />
+    <circle
+        android:fillColor="#FF58A6FF"
+        android:cx="30"
+        android:cy="34"
+        android:r="2" />
+    
+    <!-- Connection lines -->
+    <path
+        android:strokeColor="#FF58A6FF"
+        android:strokeWidth="1"
+        android:pathData="M32,14 L36,10 M32,34 L36,38" />
+    
+</vector>
