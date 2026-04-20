@@ -34,7 +34,7 @@
             android:paddingBottom="28dp">
 
             <!-- ══════════════════════════════════════════
-                 BRAND HEADER - Koda + v0.3 badge
+                 BRAND HEADER - Koda text + v0.3 badge
                  ══════════════════════════════════════════ -->
             <LinearLayout
                 android:id="@+id/header_container"
@@ -45,22 +45,14 @@
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- K Logo -->
-                <ImageView
-                    android:id="@+id/launcher_logo"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_k_logo"
-                    android:scaleType="fitCenter" />
-
-                <!-- oda -->
+                <!-- Koda text -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="oda"
+                    android:text="Koda"
                     android:textColor="@color/koda_text_primary"
-                    android:textSize="36sp"
-                    android:layout_marginStart="4dp"
+                    android:textSize="40sp"
+                    android:textStyle="bold"
                     android:includeFontPadding="false" />
 
                 <!-- v0.3 badge -->
@@ -71,7 +63,7 @@
                     android:textColor="@color/koda_text_tertiary"
                     android:textSize="12sp"
                     android:fontFamily="monospace"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="10dp"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="3dp"
                     android:background="@drawable/badge_subtle" />
