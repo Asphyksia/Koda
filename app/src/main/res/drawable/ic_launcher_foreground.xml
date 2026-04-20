@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Koda Adaptive Icon - Foreground Layer
-  The K monogram with circuits
+  Uses new Koda logo
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
@@ -9,7 +9,7 @@
         android:height="108dp"
         android:gravity="center">
         <bitmap
-            android:src="@drawable/ic_koda_logo"
+            android:src="@drawable/ic_k_logo"
             android:gravity="center" />
     </item>
 </layer-list>
