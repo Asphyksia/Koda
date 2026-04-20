@@ -49,12 +49,40 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingVertical="8dp">
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/step_dot_pending"
-                android:layout_marginEnd="12dp"/>
+            <FrameLayout
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp">
+                <View
+                    android:id="@+id/step_icon_pending"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_pending"/>
+                <View
+                    android:id="@+id/step_icon_active"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_active"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_done"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_done"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_error"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_error"
+                    android:visibility="gone"/>
+            </FrameLayout>
             <TextView
+                android:id="@+id/step_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -70,12 +98,40 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingVertical="8dp">
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/step_dot_pending"
-                android:layout_marginEnd="12dp"/>
+            <FrameLayout
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp">
+                <View
+                    android:id="@+id/step_icon_pending"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_pending"/>
+                <View
+                    android:id="@+id/step_icon_active"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_active"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_done"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_done"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_error"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_error"
+                    android:visibility="gone"/>
+            </FrameLayout>
             <TextView
+                android:id="@+id/step_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -91,12 +147,40 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingVertical="8dp">
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/step_dot_pending"
-                android:layout_marginEnd="12dp"/>
+            <FrameLayout
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp">
+                <View
+                    android:id="@+id/step_icon_pending"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_pending"/>
+                <View
+                    android:id="@+id/step_icon_active"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_active"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_done"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_done"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_error"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_error"
+                    android:visibility="gone"/>
+            </FrameLayout>
             <TextView
+                android:id="@+id/step_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -112,12 +196,40 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingVertical="8dp">
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/step_dot_pending"
-                android:layout_marginEnd="12dp"/>
+            <FrameLayout
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp">
+                <View
+                    android:id="@+id/step_icon_pending"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_pending"/>
+                <View
+                    android:id="@+id/step_icon_active"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_active"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_done"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_done"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_error"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_error"
+                    android:visibility="gone"/>
+            </FrameLayout>
             <TextView
+                android:id="@+id/step_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -133,12 +245,40 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingVertical="8dp">
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@drawable/step_dot_pending"
-                android:layout_marginEnd="12dp"/>
+            <FrameLayout
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="12dp">
+                <View
+                    android:id="@+id/step_icon_pending"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_pending"/>
+                <View
+                    android:id="@+id/step_icon_active"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_active"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_done"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_done"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/step_icon_error"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/step_dot_error"
+                    android:visibility="gone"/>
+            </FrameLayout>
             <TextView
+                android:id="@+id/step_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
