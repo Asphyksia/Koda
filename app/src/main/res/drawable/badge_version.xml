@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Premium version badge - subtle pill -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/koda_surface_2" />
+    <corners android:radius="100dp" />
+    <stroke
+        android:width="0.5dp"
+        android:color="@color/koda_stroke" />
+</shape>

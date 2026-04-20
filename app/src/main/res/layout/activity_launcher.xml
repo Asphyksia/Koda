@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Welcome / Launcher screen
-  Structure:
-    FrameLayout (full bg)
-      └─ ScrollView (centers card on small screens)
-           └─ LinearLayout (vertical, gravity=center)
-                └─ MaterialCardView (hero card)
-                     ├─ Branding block (logo + title + subtitle)
-                     ├─ Code preview block (mini terminal animation)
-                     ├─ Description
-                     ├─ Battery info block
-                     └─ CTAs (primary + secondary)
+  Premium Welcome Screen for Koda
+  Light, airy, modern AI app aesthetic
+  Reduced visual weight, better rhythm, clearer hierarchy
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/launcher_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,13 +24,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:paddingHorizontal="@dimen/space_20"
-            android:paddingTop="@dimen/space_32"
-            android:paddingBottom="@dimen/space_32"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="32dp"
             android:minHeight="600dp">
 
             <!-- ══════════════════════════════════════════
-                 HERO CARD - MaterialCardView
+                 PREMIUM CARD - Reduced weight, better surfaces
                  ══════════════════════════════════════════ -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/hero_card"
@@ -45,36 +38,36 @@
                 android:layout_height="wrap_content"
                 android:alpha="0"
                 app:cardBackgroundColor="@color/koda_surface_1"
-                app:cardCornerRadius="@dimen/radius_xl"
-                app:cardElevation="@dimen/elevation_md"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
                 app:strokeColor="@color/koda_stroke"
-                app:strokeWidth="0.5dp">
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/space_24">
+                    android:padding="20dp">
 
-                    <!-- ── Branding block ───────────────────── -->
+                    <!-- ── Header: Logo + Title + Version ───────────────────── -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/space_20">
+                        android:layout_marginBottom="16dp">
 
                         <!-- Logo -->
                         <ImageView
                             android:id="@+id/launcher_logo"
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:src="@mipmap/ic_launcher"
                             android:scaleType="centerCrop"
                             android:background="@drawable/launcher_logo_bg"
-                            android:layout_marginEnd="@dimen/space_16" />
+                            android:layout_marginEnd="12dp" />
 
-                        <!-- Title + subtitle -->
+                        <!-- Title group -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -86,7 +79,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Koda"
                                 android:textColor="@color/koda_text_primary"
-                                android:textSize="26sp"
+                                android:textSize="24sp"
                                 android:textStyle="bold"
                                 android:letterSpacing="-0.02" />
 
@@ -94,197 +87,213 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="AI Coding Agent"
-                                android:textColor="@color/koda_text_tertiary"
+                                android:textColor="@color/koda_text_secondary"
                                 android:textSize="13sp"
-                                android:layout_marginTop="@dimen/space_2" />
+                                android:layout_marginTop="1dp" />
                         </LinearLayout>
 
-                        <!-- Version chip -->
+                        <!-- Refined version badge -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="v0.3"
                             android:textColor="@color/koda_text_tertiary"
                             android:textSize="11sp"
-                            android:background="@drawable/chip_bg"
+                            android:fontFamily="monospace"
+                            android:background="@drawable/badge_version"
                             android:paddingHorizontal="8dp"
-                            android:paddingVertical="4dp" />
+                            android:paddingVertical="3dp" />
                     </LinearLayout>
 
-                    <!-- ── Code preview (mini terminal) ─────── -->
-                    <LinearLayout
+                    <!-- ── Compact Code Preview ─────────────────────────────── -->
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/code_preview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@drawable/code_preview_bg"
-                        android:paddingHorizontal="@dimen/space_16"
-                        android:paddingTop="@dimen/space_12"
-                        android:paddingBottom="@dimen/space_16"
-                        android:layout_marginBottom="@dimen/space_20">
+                        app:cardBackgroundColor="@color/koda_surface_2"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/koda_stroke"
+                        app:strokeWidth="0.5dp"
+                        android:layout_marginBottom="16dp">
 
-                        <!-- Terminal title bar -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="@dimen/space_12">
+                            android:orientation="vertical"
+                            android:padding="12dp">
 
-                            <!-- Traffic lights -->
-                            <View
-                                android:layout_width="8dp"
-                                android:layout_height="8dp"
-                                android:background="@drawable/dot_red"
-                                android:layout_marginEnd="5dp" />
-                            <View
-                                android:layout_width="8dp"
-                                android:layout_height="8dp"
-                                android:background="@drawable/dot_yellow"
-                                android:layout_marginEnd="5dp" />
-                            <View
-                                android:layout_width="8dp"
-                                android:layout_height="8dp"
-                                android:background="@drawable/dot_green"
-                                android:layout_marginEnd="@dimen/space_12" />
+                            <!-- Terminal title bar - more compact -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginBottom="8dp">
+
+                                <!-- Traffic lights - smaller -->
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="6dp"
+                                    android:background="@drawable/dot_red"
+                                    android:layout_marginEnd="4dp" />
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="6dp"
+                                    android:background="@drawable/dot_yellow"
+                                    android:layout_marginEnd="4dp" />
+                                <View
+                                    android:layout_width="6dp"
+                                    android:layout_height="6dp"
+                                    android:background="@drawable/dot_green"
+                                    android:layout_marginEnd="10dp" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="koda ~ generating"
+                                    android:textColor="@color/koda_text_tertiary"
+                                    android:textSize="10sp"
+                                    android:fontFamily="monospace" />
+                            </LinearLayout>
+
+                            <!-- Code lines - more compact -->
+                            <TextView
+                                android:id="@+id/code_line_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="def fibonacci(n: int) -> list:"
+                                android:textColor="@color/koda_primary"
+                                android:textSize="11sp"
+                                android:fontFamily="monospace"
+                                android:alpha="0" />
 
                             <TextView
-                                android:layout_width="0dp"
+                                android:id="@+id/code_line_2"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="koda ~ generating"
-                                android:textColor="@color/koda_text_tertiary"
+                                android:text="    seq = [0, 1]"
+                                android:textColor="@color/koda_text_secondary"
                                 android:textSize="11sp"
-                                android:fontFamily="monospace" />
+                                android:fontFamily="monospace"
+                                android:layout_marginTop="1dp"
+                                android:alpha="0" />
+
+                            <TextView
+                                android:id="@+id/code_line_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="    while len(seq) &lt; n:"
+                                android:textColor="@color/koda_text_secondary"
+                                android:textSize="11sp"
+                                android:fontFamily="monospace"
+                                android:layout_marginTop="1dp"
+                                android:alpha="0" />
+
+                            <TextView
+                                android:id="@+id/code_line_4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="        seq.append(seq[-1] + seq[-2])"
+                                android:textColor="@color/koda_text_secondary"
+                                android:textSize="11sp"
+                                android:fontFamily="monospace"
+                                android:layout_marginTop="1dp"
+                                android:alpha="0" />
+
+                            <TextView
+                                android:id="@+id/code_line_5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="    return seq"
+                                android:textColor="@color/koda_success"
+                                android:textSize="11sp"
+                                android:fontFamily="monospace"
+                                android:layout_marginTop="1dp"
+                                android:alpha="0" />
+
+                            <!-- Cursor -->
+                            <TextView
+                                android:id="@+id/code_cursor"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="▋"
+                                android:textColor="@color/koda_primary"
+                                android:textSize="11sp"
+                                android:fontFamily="monospace"
+                                android:layout_marginTop="1dp"
+                                android:alpha="0" />
                         </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                        <!-- Code lines — animated via Java -->
-                        <TextView
-                            android:id="@+id/code_line_1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="def fibonacci(n: int) -> list:"
-                            android:textColor="@color/koda_primary"
-                            android:textSize="12sp"
-                            android:fontFamily="monospace"
-                            android:alpha="0" />
-
-                        <TextView
-                            android:id="@+id/code_line_2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="    seq = [0, 1]"
-                            android:textColor="@color/koda_text_secondary"
-                            android:textSize="12sp"
-                            android:fontFamily="monospace"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0" />
-
-                        <TextView
-                            android:id="@+id/code_line_3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="    while len(seq) &lt; n:"
-                            android:textColor="@color/koda_text_secondary"
-                            android:textSize="12sp"
-                            android:fontFamily="monospace"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0" />
-
-                        <TextView
-                            android:id="@+id/code_line_4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="        seq.append(seq[-1] + seq[-2])"
-                            android:textColor="@color/koda_text_secondary"
-                            android:textSize="12sp"
-                            android:fontFamily="monospace"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0" />
-
-                        <TextView
-                            android:id="@+id/code_line_5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="    return seq"
-                            android:textColor="@color/koda_success"
-                            android:textSize="12sp"
-                            android:fontFamily="monospace"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0" />
-
-                        <!-- Cursor blink -->
-                        <TextView
-                            android:id="@+id/code_cursor"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="▋"
-                            android:textColor="@color/koda_primary"
-                            android:textSize="12sp"
-                            android:fontFamily="monospace"
-                            android:layout_marginTop="2dp"
-                            android:alpha="0" />
-                    </LinearLayout>
-
-                    <!-- ── Description ──────────────────────── -->
+                    <!-- ── Description - cleaner typography ─────────────────── -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Write, review and refine code with OpenClaude-powered assistance from your phone."
+                        android:text="Write, review and refine code with AI assistance. Powered by OpenClaude."
                         android:textColor="@color/koda_text_secondary"
-                        android:textSize="13sp"
-                        android:lineSpacingExtra="3dp"
-                        android:layout_marginBottom="@dimen/space_20" />
+                        android:textSize="14sp"
+                        android:lineSpacingMultiplier="1.3"
+                        android:layout_marginBottom="16dp" />
 
-                    <!-- ── Battery info block ───────────────── -->
+                    <!-- ── Battery Note - lighter, secondary ────────────────── -->
                     <LinearLayout
                         android:id="@+id/battery_block"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:background="@drawable/battery_info_bg"
-                        android:paddingHorizontal="@dimen/space_16"
-                        android:paddingVertical="@dimen/space_12"
-                        android:layout_marginBottom="@dimen/space_24">
+                        android:layout_marginBottom="20dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⚡"
-                            android:textSize="16sp"
-                            android:layout_marginEnd="@dimen/space_12" />
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_battery"
+                            android:tint="@color/koda_warning"
+                            android:layout_marginEnd="8dp" />
 
                         <TextView
                             android:id="@+id/launcher_status"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="For reliable background execution, Koda needs unrestricted battery access."
-                            android:textColor="@color/koda_text_secondary"
+                            android:text="For reliable background execution, grant unrestricted battery access."
+                            android:textColor="@color/koda_text_tertiary"
                             android:textSize="12sp"
-                            android:lineSpacingExtra="2dp" />
+                            android:lineSpacingMultiplier="1.2" />
                     </LinearLayout>
 
-                    <!-- ── CTAs ─────────────────────────────── -->
-                    <Button
+                    <!-- ── Premium CTA ───────────────────────────────────────── -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/launcher_continue"
-                        style="@style/Koda.Button.Primary"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Grant Battery Access"
-                        android:visibility="gone" />
+                        android:layout_height="52dp"
+                        android:text="Continue"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="false"
+                        android:visibility="gone"
+                        app:cornerRadius="12dp"
+                        app:backgroundTint="@color/koda_primary"
+                        android:textColor="@color/koda_on_primary"
+                        app:rippleColor="@color/koda_ripple"
+                        android:elevation="0dp"
+                        android:stateListAnimator="@null" />
 
-                    <TextView
+                    <!-- ── Secondary Action ─────────────────────────────────── -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/launcher_skip"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_horizontal"
                         android:text="Skip for now"
-                        android:textColor="@color/koda_text_tertiary"
                         android:textSize="14sp"
-                        android:gravity="center"
-                        android:paddingVertical="@dimen/space_12"
-                        android:visibility="gone" />
+                        android:textAllCaps="false"
+                        android:visibility="gone"
+                        android:textColor="@color/koda_text_secondary"
+                        app:rippleColor="@color/koda_ripple" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
