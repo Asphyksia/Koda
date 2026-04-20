@@ -45,25 +45,27 @@
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- K Logo (tight to text) -->
+                <!-- K Logo - larger, aligned with text baseline -->
                 <ImageView
                     android:id="@+id/launcher_logo"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
                     android:src="@drawable/ic_k_logo"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="bottom" />
 
-                <!-- "oda" text tight to K -->
+                <!-- "oda" text tight to K, aligned baseline -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="oda"
                     android:textColor="@color/koda_text_primary"
-                    android:textSize="32sp"
+                    android:textSize="36sp"
                     android:textStyle="bold"
-                    android:letterSpacing="-0.02"
+                    android:letterSpacing="-0.03"
                     android:includeFontPadding="false"
-                    android:layout_marginStart="-4dp" />
+                    android:layout_marginStart="-6dp"
+                    android:layout_gravity="bottom" />
 
                 <View
                     android:layout_width="8dp"
