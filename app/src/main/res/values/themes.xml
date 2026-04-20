@@ -2,23 +2,50 @@
 <resources>
 
     <!-- ============================================================
-         KODA DESIGN SYSTEM — Theme
+         KODA DESIGN SYSTEM — Material 3 Theme
          ============================================================ -->
 
-    <style name="Theme.Koda" parent="Theme.MaterialComponents.NoActionBar">
-        <!-- Core colors -->
+    <style name="Theme.Koda" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Material 3 Color System -->
         <item name="colorPrimary">@color/koda_primary</item>
-        <item name="colorPrimaryDark">@color/koda_bg</item>
-        <item name="colorAccent">@color/koda_primary</item>
         <item name="colorOnPrimary">@color/koda_on_primary</item>
+        <item name="colorPrimaryContainer">@color/koda_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/koda_on_primary</item>
+
+        <item name="colorSecondary">@color/koda_primary_dim</item>
+        <item name="colorOnSecondary">@color/koda_on_primary</item>
+        <item name="colorSecondaryContainer">@color/koda_surface_3</item>
+        <item name="colorOnSecondaryContainer">@color/koda_text_primary</item>
+
+        <item name="colorTertiary">@color/koda_success</item>
+        <item name="colorOnTertiary">@color/koda_on_primary</item>
+        <item name="colorTertiaryContainer">@color/koda_success_container</item>
+        <item name="colorOnTertiaryContainer">@color/koda_success</item>
+
+        <item name="colorError">@color/koda_error</item>
+        <item name="colorOnError">@color/koda_on_primary</item>
+        <item name="colorErrorContainer">@color/koda_error_container</item>
+        <item name="colorOnErrorContainer">@color/koda_error</item>
+
         <item name="colorSurface">@color/koda_surface_1</item>
         <item name="colorOnSurface">@color/koda_text_primary</item>
-        <item name="colorError">@color/koda_error</item>
+        <item name="colorSurfaceVariant">@color/koda_surface_2</item>
+        <item name="colorOnSurfaceVariant">@color/koda_text_secondary</item>
 
-        <!-- Window -->
+        <item name="colorOutline">@color/koda_stroke</item>
+        <item name="colorOutlineVariant">@color/koda_stroke_strong</item>
+
+        <!-- Surface containers for Material 3 elevation -->
+        <item name="colorSurfaceContainerLowest">@color/koda_bg</item>
+        <item name="colorSurfaceContainerLow">@color/koda_surface_1</item>
+        <item name="colorSurfaceContainer">@color/koda_surface_2</item>
+        <item name="colorSurfaceContainerHigh">@color/koda_surface_3</item>
+        <item name="colorSurfaceContainerHighest">@color/koda_surface_4</item>
+
+        <!-- Window - Edge to Edge support -->
         <item name="android:windowBackground">@color/koda_bg</item>
-        <item name="android:statusBarColor">@color/koda_bg</item>
-        <item name="android:navigationBarColor">@color/koda_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
 
@@ -33,6 +60,37 @@
 
         <!-- Drawer scrim -->
         <item name="scrimBackground">@color/koda_scrim</item>
+
+        <!-- Material 3 Component Styles -->
+        <item name="materialCardViewStyle">@style/Widget.Koda.CardView</item>
+        <item name="materialButtonStyle">@style/Widget.Koda.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.Koda.Button.Outlined</item>
+        <item name="materialButtonTextStyle">@style/Widget.Koda.Button.Text</item>
+    </style>
+
+    <!-- Material 3 Component Styles -->
+    <style name="Widget.Koda.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/koda_surface_1</item>
+        <item name="cardElevation">@dimen/elevation_sm</item>
+        <item name="cardCornerRadius">@dimen/radius_lg</item>
+        <item name="strokeColor">@color/koda_stroke</item>
+        <item name="strokeWidth">0.5dp</item>
+    </style>
+
+    <style name="Widget.Koda.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/koda_primary</item>
+        <item name="android:textColor">@color/koda_on_primary</item>
+        <item name="cornerRadius">@dimen/radius_md</item>
+    </style>
+
+    <style name="Widget.Koda.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/koda_stroke</item>
+        <item name="android:textColor">@color/koda_text_secondary</item>
+        <item name="cornerRadius">@dimen/radius_md</item>
+    </style>
+
+    <style name="Widget.Koda.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/koda_primary</item>
     </style>
 
     <!-- Dialog theme — dark, matches Koda palette -->
