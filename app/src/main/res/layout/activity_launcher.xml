@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Premium Welcome Screen v2 - Flat, airy, modern
-  No heavy cards, glassmorphism, better contrast
+  Premium Welcome Screen v3 - Polish final
+  Estructura mantenida, refinamiento premium
+  Microinteracciones, mejor contraste, jerarquía tipográfica
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,6 +10,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/koda_bg">
+
+    <!-- Background gradient layer for depth -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_gradient" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,120 +29,134 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:paddingHorizontal="28dp"
-            android:paddingTop="48dp"
-            android:paddingBottom="32dp"
-            android:minHeight="600dp">
+            android:paddingHorizontal="32dp"
+            android:paddingTop="56dp"
+            android:paddingBottom="28dp">
 
             <!-- ══════════════════════════════════════════
-                 HEADER - Logo + Title inline, minimal
+                 HEADER - Refined, tighter, chip badge
                  ══════════════════════════════════════════ -->
             <LinearLayout
+                android:id="@+id/header_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="32dp"
-                android:alpha="0"
-                android:id="@+id/header_container">
+                android:layout_marginBottom="36dp"
+                android:alpha="0">
 
+                <!-- Logo más pequeño, elegante -->
                 <ImageView
                     android:id="@+id/launcher_logo"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_koda_logo"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/logo_background" />
+                    android:background="@drawable/logo_background_refined" />
 
                 <View
-                    android:layout_width="12dp"
+                    android:layout_width="10dp"
                     android:layout_height="0dp" />
 
+                <!-- Nombre con mejor tracking -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Koda"
                     android:textColor="@color/koda_text_primary"
-                    android:textSize="28sp"
+                    android:textSize="26sp"
                     android:textStyle="bold"
-                    android:letterSpacing="-0.03" />
+                    android:letterSpacing="-0.02" />
 
                 <View
-                    android:layout_width="8dp"
+                    android:layout_width="6dp"
                     android:layout_height="0dp" />
 
-                <TextView
+                <!-- Badge como chip sutil -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="v0.3"
-                    android:textColor="@color/koda_text_tertiary"
-                    android:textSize="12sp"
-                    android:fontFamily="monospace" />
+                    app:cardBackgroundColor="@color/koda_surface_2"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/koda_stroke"
+                    app:strokeWidth="0.5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="v0.3"
+                        android:textColor="@color/koda_text_tertiary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp" />
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
             <!-- ══════════════════════════════════════════
-                 CODE PREVIEW - Compact, floating, glass effect
+                 CODE PREVIEW - Premium glass, mejor contraste
                  ══════════════════════════════════════════ -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/code_preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:alpha="0"
-                app:cardBackgroundColor="@color/koda_surface_2"
-                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="@color/koda_surface_glass"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="@color/koda_stroke"
-                app:strokeWidth="1dp"
-                android:layout_marginBottom="24dp">
+                app:strokeColor="@color/koda_stroke_strong"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="14dp">
+                    android:padding="16dp">
 
-                    <!-- Terminal bar minimal -->
+                    <!-- Terminal bar más refinada -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="6dp">
+                        android:layout_marginBottom="10dp">
 
                         <View
-                            android:layout_width="5dp"
-                            android:layout_height="5dp"
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
                             android:background="@drawable/dot_red"
-                            android:layout_marginEnd="3dp" />
+                            android:layout_marginEnd="4dp" />
                         <View
-                            android:layout_width="5dp"
-                            android:layout_height="5dp"
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
                             android:background="@drawable/dot_yellow"
-                            android:layout_marginEnd="3dp" />
+                            android:layout_marginEnd="4dp" />
                         <View
-                            android:layout_width="5dp"
-                            android:layout_height="5dp"
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
                             android:background="@drawable/dot_green"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="10dp" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="generating..."
-                            android:textColor="@color/koda_text_tertiary"
-                            android:textSize="9sp"
+                            android:text="koda ~ generate"
+                            android:textColor="@color/koda_text_quaternary"
+                            android:textSize="10sp"
                             android:fontFamily="monospace" />
                     </LinearLayout>
 
-                    <!-- Compact code - only 3 lines -->
+                    <!-- Código con mejor jerarquía de colores -->
                     <TextView
                         android:id="@+id/code_line_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="def solve(problem) -> Solution:"
-                        android:textColor="@color/koda_primary"
-                        android:textSize="12sp"
+                        android:text="def solve(problem):"
+                        android:textColor="@color/koda_code_purple"
+                        android:textSize="13sp"
                         android:fontFamily="monospace"
                         android:alpha="0" />
 
@@ -144,10 +165,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="    with AI.assistant() as ai:"
-                        android:textColor="@color/koda_text_secondary"
-                        android:textSize="12sp"
+                        android:textColor="@color/koda_code_blue"
+                        android:textSize="13sp"
                         android:fontFamily="monospace"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="3dp"
                         android:alpha="0" />
 
                     <TextView
@@ -155,114 +176,129 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="        return ai.generate(problem)"
-                        android:textColor="@color/koda_success"
-                        android:textSize="12sp"
+                        android:textColor="@color/koda_code_green"
+                        android:textSize="13sp"
                         android:fontFamily="monospace"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="3dp"
                         android:alpha="0" />
 
+                    <!-- Cursor animado -->
                     <TextView
                         android:id="@+id/code_cursor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="▋"
                         android:textColor="@color/koda_primary"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         android:fontFamily="monospace"
-                        android:layout_marginTop="2dp"
+                        android:layout_marginTop="3dp"
                         android:alpha="0" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- ══════════════════════════════════════════
-                 TAGLINE - Simple, centered
+                 TAGLINE - Más peso, premium
                  ══════════════════════════════════════════ -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="AI coding assistant"
-                android:textColor="@color/koda_text_secondary"
-                android:textSize="16sp"
-                android:layout_marginBottom="8dp" />
+                android:textColor="@color/koda_text_primary"
+                android:textSize="20sp"
+                android:textStyle="medium"
+                android:letterSpacing="-0.01"
+                android:layout_marginBottom="10dp" />
 
             <!-- ══════════════════════════════════════════
-                 DESCRIPTION - Lighter, secondary
+                 DESCRIPTION - Copy premium, directo
                  ══════════════════════════════════════════ -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Write and refine code on your phone."
-                android:textColor="@color/koda_text_tertiary"
-                android:textSize="14sp"
+                android:text="Write, edit, and ship code from your phone."
+                android:textColor="@color/koda_text_secondary"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.1"
                 android:gravity="center"
-                android:layout_marginBottom="40dp" />
+                android:layout_marginBottom="44dp" />
 
             <!-- ══════════════════════════════════════════
-                 ACTIONS - Premium outlined buttons
+                 ACTIONS - CTA tonal elegante, skip claro
                  ══════════════════════════════════════════ -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/launcher_continue"
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="4dp"
+                android:layout_height="52dp"
                 android:text="Get Started"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:textAllCaps="false"
                 android:visibility="gone"
-                app:cornerRadius="24dp"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:cornerRadius="14dp"
+                android:backgroundTint="@color/koda_surface_tonal"
                 android:textColor="@color/koda_primary"
-                app:strokeColor="@color/koda_primary"
-                app:strokeWidth="1.5dp"
-                app:rippleColor="@color/koda_ripple" />
+                app:rippleColor="@color/koda_ripple_strong"
+                android:stateListAnimator="@animator/button_elevation" />
 
             <View
                 android:layout_width="0dp"
-                android:layout_height="12dp" />
+                android:layout_height="14dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/launcher_skip"
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Skip"
+                android:layout_height="44dp"
+                android:text="Skip for now"
                 android:textSize="14sp"
                 android:textAllCaps="false"
                 android:visibility="gone"
-                android:textColor="@color/koda_text_tertiary"
+                android:textColor="@color/koda_text_secondary"
                 app:rippleColor="@color/koda_ripple" />
 
             <!-- ══════════════════════════════════════════
-                 BATTERY HINT - Minimal, icon only
+                 BATTERY NOTE - Discreta, bien integrada
                  ══════════════════════════════════════════ -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/battery_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginTop="24dp"
-                android:alpha="0.6">
+                android:layout_marginTop="32dp"
+                android:alpha="0"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/koda_stroke"
+                app:strokeWidth="0.5dp">
 
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:src="@drawable/ic_battery"
-                    android:tint="@color/koda_warning" />
-
-                <View
-                    android:layout_width="6dp"
-                    android:layout_height="0dp" />
-
-                <TextView
-                    android:id="@+id/launcher_status"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Battery optimization recommended"
-                    android:textColor="@color/koda_text_tertiary"
-                    android:textSize="11sp" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_battery"
+                        android:tint="@color/koda_warning" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="0dp" />
+
+                    <TextView
+                        android:id="@+id/launcher_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Battery optimization recommended"
+                        android:textColor="@color/koda_text_tertiary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </ScrollView>

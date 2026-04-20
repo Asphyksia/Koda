@@ -169,10 +169,33 @@ public class KodaLauncherActivity extends BaseActivity {
         if (needsBattery) {
             mContinueButton.setVisibility(View.VISIBLE);
             mSkipButton.setVisibility(View.VISIBLE);
+            mBatteryBlock.setVisibility(View.VISIBLE);
             mContinueButton.setAlpha(0f);
             mSkipButton.setAlpha(0f);
-            mContinueButton.animate().alpha(1f).setDuration(220).start();
-            mSkipButton.animate().alpha(1f).setDuration(220).setStartDelay(60).start();
+            mBatteryBlock.setAlpha(0f);
+            mBatteryBlock.setTranslationY(10f);
+            
+            // Staggered animation
+            mContinueButton.animate()
+                .alpha(1f)
+                .setDuration(250)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+                
+            mSkipButton.animate()
+                .alpha(1f)
+                .setDuration(250)
+                .setStartDelay(80)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
+                
+            mBatteryBlock.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(300)
+                .setStartDelay(150)
+                .setInterpolator(new DecelerateInterpolator(1.5f))
+                .start();
         } else {
             // Battery already granted — hide the block and proceed
             mBatteryBlock.setVisibility(View.GONE);

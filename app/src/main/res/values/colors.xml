@@ -14,12 +14,30 @@
     <color name="koda_surface_4">#FF2D333B</color>    <!-- hover / pressed overlays -->
 
     <!-- Glassmorphism / Premium surfaces -->
-    <color name="koda_surface_glass">#0D161B22</color> <!-- 5% opacity surface for glass effect -->
+    <color name="koda_surface_glass">#FF1C2333</color>    <!-- glass surface for cards -->
+    <color name="koda_surface_tonal">#1F6FEB20</color>  <!-- tonal button background (20% opacity hex) -->
     <color name="koda_surface_glass_border">#1AFFFFFF</color> <!-- 10% white border -->
+
+    <!-- Code syntax colors -->
+    <color name="koda_code_purple">#FFBC8EFF</color>  <!-- keywords -->
+    <color name="koda_code_blue">#FF79C0FF</color>   <!-- functions -->
+    <color name="koda_code_green">#FF7EE787</color>  <!-- strings/returns -->
+
+    <!-- Text hierarchy -->
+    <color name="koda_text_quaternary">#FF3D4D5C</color>  <!-- very subtle text -->
+
+    <!-- Ripple / pressed -->
+    <color name="koda_ripple_strong">#334A90D9</color>     <!-- 20% primary -->
+
+    <!-- Dividers & strokes -->
+    <color name="koda_stroke_strong">#FF3D4852</color> <!-- more visible stroke -->
+
+    <!-- Surface colors for glassmorphism -->
+    <color name="koda_surface_glass">#0D161B22</color> <!-- 5% opacity surface for glass effect -->
 
     <!-- Dividers & strokes -->
     <color name="koda_stroke">#FF21262D</color>       <!-- subtle border on cards/inputs -->
-    <color name="koda_stroke_strong">#FF30363D</color> <!-- more visible stroke when needed -->
+    <color name="koda_stroke_strong">#FF3D4852</color> <!-- more visible stroke when needed -->
     <color name="koda_divider">#FF161B22</color>      <!-- list dividers -->
 
     <!-- Primary - More vibrant blue -->
