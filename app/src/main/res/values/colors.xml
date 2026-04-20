@@ -33,11 +33,11 @@
     <color name="koda_stroke_strong">#FF3D4852</color> <!-- more visible stroke -->
 
     <!-- Surface colors for glassmorphism -->
-    <color name="koda_surface_glass">#0D161B22</color> <!-- 5% opacity surface for glass effect -->
+    <!-- Note: koda_surface_glass already defined above -->
 
     <!-- Dividers & strokes -->
     <color name="koda_stroke">#FF21262D</color>       <!-- subtle border on cards/inputs -->
-    <color name="koda_stroke_strong">#FF3D4852</color> <!-- more visible stroke when needed -->
+    <!-- Note: koda_stroke_strong already defined above -->
     <color name="koda_divider">#FF161B22</color>      <!-- list dividers -->
 
     <!-- Primary - More vibrant blue -->
