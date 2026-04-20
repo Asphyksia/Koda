@@ -41,11 +41,11 @@
 
                 <ImageView
                     android:id="@+id/launcher_logo"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@mipmap/ic_launcher"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_koda_logo"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/launcher_logo_bg" />
+                    android:background="@drawable/logo_background" />
 
                 <View
                     android:layout_width="12dp"
