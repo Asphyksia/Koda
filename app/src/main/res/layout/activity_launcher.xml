@@ -17,8 +17,7 @@
     android:id="@+id/launcher_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/koda_bg"
-    android:fitsSystemWindows="true">
+    android:background="@color/koda_bg">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -38,9 +37,9 @@
             android:minHeight="600dp">
 
             <!-- ══════════════════════════════════════════
-                 HERO CARD
+                 HERO CARD - MaterialCardView
                  ══════════════════════════════════════════ -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/hero_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +47,8 @@
                 app:cardBackgroundColor="@color/koda_surface_1"
                 app:cardCornerRadius="@dimen/radius_xl"
                 app:cardElevation="@dimen/elevation_md"
-                app:cardMaxElevation="@dimen/elevation_md">
+                app:strokeColor="@color/koda_stroke"
+                app:strokeWidth="0.5dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
