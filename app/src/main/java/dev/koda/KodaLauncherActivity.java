@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.termux.R;
 import com.termux.app.TermuxInstaller;
@@ -57,7 +58,15 @@ public class KodaLauncherActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Install splash screen before super.onCreate()
+        SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
+
+        // Keep splash screen visible until we decide to dismiss it
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        splashScreen.setKeepOnScreenCondition(() -> false);
+
         setContentView(R.layout.activity_launcher);
 
         mHeroCard       = findViewById(R.id.hero_card);

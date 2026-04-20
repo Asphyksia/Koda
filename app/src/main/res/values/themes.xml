@@ -93,6 +93,25 @@
         <item name="android:textColor">@color/koda_primary</item>
     </style>
 
+    <!-- Splash Screen Theme -->
+    <style name="Theme.Koda.Starting" parent="Theme.SplashScreen">
+        <!-- Window background -->
+        <item name="windowSplashScreenBackground">@color/koda_bg</item>
+
+        <!-- Animated icon - uses the app icon -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+
+        <!-- Status bar and navigation bar -->
+        <item name="android:statusBarColor">@color/koda_bg</item>
+        <item name="android:navigationBarColor">@color/koda_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Theme to use after splash -->
+        <item name="postSplashScreenTheme">@style/Theme.Koda</item>
+    </style>
+
     <!-- Dialog theme — dark, matches Koda palette -->
     <style name="Theme.Koda.Dialog" parent="Theme.MaterialComponents.Dialog">
         <item name="colorPrimary">@color/koda_primary</item>
