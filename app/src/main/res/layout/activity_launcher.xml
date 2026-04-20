@@ -205,7 +205,7 @@
                 android:text="AI coding assistant"
                 android:textColor="@color/koda_text_primary"
                 android:textSize="20sp"
-                android:textStyle="medium"
+                android:textStyle="normal"
                 android:letterSpacing="-0.01"
                 android:layout_marginBottom="10dp" />
 
