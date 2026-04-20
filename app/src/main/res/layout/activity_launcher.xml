@@ -34,7 +34,7 @@
             android:paddingBottom="28dp">
 
             <!-- ══════════════════════════════════════════
-                 HEADER - K + oda + v0.3 as single brand
+                 HEADER - K + oda + v0.3 as single brand, tight
                  ══════════════════════════════════════════ -->
             <LinearLayout
                 android:id="@+id/header_container"
@@ -45,15 +45,15 @@
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- K Logo (no background) -->
+                <!-- K Logo (tight to text) -->
                 <ImageView
                     android:id="@+id/launcher_logo"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/ic_k_logo"
                     android:scaleType="fitCenter" />
 
-                <!-- "oda" text matching K weight -->
+                <!-- "oda" text tight to K -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -63,13 +63,13 @@
                     android:textStyle="bold"
                     android:letterSpacing="-0.02"
                     android:includeFontPadding="false"
-                    android:layout_marginStart="-2dp" />
+                    android:layout_marginStart="-4dp" />
 
                 <View
-                    android:layout_width="10dp"
+                    android:layout_width="8dp"
                     android:layout_height="0dp" />
 
-                <!-- v0.3 badge - integrated, subtle -->
+                <!-- v0.3 badge - aligned with baseline -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -77,8 +77,8 @@
                     android:textColor="@color/koda_text_tertiary"
                     android:textSize="11sp"
                     android:fontFamily="monospace"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="3dp"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
                     android:background="@drawable/badge_subtle" />
             </LinearLayout>
 
