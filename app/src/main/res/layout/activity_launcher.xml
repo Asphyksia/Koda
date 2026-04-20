@@ -34,54 +34,68 @@
             android:paddingBottom="28dp">
 
             <!-- ══════════════════════════════════════════
-                 HEADER - K + oda + v0.3 as single brand, tight
+                 BRAND HEADER - K + oda + v0.3 as single unit
+                 Optical alignment, shared baseline, premium kerning
                  ══════════════════════════════════════════ -->
             <LinearLayout
                 android:id="@+id/header_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
+                android:gravity="bottom"
                 android:layout_marginBottom="40dp"
                 android:alpha="0">
 
-                <!-- K Logo - vector, elegant -->
-                <ImageView
-                    android:id="@+id/launcher_logo"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_k_logo"
-                    android:scaleType="fitCenter"
-                    android:layout_gravity="center_vertical" />
-
-                <!-- "oda" lowercase, aligned -->
-                <TextView
+                <!-- Wordmark container: K + oda with optical baseline -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="oda"
-                    android:textColor="@color/koda_text_primary"
-                    android:textSize="32sp"
-                    android:textStyle="normal"
-                    android:letterSpacing="-0.02"
-                    android:includeFontPadding="false"
-                    android:layout_marginStart="-4dp"
-                    android:layout_gravity="center_vertical" />
+                    android:orientation="horizontal"
+                    android:gravity="bottom">
 
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="0dp" />
+                    <!-- K Logo - sized for optical baseline alignment with text -->
+                    <ImageView
+                        android:id="@+id/launcher_logo"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:src="@drawable/ic_k_logo"
+                        android:scaleType="fitCenter"
+                        android:layout_marginBottom="2dp" />
 
-                <!-- v0.3 badge - aligned with baseline -->
-                <TextView
+                    <!-- oda - aligned to K's optical baseline -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="oda"
+                        android:textColor="@color/koda_text_primary"
+                        android:textSize="40sp"
+                        android:textStyle="normal"
+                        android:letterSpacing="-0.03"
+                        android:includeFontPadding="false"
+                        android:layout_marginStart="-2dp"
+                        android:lineSpacingExtra="0dp" />
+                </LinearLayout>
+
+                <!-- Version badge - aligned with wordmark, not floating -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="v0.3"
-                    android:textColor="@color/koda_text_tertiary"
-                    android:textSize="11sp"
-                    android:fontFamily="monospace"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="2dp"
-                    android:background="@drawable/badge_subtle" />
+                    android:orientation="horizontal"
+                    android:gravity="bottom"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="v0.3"
+                        android:textColor="@color/koda_text_tertiary"
+                        android:textSize="13sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="3dp"
+                        android:background="@drawable/badge_subtle" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ══════════════════════════════════════════
