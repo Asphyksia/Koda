@@ -42,8 +42,9 @@ public class KodaLauncherActivity extends BaseActivity {
     private static final int BATTERY_REQUEST_CODE    = 1002;
 
     // Card + animation views
-    private View     mHeroCard;
-    private View     mCodeLine1, mCodeLine2, mCodeLine3, mCodeLine4, mCodeLine5;
+    private View     mHeaderContainer;
+    private View     mCodePreview;
+    private View     mCodeLine1, mCodeLine2, mCodeLine3;
     private TextView mCodeCursor;
     private TextView mLauncherStatus;
 
@@ -69,25 +70,26 @@ public class KodaLauncherActivity extends BaseActivity {
 
         setContentView(R.layout.activity_launcher);
 
-        mHeroCard       = findViewById(R.id.hero_card);
-        mCodeLine1      = findViewById(R.id.code_line_1);
-        mCodeLine2      = findViewById(R.id.code_line_2);
-        mCodeLine3      = findViewById(R.id.code_line_3);
-        mCodeLine4      = findViewById(R.id.code_line_4);
-        mCodeLine5      = findViewById(R.id.code_line_5);
-        mCodeCursor     = findViewById(R.id.code_cursor);
-        mLauncherStatus = findViewById(R.id.launcher_status);
-        mContinueButton = findViewById(R.id.launcher_continue);
-        mSkipButton     = findViewById(R.id.launcher_skip);
-        mBatteryBlock   = findViewById(R.id.battery_block);
+        mHeaderContainer = findViewById(R.id.header_container);
+        mCodePreview     = findViewById(R.id.code_preview);
+        mCodeLine1       = findViewById(R.id.code_line_1);
+        mCodeLine2       = findViewById(R.id.code_line_2);
+        mCodeLine3       = findViewById(R.id.code_line_3);
+        mCodeCursor      = findViewById(R.id.code_cursor);
+        mLauncherStatus  = findViewById(R.id.launcher_status);
+        mContinueButton  = findViewById(R.id.launcher_continue);
+        mSkipButton      = findViewById(R.id.launcher_skip);
+        mBatteryBlock    = findViewById(R.id.battery_block);
 
         mContinueButton.setOnClickListener(v -> requestBatteryOptimization());
         mSkipButton.setOnClickListener(v -> proceedToRoute());
 
-        // Animate card in, then start code animation, then check permissions
-        animateCardIn(() -> {
-            animateCodeLines(() ->
-                mHandler.postDelayed(this::checkPermissions, 300));
+        // Animate header in, then code preview, then check permissions
+        animateHeaderIn(() -> {
+            animateCodePreview(() -> {
+                animateCodeLines(() ->
+                    mHandler.postDelayed(this::checkPermissions, 300));
+            });
         });
     }
 
@@ -102,13 +104,31 @@ public class KodaLauncherActivity extends BaseActivity {
     // Animations
     // =========================================================
 
-    private void animateCardIn(Runnable onDone) {
-        mHeroCard.setAlpha(0f);
-        mHeroCard.setTranslationY(40f);
-        mHeroCard.animate()
+    private void animateHeaderIn(Runnable onDone) {
+        mHeaderContainer.setAlpha(0f);
+        mHeaderContainer.setTranslationY(-20f);
+        mHeaderContainer.animate()
             .alpha(1f)
             .translationY(0f)
-            .setDuration(320)
+            .setDuration(400)
+            .setInterpolator(new DecelerateInterpolator(1.8f))
+            .setListener(new AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(Animator a) { if (onDone != null) onDone.run(); }
+            })
+            .start();
+    }
+
+    private void animateCodePreview(Runnable onDone) {
+        mCodePreview.setAlpha(0f);
+        mCodePreview.setTranslationY(20f);
+        mCodePreview.setScaleX(0.95f);
+        mCodePreview.setScaleY(0.95f);
+        mCodePreview.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(350)
             .setInterpolator(new DecelerateInterpolator(1.6f))
             .setListener(new AnimatorListenerAdapter() {
                 @Override public void onAnimationEnd(Animator a) { if (onDone != null) onDone.run(); }
@@ -118,21 +138,21 @@ public class KodaLauncherActivity extends BaseActivity {
 
     /** Fades in code lines one by one, then starts cursor blink loop. */
     private void animateCodeLines(Runnable onDone) {
-        View[] lines = { mCodeLine1, mCodeLine2, mCodeLine3, mCodeLine4, mCodeLine5 };
+        View[] lines = { mCodeLine1, mCodeLine2, mCodeLine3 };
         int delay = 0;
         for (View line : lines) {
             final int d = delay;
             mHandler.postDelayed(() ->
-                line.animate().alpha(1f).setDuration(160)
+                line.animate().alpha(1f).setDuration(140)
                     .setInterpolator(new DecelerateInterpolator()).start(), d);
-            delay += 120;
+            delay += 100;
         }
         // Show cursor after last line
         mHandler.postDelayed(() -> {
             mCodeCursor.setAlpha(1f);
             startCursorBlink();
             if (onDone != null) onDone.run();
-        }, delay + 80);
+        }, delay + 60);
     }
 
     private void startCursorBlink() {
