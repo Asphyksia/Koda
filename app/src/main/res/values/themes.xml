@@ -93,6 +93,11 @@
         <item name="android:textColor">@color/koda_primary</item>
     </style>
 
+    <!-- Activity Transitions -->
+    <style name="Theme.Koda.ActivityTransition">
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+
     <!-- Splash Screen Theme -->
     <style name="Theme.Koda.Starting" parent="Theme.SplashScreen">
         <!-- Window background -->
