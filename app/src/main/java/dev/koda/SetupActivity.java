@@ -43,7 +43,6 @@ public class SetupActivity extends AppCompatActivity {
 
     // ─── Views: Install phase ─────────────────────────────────────────────────
     private View            mInstallContainer;
-    private TextView        mInstallSubtitle;
     private ProgressBar     mInstallProgress;
     private TextView        mInstallHint;
 
@@ -95,29 +94,10 @@ public class SetupActivity extends AppCompatActivity {
     private View            mStep1Container;
     private LinearLayout    mProvidersPriority;
     private LinearLayout    mProvidersSecondary;
-    private LinearLayout    mProvidersAdvanced;
 
     // Step 2
     private View            mStep2Container;
-    private TextView        mSelectedProviderIcon;
-    private TextView        mSelectedProviderName;
-    private TextView        mSelectedProviderDesc;
-    private TextView        mChangeProviderBtn;
-    private TextView        mModeLabel;
-    private LinearLayout    mModeChipsContainer;
     private EditText        mApiKeyInput;
-    private TextView        mToggleKeyVisibility;
-    private TextView        mEndpointLabel;
-    private EditText        mEndpointUrlInput;
-    private TextView        mModelLabel;
-    private LinearLayout    mModelChipsRow1;
-    private LinearLayout    mModelChipsRow2;
-    private EditText        mModelCustomInput;
-    private TextView        mConfigStatus;
-
-    // Bottom bar
-    private Button          mBtnBack;
-    private Button          mBtnNext;
 
     // ─── State ────────────────────────────────────────────────────────────────
     private int             mCurrentStep = 1;       // 1 = provider list, 2 = config
@@ -178,7 +158,6 @@ public class SetupActivity extends AppCompatActivity {
 
     private void bindViews() {
         mInstallContainer       = findViewById(R.id.install_container);
-        mInstallSubtitle        = findViewById(R.id.install_subtitle);
         mInstallProgress        = findViewById(R.id.install_progress);
         mInstallHint            = findViewById(R.id.install_hint);
         mInstallSuccess         = findViewById(R.id.install_success);
@@ -189,12 +168,11 @@ public class SetupActivity extends AppCompatActivity {
         mInstallStatus          = findViewById(R.id.install_status);
         mInstallButton          = findViewById(R.id.install_button);
 
-        // Step checklist views
+        // Step checklist views - simplified, no dynamic labels
         int[] stepIds = { R.id.step_1, R.id.step_2, R.id.step_3, R.id.step_4, R.id.step_5 };
         mStepViews = new View[5];
         for (int i = 0; i < 5; i++) {
             mStepViews[i] = findViewById(stepIds[i]);
-            setStepLabel(i, STEP_LABELS[i]);
             setStepState(i, StepState.PENDING);
         }
 
@@ -206,27 +184,9 @@ public class SetupActivity extends AppCompatActivity {
         mStep1Container         = findViewById(R.id.step1_container);
         mProvidersPriority      = findViewById(R.id.providers_priority);
         mProvidersSecondary     = findViewById(R.id.providers_secondary);
-        mProvidersAdvanced      = findViewById(R.id.providers_advanced);
 
         mStep2Container         = findViewById(R.id.step2_container);
-        mSelectedProviderIcon   = findViewById(R.id.selected_provider_icon);
-        mSelectedProviderName   = findViewById(R.id.selected_provider_name);
-        mSelectedProviderDesc   = findViewById(R.id.selected_provider_desc);
-        mChangeProviderBtn      = findViewById(R.id.change_provider_btn);
-        mModeLabel              = findViewById(R.id.mode_label);
-        mModeChipsContainer     = findViewById(R.id.mode_chips_container);
         mApiKeyInput            = findViewById(R.id.api_key_input);
-        mToggleKeyVisibility    = findViewById(R.id.toggle_key_visibility);
-        mEndpointLabel          = findViewById(R.id.endpoint_label);
-        mEndpointUrlInput       = findViewById(R.id.endpoint_url_input);
-        mModelLabel             = findViewById(R.id.model_label);
-        mModelChipsRow1         = findViewById(R.id.model_chips_row1);
-        mModelChipsRow2         = findViewById(R.id.model_chips_row2);
-        mModelCustomInput       = findViewById(R.id.model_custom_input);
-        mConfigStatus           = findViewById(R.id.config_status);
-
-        mBtnBack                = findViewById(R.id.btn_back);
-        mBtnNext                = findViewById(R.id.btn_next);
 
         mInstallButton.setOnClickListener(v -> {
             mRawLog.setLength(0);
@@ -237,12 +197,8 @@ public class SetupActivity extends AppCompatActivity {
         mInstallShowLogs.setOnClickListener(v -> {
             boolean showing = mInstallScroll.getVisibility() == View.VISIBLE;
             mInstallScroll.setVisibility(showing ? View.GONE : View.VISIBLE);
-            mInstallShowLogs.setText(showing ? "Show technical details" : "Hide technical details");
+            mInstallShowLogs.setText(showing ? "View details" : "Hide details");
         });
-        mChangeProviderBtn.setOnClickListener(v -> goToStep(1));
-        mToggleKeyVisibility.setOnClickListener(v -> toggleKeyVisibility());
-        mBtnBack.setOnClickListener(v -> goToStep(1));
-        mBtnNext.setOnClickListener(v -> onNextClicked());
     }
 
     // ─────────────────────────────────────────────────────────────────────────
