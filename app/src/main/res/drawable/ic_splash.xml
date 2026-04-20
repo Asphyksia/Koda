@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Splash screen animated icon for Material 3 SplashScreen API.
-  Uses Koda logo with circuit design.
+  Uses new Koda logo.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:width="48dp"
         android:height="48dp"
         android:gravity="center">
-        <bitmap android:src="@drawable/ic_koda_logo" />
+        <bitmap android:src="@drawable/ic_k_logo" />
     </item>
 </layer-list>
